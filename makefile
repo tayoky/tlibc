@@ -1,8 +1,8 @@
 MAKEFLAGS += --no-builtin-rules
 
 #first get all the src
-SRC_C = $(shell find -name "*.c")
-SRC_ASM = $(shell find -name "*.s")
+SRC_C = $(shell find src -name "*.c")
+SRC_ASM = $(shell find src -name "*.s")
 OBJ = ${SRC_C:.c=.o} ${SRC_ASM:.s=.o}
 
 OUT = tlibc.a

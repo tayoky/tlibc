@@ -36,8 +36,9 @@ CFLAGS = -Wall \
 	-mno-sse \
 	-mno-sse2 \
 	-mno-red-zone \
-	-mcmodel=kernel
-CFLAGS += -I ./include
+	-mcmodel=kernel\
+	-nostdlib
+CFLAGS += --sysroot=./ -isystem ./include
 
 all : ${OUT}
 

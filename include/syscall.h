@@ -33,5 +33,6 @@ static inline __syscall3(long n,long a1,long a2,long a3) {
 #define SYS_CLOSE 2
 #define SYS_READ 3
 #define SYS_WRITE 4
+#define SYS_SEEK 5
 
 #endif

@@ -14,7 +14,6 @@ NASM = nasm
 
 #ld flags
 LDFLAGS += \
-	-m elf_x86_64 \
 	-nostdlib \
 	-static \
 #nasm flags
@@ -38,13 +37,12 @@ CFLAGS = -Wall \
 	-mno-red-zone \
 	-mcmodel=kernel\
 	-nostdlib
-CFLAGS += --sysroot=./ -isystem ./include
+CFLAGS += --sysroot=./ -isystem ./include -isystem ./include/stanix
 
-all : ${OUT}
+all : ${OUT} crt0.o
 
 ${OUT} : ${OBJ}
-	${LD} ${LDFLAGS} -o tlibc.o ${OBJ}
-	ar rcs ${OUT} tlibc.o
+	ar rcs ${OUT} ${OBJ}
 
 %.o : %.c
 	${CC} ${CFLAGS} -r -o $@ -g -c $^

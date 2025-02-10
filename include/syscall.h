@@ -1,8 +1,6 @@
 #ifndef SYSCALL_H
 #define SYSCALL_H
 
-#include <stdint.h>
-
 static inline long __syscall0(long n)
 {
 	long ret;
@@ -29,5 +27,11 @@ static inline __syscall3(long n,long a1,long a2,long a3) {
     asm volatile ("int $0x80"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3) : "memory"); 
     return ret; 
 }
+
+#define SYS_EXIT 0
+#define SYS_OPEN 1
+#define SYS_CLOSE 2
+#define SYS_READ 3
+#define SYS_WRITE 4
 
 #endif

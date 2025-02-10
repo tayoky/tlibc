@@ -1,0 +1,24 @@
+# todo
+list of all header to do  
+- [ ] assert.h
+- [ ] complex.h
+- [ ] ctype.h
+- [ ] errno.h
+- [ ] fenv.h
+- [ ] float.h
+- [ ] inttype.h
+- [ ] iso646.h
+- [ ] limits.h
+- [ ] locale.h
+- [ ] math.h
+- [ ] setjmp.h
+- [ ] signal.h
+- [ ] stdarg.h
+- [x] stdbool.h
+- [ ] stddef.h
+- [ ] stdint.h
+- [ ] stdio.h
+- [ ] stdlib.h
+- [ ] string.h
+- [ ] wchar.h
+- [ ] wctype.h

@@ -7,7 +7,7 @@ list of all header to do
 - [ ] fenv.h
 - [ ] float.h
 - [ ] inttype.h
-- [ ] iso646.h
+- [x] iso646.h
 - [ ] limits.h
 - [ ] locale.h
 - [ ] math.h

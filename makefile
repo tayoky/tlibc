@@ -1,16 +1,14 @@
 MAKEFLAGS += --no-builtin-rules
 
+SYSROOT = sysroot
+TARGET = stanix
+
 #first get all the src
 SRC_C = $(shell find src -name "*.c")
 SRC_ASM = $(shell find src -name "*.s")
 OBJ = ${SRC_C:.c=.o} ${SRC_ASM:.s=.o}
 
 OUT = tlibc.a
-
-#util
-CC = gcc
-LD = ld
-NASM = nasm
 
 #ld flags
 LDFLAGS += \
@@ -51,3 +49,13 @@ ${OUT} : ${OBJ}
 
 clean : 
 	rm -f ${OBJ}
+
+#install the header
+header : 
+	mkdir -p ${SYSROOT}/usr/include
+	cp ./include/*.h ${SYSROOT}/usr/include
+	cp ./include/${TARGET}/*.h ${SYSROOT}/usr/include
+install : header all
+	mkdir -p ${SYSROOT}/usr/lib 
+	cp crt0.o ${SYSROOT}/usr/lib 
+	cp ${OUT} ${SYSROOT}/usr/lib/libc.a

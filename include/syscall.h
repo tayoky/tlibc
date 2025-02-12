@@ -28,11 +28,14 @@ static inline __syscall3(long n,long a1,long a2,long a3) {
     return ret; 
 }
 
-#define SYS_EXIT 0
-#define SYS_OPEN 1
-#define SYS_CLOSE 2
-#define SYS_READ 3
-#define SYS_WRITE 4
-#define SYS_SEEK 5
+#define SYS_exit  0
+#define SYS_open  1
+#define SYS_close 2
+#define SYS_read  3
+#define SYS_write 4
+#define SYS_seek  5
+#define SYS_dup   6
+#define SYS_dup2  7
+#define SYS_sbrk  8
 
 #endif

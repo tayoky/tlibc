@@ -47,7 +47,11 @@ typedef uint64_t uint_max;
 
 
 //ptr
+#ifndef INTPTR_T_DEFINED
+#define INTPTR_T_DEFINED
 typedef int64_t  intptr_t;
+#endif
+
 typedef uint64_t uintptr_t;
 
 #endif

@@ -26,9 +26,27 @@ typedef unsigned long size_t;
 typedef unsigned long off_t;
 #endif
 
+#ifndef INTPTR_T_DEFINED
+#define INTPTR_T_DEFINED
+typedef long long  intptr_t;
+#endif
+
+#ifndef STDIN_FILENO
+#define STDIN_FILENO 0
+#endif
+#ifndef STDOUT_FILENO
+#define STDOUT_FILENO 1
+#endif
+#ifndef STDERR_FILENO
+#define STDERR_FILENO 2
+#endif
+
 off_t lseek(int fd, off_t offset, int whence);
 
 ssize_t read(int fd, const void *buffer, size_t count);
 ssize_t write(int fd, const void *buffer, size_t count);
+
+
+void *sbrk(intptr_t increment);
 
 #endif

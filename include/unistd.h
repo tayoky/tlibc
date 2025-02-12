@@ -46,7 +46,8 @@ off_t lseek(int fd, off_t offset, int whence);
 ssize_t read(int fd, const void *buffer, size_t count);
 ssize_t write(int fd, const void *buffer, size_t count);
 
-
 void *sbrk(intptr_t increment);
+
+void _exit(int status);
 
 #endif

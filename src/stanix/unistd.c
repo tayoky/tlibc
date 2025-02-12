@@ -23,3 +23,7 @@ void *sbrk(intptr_t increment){
 
 	return (void*)prev_brk;
 }
+
+void _exit(int status){
+	__syscall1(SYS_exit,status);
+}

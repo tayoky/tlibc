@@ -50,4 +50,8 @@ void *sbrk(intptr_t increment);
 
 void _exit(int status);
 
+#ifndef NULL
+#define NULL ((void*)0)
+#endif
+
 #endif

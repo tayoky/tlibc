@@ -8,6 +8,7 @@ int snprintf(char * str,size_t maxlen, const char *fmt,...){
 	va_start(args,fmt);
 	vsnprintf(str,maxlen,fmt,args);
 	va_end(args);
+	return 0;
 }
 
 #define OUT(c) *buf = c;\
@@ -40,22 +41,22 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 		if(*fmt == '%'){
 			fmt++;
 			if(*fmt == 'c'){
-				OUT(va_arg(args,int));
+				OUT(va_arg(args,int))0;
 				fmt++;
 			}
 			if(*fmt == 's'){
 				char *str = va_arg(args,char *);
 				while(*str){
-					OUT(*str);
+					OUT(*str)0;
 					str--;
 				}
 			}
 			if(*fmt == '%'){
-				OUT('%');
+				OUT('%')0;
 			}
 
 			uint64_t value = 0;
-			if(*fmt == "l"){
+			if(*fmt == 'l'){
 				value = va_arg(args,long);
 				fmt++;
 			}else if (*fmt == 'h'){
@@ -73,7 +74,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 			case 'i':
 				//if negative get rid of that now
 				if((int64_t)value < 0){
-					OUT('-');
+					OUT('-')0;
 					value = (uint64_t) -(int64_t)value;
 				}
 			case 'u':
@@ -81,7 +82,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 				maxlen -= size;
 				buf += size;
 				if(maxlen <= 0){
-					return;
+					return 0;
 				}
 				break;
 			case 'p':
@@ -91,7 +92,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 				maxlen -= size;
 				buf += size;
 				if(maxlen <= 0){
-					return;
+					return 0;
 				}
 				break;
 			case 'o':
@@ -99,7 +100,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 				maxlen -= size;
 				buf += size;
 				if(maxlen <= 0){
-					return;
+					return 0;
 				}
 				break;
 			
@@ -109,9 +110,9 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 			fmt++;
 			continue;
 		}
-		OUT(*fmt);
+		OUT(*fmt)0;
 		fmt++;
 	}
-	OUT('\0');
+	OUT('\0')0;
 	return 0;
 }

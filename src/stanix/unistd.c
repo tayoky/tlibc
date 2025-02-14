@@ -14,6 +14,10 @@ off_t lseek(int fd, off_t offset, int whence){
 	return (off_t)__syscall3(SYS_seek,fd,(long)offset,whence);
 }
 
+int close(int fd){
+	return __syscall1(SYS_close,(long)fd);
+}
+
 void *sbrk(intptr_t increment){
 	//save the current sbrk beauce stanix's sbrk return the new heao end
 	//not the previous like linux

@@ -8,6 +8,11 @@
 typedef unsigned long long size_t;
 #endif
 
+#ifndef FPOS_T_DEFINED
+#define FPOS_T_DEFNIED
+typedef unsigned long long fpos_t;
+#endif
+
 
 int snprintf(char * str,size_t maxlen, const char *fmt,...);
 int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args);
@@ -31,5 +36,23 @@ extern FILE *stdout;
 extern FILE *stderr;
 
 #define PRINTF_MAX 1024
+
+#ifndef SEEK_SET
+#define SEEK_SET 0
+#endif
+#ifndef SEEK_CUR
+#define SEEK_CUR 1
+#endif
+#ifndef SEEK_END
+#define SEEK_END 2
+#endif
+
+#ifndef NULL
+#define NULL (void *)0
+#endif
+
+#ifndef BUFSIZ
+#define BUFSIZ 4096
+#endif
 
 #endif

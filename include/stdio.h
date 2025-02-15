@@ -31,9 +31,32 @@ int vfprintf(FILE *stream, const char *fmt, va_list args);
 int printf(const char *fmt, ...);
 int vprintf(const char *fmt, va_list args);
 
+FILE *fdopen(int handle, char *type);
+
+//seek func
+int fseek(FILE *stream, long int offset, int origin);
+long int ftell(FILE *stream);
+void rewind(FILE *stream);
+
 extern FILE *stdin;
 extern FILE *stdout;
 extern FILE *stderr;
+
+//put/get
+int fgetc(FILE *stream);
+int getc(FILE *stream);
+int getchar(void);
+
+char *fgets (char *string, int n, FILE *stream);
+char *gets(char *buffer);
+
+int fputc(int c,FILE *stream);
+int putc(int c,FILE *stream);
+int putchar(int c);
+
+int fputs (char *string, int n, FILE *stream);
+int puts(char *string);
+
 
 #define PRINTF_MAX 1024
 
@@ -54,5 +77,7 @@ extern FILE *stderr;
 #ifndef BUFSIZ
 #define BUFSIZ 4096
 #endif
+
+#define EOF -1000
 
 #endif

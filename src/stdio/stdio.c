@@ -148,11 +148,23 @@ int vfprintf(FILE *stream, const char *fmt, va_list args){
 int printf(const char *fmt, ...){
 	va_list args;
 	va_start(args, fmt);
-	int ret =vprintf(fmt,args);
+	int ret = vprintf(fmt,args);
 	va_end(args);
 	return ret;
 }
 
 int vprintf(const char *fmt, va_list args){
 	return vfprintf(stdout,fmt,args);
+}
+
+FILE *fdopen(int handle, char *type){
+	if(handle < 0){
+		return __set_errno(handle);
+	}
+
+	FILE *stream = malloc(sizeof(FILE));
+	stream->errno =0;
+	stream->fd = handle;
+
+	return stream;
 }

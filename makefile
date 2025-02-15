@@ -4,8 +4,8 @@ SYSROOT = sysroot
 TARGET = stanix
 
 #first get all the src
-SRC_C = $(shell find src -name "*.c")
-SRC_ASM = $(shell find src -name "*.s")
+SRC_C = $(shell find src -maxdepth 1 -name "*.c") $(shell find src/stdio -name "*.c") $(shell find src/${TARGET} -name "*.c")
+SRC_ASM = $(shell find src -maxdepth 1 -name "*.s")
 OBJ = ${SRC_C:.c=.o} ${SRC_ASM:.s=.o}
 
 OUT = tlibc.a
@@ -35,7 +35,7 @@ CFLAGS = -Wall \
 	-mno-red-zone \
 	-mcmodel=kernel\
 	-nostdlib
-CFLAGS += --sysroot=./ -isystem ./include -isystem ./include/stanix
+CFLAGS += --sysroot=./ -isystem ./include -isystem ./include/${TARGET}
 
 all : ${OUT} crt0.o
 

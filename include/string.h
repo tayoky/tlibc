@@ -32,6 +32,8 @@ int memcmp(const void *buf1,const void *buf2,size_t count);
 
 void *memchr(const void *buf, int c, size_t count);
 
+const char *strerror(int errnum);
+
 #ifndef NULL
 #define NULL (void *)0
 #endif

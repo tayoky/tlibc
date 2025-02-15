@@ -4,7 +4,7 @@
 
 
 #ifndef NULL
-#define NULL
+#define NULL (void *)0
 #endif
 
 #ifndef SIZE_T_DEFINED
@@ -16,6 +16,6 @@ typedef signed long ptrdiff_t;
 
 typedef char wchar_t;
 
-//TODO : offsetof() macro
+#define offsetof(struct_type,member) (size_t)&((struct struct_type *)0)->member
 
 #endif

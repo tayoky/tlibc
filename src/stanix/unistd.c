@@ -1,21 +1,22 @@
 #include <unistd.h>
 #include <syscall.h>
 #include <stdint.h>
+#include <errno.h>
 
 ssize_t read(int fd, const void *buffer, size_t count){
-	return __syscall3(SYS_read,fd,(long)buffer,count);
+	return __set_errno(__syscall3(SYS_read,fd,(long)buffer,count));
 }
 
 ssize_t write(int fd, const void *buffer, size_t count){
-	return __syscall3(SYS_write,fd,(long)buffer,count);
+	return __set_errno(__syscall3(SYS_write,fd,(long)buffer,count));
 }
 
 off_t lseek(int fd, off_t offset, int whence){
-	return (off_t)__syscall3(SYS_seek,fd,(long)offset,whence);
+	return __set_errno(__syscall3(SYS_seek,fd,(long)offset,whence));
 }
 
 int close(int fd){
-	return __syscall1(SYS_close,(long)fd);
+	return __set_errno(__syscall1(SYS_close,(long)fd));
 }
 
 void *sbrk(intptr_t increment){

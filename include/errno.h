@@ -126,6 +126,11 @@
 #define EWOULDBLOCK EAGAIN    /* Operation would block */
 
 extern int errno;
-#define __sets_errno(ret) if(ret < 0){errno = ret;return -1}return ret 
+static inline int __set_errno(int ret){ 
+	if(ret < 0){
+		errno = ret;
+	}
+	return ret;
+}
 
 #endif

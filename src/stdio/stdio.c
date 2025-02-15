@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <errno.h>
+#undef errno
 
 struct _FILE{
 	int fd;
@@ -84,7 +86,7 @@ FILE *fopen(const char *path,const char *mode){
 }
 
 int fclose(FILE *stream){
-	if(!stream)return 0;
+	if(!stream)return __set_errno(-EBADF);
 
 	close(stream->fd);
 	free(stream);
@@ -92,13 +94,13 @@ int fclose(FILE *stream){
 }
 
 size_t fread(void * ptr, size_t size, size_t n, FILE *stream){
-	if(!stream)return 0;
+	if(!stream)return __set_errno(-EBADF);
 
 	ssize_t rsize = read(stream->fd,ptr,size * n);
 
 	if(rsize < 0){
 		//it's an error
-		stream->errno = (unsigned long)-rsize;
+		stream->errno = errno;
 		return 0;
 	}
 
@@ -106,13 +108,13 @@ size_t fread(void * ptr, size_t size, size_t n, FILE *stream){
 }
 
 size_t fwrite(void * ptr, size_t size, size_t n, FILE *stream){
-	if(!stream)return 0;
+	if(!stream)return __set_errno(-EBADF);
 
 	ssize_t wsize = write(stream->fd,ptr,size * n);
 
 	if(wsize < 0){
 		//it's an error
-		stream->errno = (unsigned long)-wsize;
+		stream->errno = errno;
 		return 0;
 	}
 
@@ -122,12 +124,13 @@ size_t fwrite(void * ptr, size_t size, size_t n, FILE *stream){
 int fprintf(FILE *stream, const char *fmt, ...){
 	va_list args;
 	va_start(args,fmt);
-	vfprintf(stream,fmt,args);
+	int ret = vfprintf(stream,fmt,args);
 	va_end(args);
+	return ret;
 }
 
 int vfprintf(FILE *stream, const char *fmt, va_list args){
-	if(!stream)return 0;
+	if(!stream)return __set_errno(-EBADF);
 
 	char buf[PRINTF_MAX];
 	buf[PRINTF_MAX - 1] ='\0';
@@ -139,19 +142,17 @@ int vfprintf(FILE *stream, const char *fmt, va_list args){
 		bufsize = strlen(buf);
 	}
 
-	fwrite(buf,bufsize,1,stream);
-	return 0;
+	return fwrite(buf,bufsize,1,stream);
 }
 
 int printf(const char *fmt, ...){
 	va_list args;
 	va_start(args, fmt);
-	vprintf(fmt,args);
+	int ret =vprintf(fmt,args);
 	va_end(args);
-	return 0;
+	return ret;
 }
 
 int vprintf(const char *fmt, va_list args){
-	vfprintf(stdout,fmt,args);
-	return 0;
+	return vfprintf(stdout,fmt,args);
 }

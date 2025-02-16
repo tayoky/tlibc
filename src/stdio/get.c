@@ -7,11 +7,11 @@
 
 struct _FILE{
 	int fd;
-	unsigned long errno;
+	long errno;
 };
 
 int fgetc(FILE *stream){
- 	char c = 0;
+ 	unsigned char c = 0;
 	ssize_t rsize = read(stream->fd,&c,1);
 	if(rsize < 0){
 		return __set_errno(rsize);
@@ -34,7 +34,7 @@ char *fgets (char *string, int n, FILE *stream){
 	do
 	{
 		if(n <= 0){
-			return stream;
+			return string;
 		}
 		c = fgetc(stream);
 		*string = (char)c;
@@ -44,7 +44,7 @@ char *fgets (char *string, int n, FILE *stream){
 	
 	string--;
 	*string = '\0';
-	return stream;
+	return string;
 }
 char *gets(char *buffer){
 	//TODO replace by INT32_MAX when it will be added to stdint.h
@@ -68,7 +68,7 @@ int putchar(int c){
 }
 
 int fputs (char *string, int n, FILE *stream){
-	for (size_t i = 0; i < n; i++){
+	for (int i = 0; i < n; i++){
 		if(!string[i]){
 			n = i;
 		}

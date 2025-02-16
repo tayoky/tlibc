@@ -103,3 +103,7 @@ void free(void *ptr){
 		current_seg->prev->next = current_seg->next;
 	}
 }
+
+void abort(void){
+	return exit(EXIT_FAILURE);
+}

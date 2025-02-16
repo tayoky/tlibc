@@ -48,7 +48,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 				char *str = va_arg(args,char *);
 				while(*str){
 					OUT(*str)0;
-					str--;
+					str++;
 				}
 			}
 			if(*fmt == '%'){

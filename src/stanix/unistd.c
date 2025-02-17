@@ -2,6 +2,8 @@
 #include <syscall.h>
 #include <stdint.h>
 #include <errno.h>
+#include <sys/time.h>
+#include <sys/type.h>
 
 ssize_t read(int fd, const void *buffer, size_t count){
 	return __set_errno(__syscall3(SYS_read,fd,(long)buffer,count));
@@ -31,4 +33,20 @@ void *sbrk(intptr_t increment){
 
 void _exit(int status){
 	__syscall1(SYS_exit,status);
+}
+
+unsigned int sleep(unsigned int seconds){
+	return (int)usleep(seconds * 1000000) / 1000000;
+}
+int usleep(useconds_t usec){
+	return __syscall1(SYS_usleep,usec);
+}
+
+int gettimeofday(struct timeval *tv,struct timezone *tz){
+	return __set_errno(__syscall2(SYS_gettimeoftheday,(long)tv,(long)tz));
+}
+
+int ioctl(int fd, unsigned long op, ...){
+	//TODO : support for arg
+	return __set_errno(__syscall3(SYS_ioctl,fd,op,NULL));
 }

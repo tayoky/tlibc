@@ -1,6 +1,8 @@
 #ifndef UNISTD_H
 #define UNISTD_H
 
+#include <sys/type.h>
+
 #ifndef SSIZE_T_DEFINED
 #define SSIZE_T_DEFINED
 typedef long ssize_t;
@@ -51,6 +53,9 @@ void *sbrk(intptr_t increment);
 void _exit(int status);
 
 int close(int fd);
+
+unsigned int sleep(unsigned int seconds);
+int usleep(useconds_t usec);
 
 #ifndef NULL
 #define NULL ((void*)0)

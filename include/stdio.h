@@ -57,6 +57,7 @@ int putchar(int c);
 int fputs (char *string, int n, FILE *stream);
 int puts(char *string);
 
+int feof(FILE *stream);
 
 #define PRINTF_MAX 1024
 

@@ -10,19 +10,23 @@
 struct _FILE{
 	int fd;
 	unsigned long errno;
+	int eof;
 };
 
 static FILE _stdin = {
 	.fd = 0,
-	.errno = 0
+	.errno = 0,
+	.eof = 0
 };
 static FILE _stdout = {
 	.fd = 1,
-	.errno = 0
+	.errno = 0,
+	.eof = 0
 };
 static FILE _stderr = {
 	.fd = 2,
-	.errno = 0
+	.errno = 0,
+	.eof = 0
 };
 
 FILE *stdin = &_stdin;
@@ -82,6 +86,7 @@ FILE *fopen(const char *path,const char *mode){
 	FILE *stream = malloc(sizeof(FILE));
 	stream->fd = fd;
 	stream->errno = 0;
+	stream->eof = 0;
 	return stream;
 }
 
@@ -104,6 +109,10 @@ size_t fread(void * ptr, size_t size, size_t n, FILE *stream){
 		return 0;
 	}
 
+	if(rsize < n){
+		stream->eof = 1;
+	}
+
 	return (size_t)rsize;
 }
 
@@ -116,6 +125,10 @@ size_t fwrite(void * ptr, size_t size, size_t n, FILE *stream){
 		//it's an error
 		stream->errno = errno;
 		return 0;
+	}
+
+	if(wsize < n){
+		stream->eof = 1;
 	}
 
 	return (size_t)wsize;
@@ -165,6 +178,11 @@ FILE *fdopen(int handle, char *type){
 	FILE *stream = malloc(sizeof(FILE));
 	stream->errno =0;
 	stream->fd = handle;
+	stream->eof = 0;
 
 	return stream;
+}
+
+int feof(FILE *stream){
+	return stream->eof;
 }

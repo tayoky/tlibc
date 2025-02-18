@@ -41,5 +41,7 @@ static inline __syscall3(long n,long a1,long a2,long a3) {
 #define SYS_usleep          10
 #define SYS_sleepuntil      11
 #define SYS_gettimeoftheday 12
+#define SYS_settimeoftheday 13
+#define SYS_pipe            14
 
 #endif

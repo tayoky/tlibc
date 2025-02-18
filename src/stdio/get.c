@@ -8,6 +8,7 @@
 struct _FILE{
 	int fd;
 	long errno;
+	int eof;
 };
 
 int fgetc(FILE *stream){
@@ -17,6 +18,7 @@ int fgetc(FILE *stream){
 		return __set_errno(rsize);
 	}
 	if(rsize == 0){
+		stream->eof = 1;
 		return EOF;
 	}
 	return c;

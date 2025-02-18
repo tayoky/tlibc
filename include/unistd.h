@@ -57,6 +57,8 @@ int close(int fd);
 unsigned int sleep(unsigned int seconds);
 int usleep(useconds_t usec);
 
+int pipe(int pipefd[2]);
+
 #ifndef NULL
 #define NULL ((void*)0)
 #endif

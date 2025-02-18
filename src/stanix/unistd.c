@@ -50,3 +50,7 @@ int ioctl(int fd, unsigned long op, ...){
 	//TODO : support for arg
 	return __set_errno(__syscall3(SYS_ioctl,fd,op,NULL));
 }
+
+int pipe(int pipefd[2]){
+	return __set_errno(__syscall1(SYS_pipe,(long)pipefd));
+}

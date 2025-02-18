@@ -121,7 +121,7 @@ static const char * _error_strings[] = {
 
 static char _error_string_unkown[100];
 const char *strerror(int errnum){
-	if((errnum < 0 || (size_t)errnum >= (size_t)sizeof(_error_strings) / sizeof(char *)) && _error_strings[errnum]){
+	if((errnum >= 0 || (size_t)errnum < (size_t)sizeof(_error_strings) / sizeof(char *)) && _error_strings[errnum]){
 		return _error_strings[errnum];
 	} else {
 		snprintf(_error_string_unkown,99,"%d",errnum);

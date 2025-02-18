@@ -128,7 +128,7 @@
 extern int errno;
 static inline int __set_errno(int ret){ 
 	if(ret < 0){
-		errno = ret;
+		errno = -ret;
 	}
 	return ret;
 }

@@ -59,6 +59,8 @@ int puts(char *string);
 
 int feof(FILE *stream);
 
+void perror(const char *string);
+
 #define PRINTF_MAX 1024
 
 #ifndef SEEK_SET

@@ -186,3 +186,11 @@ FILE *fdopen(int handle, char *type){
 int feof(FILE *stream){
 	return stream->eof;
 }
+
+void perror(const char *string){
+	if(string){
+		printf("%s",string);
+	}
+	printf(" : %s\n",strerror(errno));
+	abort();
+}

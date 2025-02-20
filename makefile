@@ -10,6 +10,9 @@ OBJ = ${SRC_C:.c=.o} ${SRC_ASM:.s=.o}
 
 OUT = tlibc.a
 
+#default nasm
+NASM = nasm
+
 #ld flags
 LDFLAGS += \
 	-nostdlib \

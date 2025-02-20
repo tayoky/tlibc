@@ -3,3 +3,6 @@
 
 #build
 tlibc.a
+
+#sysroot
+sysroot/*

@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdint.h>
+#include <ctype.h>
 
 char *strcpy(char *dest, const char *src){
 	size_t index = 0;
@@ -81,6 +82,31 @@ char *strcat(char * dest, const char * src){
 		dest++;
 	}
 	return strcpy(dest,src);
+}
+
+int stricmp(const char *str1, const char *str2){
+	while (*str1 || *str2) {
+		char c1 = tolower(*str1);
+		char c2 = tolower(*str2);
+		if (c1 > c2) return 1;
+		if (c2 > c1) return -1;
+		str1++; str2++;
+	}
+	return 0;
+}
+int strnicmp(const char *str1, const char *str2, size_t n){
+	while (*str1 || *str2) {
+		if(n <= 0){
+			return 0;
+		}
+		char c1 = tolower(*str1);
+		char c2 = tolower(*str2);
+		if (c1 > c2) return 1;
+		if (c2 > c1) return -1;
+		n--;
+		str1++; str2++;
+	}
+	return 0;
 }
 
 void *memcpy(void *dest, const void *src,size_t n){

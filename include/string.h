@@ -22,6 +22,14 @@ char *strcat(char * dest, const char * src);
 
 char *strdup(const char *str);
 
+int stricmp(const char *str1, const char *str2);
+
+#define strcmpi(str1,str2) stricmp(str1,str2);
+
+int strnicmp(const char *str1, const char *str2, size_t n);
+
+#define strncmpi(str1,str2,n) strnicmp(str1,str2,n)
+
 //mem
 
 void *memset(void *pointer,int value,size_t count);

@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <sys/time.h>
 #include <sys/type.h>
+#include <sys/types.h>
 #include <stdio.h>
 
 ssize_t read(int fd, const void *buffer, size_t count){
@@ -58,4 +59,8 @@ int pipe(int pipefd[2]){
 
 int execve(const char *pathname,const char **argv,const char **envp){
 	return __set_errno(__syscall2(SYS_execve,(long)pathname,(long)argv));
+}
+
+pid_t fork(void){
+	return __set_errno(__syscall0(SYS_fork));
 }

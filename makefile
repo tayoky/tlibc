@@ -55,9 +55,10 @@ clean :
 
 #install the header
 header : 
-	mkdir -p ${SYSROOT}/usr/include
+	mkdir -p ${SYSROOT}/usr/include/sys
 	cp ./include/*.h ${SYSROOT}/usr/include
 	cp ./include/${TARGET}/*.h ${SYSROOT}/usr/include
+	cp ./include/${TARGET}/sys/*.h ${SYSROOT}/usr/include/sys
 install : header all
 	mkdir -p ${SYSROOT}/usr/lib 
 	cp crt0.o ${SYSROOT}/usr/lib 

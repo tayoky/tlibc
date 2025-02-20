@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <sys/time.h>
 #include <sys/type.h>
+#include <stdio.h>
 
 ssize_t read(int fd, const void *buffer, size_t count){
 	return __set_errno(__syscall3(SYS_read,fd,(long)buffer,count));
@@ -53,4 +54,8 @@ int ioctl(int fd, unsigned long op, ...){
 
 int pipe(int pipefd[2]){
 	return __set_errno(__syscall1(SYS_pipe,(long)pipefd));
+}
+
+int execve(const char *pathname,const char **argv,const char **envp){
+	return __set_errno(__syscall2(SYS_execve,(long)pathname,(long)argv));
 }

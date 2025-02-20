@@ -59,6 +59,8 @@ int usleep(useconds_t usec);
 
 int pipe(int pipefd[2]);
 
+int execve(const char *pathname,const char *argv[],const char *envp[]);
+
 #ifndef NULL
 #define NULL ((void*)0)
 #endif

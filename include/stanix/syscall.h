@@ -43,5 +43,6 @@ static inline __syscall3(long n,long a1,long a2,long a3) {
 #define SYS_gettimeoftheday 12
 #define SYS_settimeoftheday 13
 #define SYS_pipe            14
+#define SYS_execve          15
 
 #endif

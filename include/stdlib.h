@@ -13,6 +13,12 @@ void free(void *ptr);
 
 void abort(void);
 
+//convertion things
+
+long long int atoll(const char *str);
+long int atol(const char *str);
+int atoi(const char *str);
+
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE -1
 

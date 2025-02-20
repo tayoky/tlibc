@@ -67,7 +67,7 @@ int strncmp(const char *str1,const  char *str2,size_t n){
 	return 0;
 }
 
-char *strrchr(const char *str, int c){
+char *strchr(const char *str, int c){
 	while(*str){
 		if(*str == c){
 			return (char *)str;

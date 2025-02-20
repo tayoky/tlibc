@@ -16,7 +16,7 @@ size_t strlen(const char *str);
 int strcmp(const char *s1, const char *s2);
 int strncmp(const char *str1,const  char *str2,size_t n);
 
-char *strrchr(const char *str, int c);
+char *strchr(const char *str, int c);
 
 char *strcat(char * dest, const char * src);
 

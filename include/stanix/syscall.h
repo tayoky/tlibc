@@ -45,5 +45,7 @@ static inline __syscall3(long n,long a1,long a2,long a3) {
 #define SYS_pipe            14
 #define SYS_execve          15
 #define SYS_fork            16
+#define SYS_mkdir           17
+#define SYS_unlink          18
 
 #endif

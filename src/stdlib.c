@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 void exit(int status){
 	_exit(status);
@@ -102,6 +103,13 @@ void free(void *ptr){
 		}
 		current_seg->prev->next = current_seg->next;
 	}
+}
+
+void *calloc(size_t num,size_t size){
+	size *= num;
+	void *buf = malloc(size);
+	memset(buf,0,size);
+	return buf;
 }
 
 void abort(void){

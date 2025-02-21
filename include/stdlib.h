@@ -10,6 +10,7 @@ typedef unsigned long long size_t;
 
 void *malloc(size_t amount);
 void free(void *ptr);
+void *calloc(size_t num,size_t size);
 
 void abort(void);
 

@@ -2,6 +2,7 @@
 #define UNISTD_H
 
 #include <sys/type.h>
+#include <sys/types.h>
 
 #ifndef SSIZE_T_DEFINED
 #define SSIZE_T_DEFINED
@@ -58,6 +59,10 @@ unsigned int sleep(unsigned int seconds);
 int usleep(useconds_t usec);
 
 int pipe(int pipefd[2]);
+
+int execve(const char *pathname,const char *argv[],const char *envp[]);
+
+pid_t fork(void);
 
 #ifndef NULL
 #define NULL ((void*)0)

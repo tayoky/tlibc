@@ -64,6 +64,8 @@ int execve(const char *pathname,const char *argv[],const char *envp[]);
 
 pid_t fork(void);
 
+int mkdir(const char *pathname,mode_t mode);
+
 #ifndef NULL
 #define NULL ((void*)0)
 #endif

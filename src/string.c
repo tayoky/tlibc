@@ -33,6 +33,25 @@ size_t strlen(const char *str){
 	return index;
 }
 
+char *strstr(const char *str1,const char *str2){
+	size_t str2_len = strlen(str2) + 1;
+	while(*str1){
+		//check all char
+		for(int i=0;i<str2_len;i++){
+			if(!str2[i]){
+				//all str2 was found
+				return (char *)str1;
+			}
+
+			if(str1[i] != str2[i]){
+				break;
+			}
+		}
+		str1++;
+	}
+	return NULL;
+}
+
 void *memset(void *pointer,int value,uint64_t count){
 	uint8_t *ptr = pointer;
 	while (count > 0){

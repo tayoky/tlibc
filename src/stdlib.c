@@ -112,6 +112,22 @@ void *calloc(size_t num,size_t size){
 	return buf;
 }
 
+void *realloc(void *ptr,size_t new_size){
+	void *new_buf = malloc(new_size);
+	if(!new_buf){
+		return NULL;
+	}
+	size_t old_size = ((*heap_segment)((uintptr_t)ptr - sizeof(heap_segment)))->lenght;
+
+	if(new_size > old_size){
+		memcpy(new_buf,ptr,old_size);
+	} else {
+		memcpy(new_buf,ptr,new_size);
+	}
+	free(ptr);
+	return new_buf;
+}
+
 void abort(void){
 	return exit(EXIT_FAILURE);
 }

@@ -4,7 +4,7 @@ SYSROOT = sysroot
 TARGET = stanix
 
 #first get all the src
-SRC_C = $(shell find src -maxdepth 1 -name "*.c") $(shell find src/stdio -name "*.c") $(shell find src/${TARGET} -name "*.c")
+SRC_C = $(shell find src -maxdepth 1 -name "*.c") $(shell find src/stdio -name "*.c") $(shell find src/${TARGET} -name "*.c") $(shell find src/math -name "*.c")
 SRC_ASM = $(shell find src -maxdepth 1 -name "*.s")
 OBJ = ${SRC_C:.c=.o} ${SRC_ASM:.s=.o}
 

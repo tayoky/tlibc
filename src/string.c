@@ -77,6 +77,18 @@ char *strchr(const char *str, int c){
 	return NULL;
 }
 
+char *strrchr(const char *str, int c){
+	//start with the right
+	int i = strlen(str);
+	while(i > 0){
+		if(str[i] == c){
+			return (char *)&str[i];
+		}
+		i--;
+	}
+	return NULL;
+}
+
 char *strcat(char * dest, const char * src){
 	while(*dest){
 		dest++;
@@ -109,13 +121,28 @@ int strnicmp(const char *str1, const char *str2, size_t n){
 	return 0;
 }
 
+
 void *memcpy(void *dest, const void *src,size_t n){
-	while (n > 0){
-		*(char *)dest = *(char *)src;
-		(char *)src++;
-		(char *)dest++;
-		n--;
+	asm("rep movsb"
+		: : "D" (dest),
+		    "S" (src),
+		    "c" (n));
+	return dest;
+}
+
+void *memmove(void *dest, const void *src, size_t n){
+	if(dest == src){
+		return dest;
 	}
+
+	if(dest < src){
+		return memcpy(dest,src,n);
+	}
+
+	asm("rep movsq"
+		: : "D" (dest),
+		    "S" (src),
+		    "c" (n));
 	return dest;
 }
 

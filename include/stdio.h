@@ -61,6 +61,8 @@ int feof(FILE *stream);
 
 void perror(const char *string);
 
+int fflush(FILE *stream);
+
 #define PRINTF_MAX 1024
 
 #ifndef SEEK_SET

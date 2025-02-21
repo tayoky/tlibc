@@ -194,3 +194,7 @@ void perror(const char *string){
 	printf(" : %s\n",strerror(errno));
 	abort();
 }
+
+int fflush(FILE *stream){
+	return 0;
+}

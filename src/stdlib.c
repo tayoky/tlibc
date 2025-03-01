@@ -117,7 +117,7 @@ void *realloc(void *ptr,size_t new_size){
 	if(!new_buf){
 		return NULL;
 	}
-	size_t old_size = ((*heap_segment)((uintptr_t)ptr - sizeof(heap_segment)))->lenght;
+	size_t old_size = ((heap_segment*)((uintptr_t)ptr - sizeof(heap_segment)))->lenght;
 
 	if(new_size > old_size){
 		memcpy(new_buf,ptr,old_size);

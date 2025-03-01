@@ -62,7 +62,7 @@ int execve(const char *pathname,const char **argv,const char **envp){
 }
 
 int mkdir(const char *pathname,mode_t mode){
-	return __set_errno(__syscall2(SYS_mkdir,(long)mode));
+	return __set_errno(__syscall2(SYS_mkdir,(long)pathname,(long)mode));
 }
 
 pid_t fork(void){

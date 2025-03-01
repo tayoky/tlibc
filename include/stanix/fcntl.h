@@ -1,10 +1,8 @@
 #ifndef FCNTL_H
 #define FCNTL_H
 
-#ifndef MODE_T_DEFINED
-#define MODE_T_DEFINED
-typedef unsigned long mode_t;
-#endif
+#include <sys/type.h>
+#include <sys/types.h>
 
 #define O_RDONLY	00000000
 #define O_WRONLY	00000001

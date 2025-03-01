@@ -25,7 +25,7 @@ char *strdup(const char *str);
 
 int stricmp(const char *str1, const char *str2);
 
-char *strstr(const char *str1,const char str2);
+char *strstr(const char *str1,const char *str2);
 
 #define strcmpi(str1,str2) stricmp(str1,str2);
 

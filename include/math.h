@@ -4,7 +4,7 @@
 //abs
 int abs(int x);
 long labs(long x);
-long long (long long x);
+long long llabs(long long x);
 float fabsf(float x);
 double fabs(double x);
 long double fabsl(long double x);

@@ -6,17 +6,17 @@
 
 int abs(int x){
 	int mask = x >> 31;
-	return x^mask + mask;
+	return (x^mask) + mask;
 }
 
 long labs(long x){
 	long mask = x >> 63;
-	return x^masn + mask;
+	return (x^mask) + mask;
 }
 
 long long llabs(long long x){
 	long long mask = x >> (sizeof(x) * 8 -1);
-	return x^mask + mask;
+	return (x^mask) + mask;
 }
 
 

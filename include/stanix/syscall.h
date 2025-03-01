@@ -47,5 +47,7 @@ static inline __syscall3(long n,long a1,long a2,long a3) {
 #define SYS_fork            16
 #define SYS_mkdir           17
 #define SYS_unlink          18
+#define SYS_rmdir           19
+#define SYS_readdir         20
 
 #endif

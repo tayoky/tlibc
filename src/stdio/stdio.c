@@ -188,10 +188,8 @@ int feof(FILE *stream){
 }
 
 void perror(const char *string){
-	if(string){
-		printf("%s",string);
-	}
-	printf(" : %s\n",strerror(errno));
+	fprintf(stderr,"%s",string);
+	fprintf(stderr," : %s\n",strerror(errno));
 	abort();
 }
 

@@ -44,6 +44,9 @@ void *memchr(const void *buf, int c, size_t count);
 
 const char *strerror(int errnum);
 
+//dup
+char *strdup(const char *str);
+
 #ifndef NULL
 #define NULL (void *)0
 #endif

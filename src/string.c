@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 char *strcpy(char *dest, const char *src){
 	size_t index = 0;
@@ -52,7 +53,7 @@ char *strstr(const char *str1,const char *str2){
 	return NULL;
 }
 
-void *memset(void *pointer,int value,uint64_t count){
+void *memset(void *pointer,int value,size_t count){
 	uint8_t *ptr = pointer;
 	while (count > 0){
 		*ptr = value;
@@ -186,4 +187,10 @@ void *memchr(const void *buf, int c, size_t count){
 		count--;
 	}
 	return NULL;
+}
+
+char *strdup(const char *str){
+	char *newstr = malloc(strlen(str) + 1);
+	strcpy(newstr,str);
+	return newstr;;
 }

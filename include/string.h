@@ -1,10 +1,7 @@
 #ifndef STRING_H
 #define STRING_H
 
-#ifndef SIZE_T_DEFINED
-#define SIZE_T_DEFINED
-typedef unsigned long long size_t;
-#endif
+typedef unsigned long size_t;
 
 //str
 

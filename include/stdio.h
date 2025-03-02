@@ -3,15 +3,8 @@
 
 #include <stdarg.h>
 
-#ifndef SIZE_T_DEFINED
-#define SIZE_T_DEFINED
-typedef unsigned long long size_t;
-#endif
-
-#ifndef FPOS_T_DEFINED
-#define FPOS_T_DEFNIED
-typedef unsigned long long fpos_t;
-#endif
+typedef unsigned long size_t;
+typedef size_t fpos_t;
 
 
 int snprintf(char * str,size_t maxlen, const char *fmt,...);

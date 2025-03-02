@@ -4,16 +4,6 @@
 #include <sys/type.h>
 #include <sys/types.h>
 
-#ifndef SSIZE_T_DEFINED
-#define SSIZE_T_DEFINED
-typedef long ssize_t;
-#endif
-
-#ifndef SIZE_T_DEFINED
-#define SIZE_T_DEFINED
-typedef unsigned long size_t;
-#endif
-
 #ifndef SEEK_SET
 #define SEEK_SET 0
 #endif
@@ -24,10 +14,7 @@ typedef unsigned long size_t;
 #define SEEK_END 2
 #endif
 
-#ifndef INTPTR_T_DEFINED
-#define INTPTR_T_DEFINED
-typedef long long  intptr_t;
-#endif
+typedef long  intptr_t;
 
 #ifndef STDIN_FILENO
 #define STDIN_FILENO 0

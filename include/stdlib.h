@@ -3,10 +3,7 @@
 
 void exit(int status);
 
-#ifndef SIZE_T_DEFINED
-#define SIZE_T_DEFINED
-typedef unsigned long long size_t;
-#endif
+typedef unsigned long size_t;
 
 void *malloc(size_t amount);
 void free(void *ptr);

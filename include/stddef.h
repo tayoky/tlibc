@@ -1,15 +1,10 @@
 #ifndef STDDEF_H
 #define STDDEF_H
 
-
+#include <sys/types.h>
 
 #ifndef NULL
 #define NULL (void *)0
-#endif
-
-#ifndef SIZE_T_DEFINED
-#define SIZE_T_DEFINED
-typedef unsigned long size_t;
 #endif
 
 typedef signed long ptrdiff_t;

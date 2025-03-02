@@ -24,11 +24,6 @@ typedef unsigned long size_t;
 #define SEEK_END 2
 #endif
 
-#ifndef OFF_T_DEFINED
-#define OFF_T_DEFINED
-typedef unsigned long off_t;
-#endif
-
 #ifndef INTPTR_T_DEFINED
 #define INTPTR_T_DEFINED
 typedef long long  intptr_t;

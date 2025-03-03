@@ -133,5 +133,5 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 		fmt++;
 	}
 	OUT('\0');
-	return count;
+	return count - 1; //don't count the last '\0'
 }

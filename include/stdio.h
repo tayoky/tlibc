@@ -6,7 +6,8 @@
 typedef unsigned long size_t;
 typedef size_t fpos_t;
 
-
+int sprintf(char * str,const char *fmt,...);
+int vsprintf(char * buf,const char *fmt,va_list args);
 int snprintf(char * str,size_t maxlen, const char *fmt,...);
 int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args);
 

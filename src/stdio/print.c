@@ -2,23 +2,38 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <limits.h>
+
+int sprintf(char * str,const char *fmt,...){
+	va_list args;
+	va_start(args,fmt);
+	int ret = vsprintf(str,fmt,args);
+	va_end(args);
+	return ret;
+}
+int vsprintf(char * buf,const char *fmt,va_list args){
+	return vsnprintf(buf,INT_MAX,fmt,args);
+}
+
 
 int snprintf(char * str,size_t maxlen, const char *fmt,...){
 	va_list args;
 	va_start(args,fmt);
-	vsnprintf(str,maxlen,fmt,args);
+	int ret = vsnprintf(str,maxlen,fmt,args);
 	va_end(args);
-	return 0;
+	return ret;
 }
 
 #define OUT(c) *buf = c;\
 buf++;\
+count++;\
 maxlen--;\
-if(maxlen <= 0) return
+if(maxlen <= 0) return count
 
-static size_t print_uint(char *buf,size_t maxlen,uint64_t value,uint64_t base){
+static int print_uint(char *buf,size_t maxlen,uint64_t value,uint64_t base){
 	char str[64];
 	char figures[] = "0123456789ABCDEF";
+	int count;
 	uint64_t i = 63;
 	str[63] = '\0';
 	do{
@@ -29,7 +44,7 @@ static size_t print_uint(char *buf,size_t maxlen,uint64_t value,uint64_t base){
 	
 	size_t len = 0;
 	while(str[i]){
-		OUT(str[i])len;
+		OUT(str[i]);
 		len++;
 		i++;
 	}
@@ -37,22 +52,23 @@ static size_t print_uint(char *buf,size_t maxlen,uint64_t value,uint64_t base){
 }
 
 int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
+	int count = 0;
 	while(*fmt){
 		if(*fmt == '%'){
 			fmt++;
 			if(*fmt == 'c'){
-				OUT(va_arg(args,int))0;
+				OUT(va_arg(args,int));
 				fmt++;
 			}
 			if(*fmt == 's'){
 				char *str = va_arg(args,char *);
 				while(*str){
-					OUT(*str)0;
+					OUT(*str);
 					str++;
 				}
 			}
 			if(*fmt == '%'){
-				OUT('%')0;
+				OUT('%');
 			}
 
 			uint64_t value = 0;
@@ -74,15 +90,16 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 			case 'i':
 				//if negative get rid of that now
 				if((int64_t)value < 0){
-					OUT('-')0;
+					OUT('-');
 					value = (uint64_t) -(int64_t)value;
 				}
 			case 'u':
 				size = print_uint(buf,maxlen,value,10);
 				maxlen -= size;
 				buf += size;
+				count += size;
 				if(maxlen <= 0){
-					return 0;
+					return count;
 				}
 				break;
 			case 'p':
@@ -91,16 +108,18 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 				size = print_uint(buf,maxlen,value,16);
 				maxlen -= size;
 				buf += size;
+				count += size;
 				if(maxlen <= 0){
-					return 0;
+					return count;
 				}
 				break;
 			case 'o':
 				size = print_uint(buf,maxlen,value,8);
 				maxlen -= size;
 				buf += size;
+				count += size;
 				if(maxlen <= 0){
-					return 0;
+					return count;
 				}
 				break;
 			
@@ -110,9 +129,9 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 			fmt++;
 			continue;
 		}
-		OUT(*fmt)0;
+		OUT(*fmt);
 		fmt++;
 	}
-	OUT('\0')0;
-	return 0;
+	OUT('\0');
+	return count;
 }

@@ -146,16 +146,9 @@ int vfprintf(FILE *stream, const char *fmt, va_list args){
 	if(!stream)return __set_errno(-EBADF);
 
 	char buf[PRINTF_MAX];
-	buf[PRINTF_MAX - 1] ='\0';
-	vsnprintf(buf,PRINTF_MAX,fmt,args);
+	int size = vsnprintf(buf,PRINTF_MAX,fmt,args);
 
-	//find the size of the buffer;
-	size_t bufsize = PRINTF_MAX;
-	if(buf[PRINTF_MAX - 1] == '\0'){
-		bufsize = strlen(buf);
-	}
-
-	return fwrite(buf,bufsize,1,stream);
+	return fwrite(buf,size,1,stream);
 }
 
 int printf(const char *fmt, ...){

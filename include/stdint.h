@@ -47,7 +47,7 @@ typedef uint64_t uint_max;
 
 
 //ptr
-typedef int64_t  intptr_t;
-typedef uint64_t uintptr_t;
+typedef signed   long intptr_t;
+typedef unsigned long uintptr_t;
 
 #endif

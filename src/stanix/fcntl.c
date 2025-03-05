@@ -16,5 +16,5 @@ int open(const char *pathname, int flags, ... /* mode_t mode */ ){
 }
 
 int creat(const char *pathname, mode_t mode){
-	return __set_errno(__syscall3(SYS_close,(long)pathname,O_CREAT|O_WRONLY|O_TRUNC,mode));
+	return __set_errno(__syscall3(SYS_open,(long)pathname,O_CREAT|O_WRONLY|O_TRUNC,mode));
 }

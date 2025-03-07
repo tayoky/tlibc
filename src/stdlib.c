@@ -28,7 +28,7 @@ heap_info heap;
 #define HEAP_SEG_MAGIC_ALLOCATED 0x0505
 
 
-void init_heap(void){
+void __init_heap(void){
 	//get the heap start and initial size
 	heap.start = sbrk(INITIAL_HEAP_SIZE);
 	heap.lenght = INITIAL_HEAP_SIZE;

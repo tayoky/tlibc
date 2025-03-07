@@ -19,6 +19,11 @@ long int atol(const char *str);
 int atoi(const char *str);
 double atof(const char *str);
 
+//environement varirables
+
+int putenv(char *str);
+char *getenv(const char *name);
+
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE -1
 

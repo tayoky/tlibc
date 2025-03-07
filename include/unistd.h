@@ -48,8 +48,19 @@ pid_t fork(void);
 
 int mkdir(const char *pathname,mode_t mode);
 
+//not syscall exec
+
+int execl(const char *pathname, const char *arg, ... /*, (char *) NULL */);
+int execlp(const char *file, const char *arg, ... /*, (char *) NULL */);
+int execle(const char *pathname, const char *arg, ... /*, (char *) NULL, char *const envp[] */);
+int execv(const char *pathname, char *const argv[]);
+int execvp(const char *file, char *const argv[]);
+int execvpe(const char *file, char *const argv[], char *const envp[]);
+
 #ifndef NULL
 #define NULL ((void*)0)
 #endif
+
+extern char **__environ;
 
 #endif

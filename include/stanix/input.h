@@ -19,7 +19,7 @@ struct input_event {
             char padding[3];
             unsigned long scancode;
             unsigned long flags;
-        };
+        } ie_key;
         char ie_string[24];
     };
 };

@@ -5,19 +5,19 @@
 #include <errno.h>
 #include <stdio.h>
 //environement variable manipulation
-char **__environ;
+char **environ;
 
 void __init_environ(int argc,char **argv,int envc,char **envp){
 	//envp is created by the kernel
 	//so we can't realloc it
 	//copy it to normal memory
 
-	__environ = malloc((envc + 1) * sizeof(char *));
+	environ = malloc((envc + 1) * sizeof(char *));
 	for (size_t i = 0; i < envc; i++){
-		__environ[i] = envp[i];
+		environ[i] = envp[i];
 	}
 	//last NULL entry
-	__environ[envc] = NULL;
+	environ[envc] = NULL;
 }
 
 int putenv(char *str){
@@ -30,26 +30,26 @@ int putenv(char *str){
 
 	//try to find the key
 	int key = 0;
-	while(__environ[key]){
+	while(environ[key]){
 		//is it the good key ?
-		if(strlen(__environ[key]) > name_len && memcmp(__environ[key],str,name_len)){
+		if(strlen(environ[key]) > name_len && !memcmp(environ[key],str,name_len)){
 			break;
 		}
 		key++;
 	}
 	
-	if(!__environ[key]){
+	if(!environ[key]){
 		//no key found
-		__environ = realloc(__environ,(key + 2) * sizeof(char *));
+		environ = realloc(environ,(key + 2) * sizeof(char *));
 
 		//set last NULL entry
-		__environ[key + 1] = NULL;
+		environ[key + 1] = NULL;
 
-		__environ[key] = str;
+		environ[key] = str;
 		return 0;
 	}
 
-	__environ[key] = str;
+	environ[key] = str;
 	return 0;
 }
 
@@ -65,24 +65,22 @@ char *getenv(const char *name){
 
 	size_t name_len = strlen(search);
 
-	printf("still here");
-
 	//try to find the key
 	int key = 0;
-	while(__environ[key]){
+	while(environ[key]){
 		//is it the good key ?
-		if(strlen(__environ[key]) > name_len && memcmp(__environ[key],search,name_len)){
+		if(strlen(environ[key]) >= name_len && !memcmp(environ[key],search,name_len)){
 			break;
 		}
 		key++;
 	}
 
-	if(!__environ[key]){
+	if(!environ[key]){
 		//key not found
+		errno = ESRCH;
 		return NULL;
 	}
 
 	free(search);
-	printf("env find !!\n");
-	return __environ[key] + name_len;
+	return environ[key] + name_len;
 }

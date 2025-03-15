@@ -63,3 +63,11 @@ int mkdir(const char *pathname,mode_t mode){
 pid_t fork(void){
 	return __set_errno(__syscall0(SYS_fork));
 }
+
+char *getcwd(char *buf, size_t size){
+	if(__set_errno(__syscall2(SYS_getcwd,(long)buf,(long)size))){
+		return NULL;
+	} else{
+		return buf;
+	}
+}

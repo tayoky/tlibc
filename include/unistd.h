@@ -57,6 +57,10 @@ int execv(const char *pathname, char *const argv[]);
 int execvp(const char *file, char *const argv[]);
 int execvpe(const char *file, char *const argv[], char *const envp[]);
 
+//cwd management
+
+char *getcwd(char *buf, size_t size);
+
 #ifndef NULL
 #define NULL ((void*)0)
 #endif

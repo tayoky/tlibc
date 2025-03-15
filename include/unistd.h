@@ -60,6 +60,7 @@ int execvpe(const char *file, char *const argv[], char *const envp[]);
 //cwd management
 
 char *getcwd(char *buf, size_t size);
+int chdir(const char *path);
 
 #ifndef NULL
 #define NULL ((void*)0)

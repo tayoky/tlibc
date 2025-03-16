@@ -6,6 +6,8 @@
 #include <errno.h>
 #include <info.h> //get info on the current OS
 
+extern char **environ;
+
 //iplement all exec functions using execve
 
 /// @brief convert an arg list 
@@ -61,11 +63,11 @@ int execle(const char *pathname, const char *arg, ... /*, (char *) NULL, char *c
 }
 
 int execv(const char *pathname, char *const argv[]){
-	return execve(pathname,argv,__environ);
+	return execve(pathname,argv,environ);
 }
 
 int execvp(const char *file, char *const argv[]){
-	return execvpe(file,argv,__environ);
+	return execvpe(file,argv,environ);
 }
 
 int execvpe(const char *file, char *const argv[], char *const envp[]){

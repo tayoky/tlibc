@@ -15,6 +15,13 @@ ssize_t write(int fd, const void *buffer, size_t count){
 	return __set_errno(__syscall3(SYS_write,fd,(long)buffer,count));
 }
 
+int dup(int oldfd){
+	return __set_errno(__syscall1(SYS_dup,(long)oldfd));
+}
+int dup2(int oldfd, int newfd){
+	return __set_errno(__syscall2(SYS_dup2,(long)oldfd,(long)newfd));
+}
+
 off_t lseek(int fd, off_t offset, int whence){
 	return __set_errno(__syscall3(SYS_seek,fd,(long)offset,whence));
 }

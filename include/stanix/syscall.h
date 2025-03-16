@@ -53,5 +53,6 @@ static inline __syscall3(long n,long a1,long a2,long a3) {
 #define SYS_fstat           22
 #define SYS_getcwd          23
 #define SYS_chdir           24
+#define SYS_waitpid         25
 
 #endif

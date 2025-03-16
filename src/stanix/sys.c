@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 
 int ioctl(int fd,unsigned long op,void *arg){
 	return __set_errno(__syscall3(SYS_ioctl,fd,op,arg));
@@ -20,4 +21,11 @@ int stat(const char *pathname,struct stat *st){
 //so lstat in not implemented
 int lstat(const char *pathname,struct stat *st){
 	return stat(pathname,st);
+}
+
+//TODO : make this when the kernel will get support for it
+pid_t wait(int *status);
+
+pid_t waitpid(pid_t pid, int *status, int options){
+	return __set_errno(__syscall3(SYS_waitpid,(long)pid,(long)status,(long)options));
 }

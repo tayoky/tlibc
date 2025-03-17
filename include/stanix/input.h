@@ -69,6 +69,7 @@ struct input_request {
 #define IE_KEY_PRESS 0x01
 #define IE_KEY_RELEASE 0x02
 #define IE_KEY_HOLD 0x03
-#define IE_KEY_GRPAH 0x04  // printable key
+#define IE_KEY_GRAPH 0x04  // printable key
+#define IE_KEY_GRPAH IE_KEY_GRAPH  //conserved 
 
 #endif

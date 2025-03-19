@@ -41,7 +41,7 @@ void *sbrk(intptr_t increment){
 }
 
 void _exit(int status){
-	__syscall1(SYS_exit,status);
+	__syscall1(SYS_exit,(long)status);
 }
 
 unsigned int sleep(unsigned int seconds){

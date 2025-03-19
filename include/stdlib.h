@@ -25,6 +25,6 @@ int putenv(char *str);
 char *getenv(const char *name);
 
 #define EXIT_SUCCESS 0
-#define EXIT_FAILURE -1
+#define EXIT_FAILURE 1
 
 #endif

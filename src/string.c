@@ -192,5 +192,16 @@ void *memchr(const void *buf, int c, size_t count){
 char *strdup(const char *str){
 	char *newstr = malloc(strlen(str) + 1);
 	strcpy(newstr,str);
-	return newstr;;
+	return newstr;
+}
+
+char *strndup(const char *str,size_t count){
+	size_t len = strlen(str);
+	if(len >= count - 1){
+		len = count -1;
+	}
+
+	char *newstr = malloc(len + 1);
+	newstr[len] = '\0';
+	return memcpy(newstr,str,len);
 }

@@ -47,6 +47,8 @@ const char *strerror(int errnum);
 //dup
 char *strdup(const char *str);
 
+char *strndup(const char *str,size_t count);
+
 #ifndef NULL
 #define NULL (void *)0
 #endif

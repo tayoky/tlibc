@@ -1,0 +1,103 @@
+#!/bin/sh
+#delete any old conf file
+rm -f $(dirname $0)/config.mk
+
+HOST=""
+
+PREFIX="/usr/local"
+
+SYSROOT=$(realpath ./sysroot)
+
+for i in "$@"; do
+	case $i in
+		--with-sysroot=*)
+			SYSROOT="${i#*=}"
+			shift # past argument=value
+			;;
+		--with-CC=*)
+			CC="${i#*=}"
+			shift # past argument=value
+			;;
+		--with-LD=*)
+			LD="${i#*=}"
+			shift # past argument=value
+			;;
+		--host=*)
+			HOST="${i#*=}"
+			shift # past argument=value
+			;;
+		--prefix=*)
+			PREFIX="${i#*=}"
+			shift # past argument=value
+			;;
+		-*|--*)
+			echo "Unknown option $i"
+			exit 1
+			;;
+		*)
+			;;
+	esac
+done
+
+#check tools
+if [ "$HOST" != "" ] ; then
+	PREV="${HOST}-"
+fi
+
+if [ "$CC" = "" ] ; then
+	if ${PREV}gcc --version > /dev/null ; then
+		CC="${PREV}gcc"
+	elif ${PREV}clang --version > /dev/null ; then
+		CC="${PREV}clang"
+	else
+		echo "error : no c compilator found"
+		exit 1
+	fi
+fi
+
+if [ "$LD" = "" ] ; then
+	if ${PREV}ld --version > /dev/null ; then
+		LD="${PREV}ld"
+	else
+		echo "error : no linker found"
+		exit 1
+	fi
+fi
+
+if [ "$AR" = "" ] ; then
+	if ${PREV}ar --version > /dev/null ; then
+		AR="${PREV}ar"
+	else
+		echo "error : no archiver found"
+		exit 1
+	fi
+fi
+
+#if host is NULL get it from compiler
+if [ "$HOST" = "" ] ; then
+	HOST=$($CC -dumpmachine)
+fi
+
+ARCH=${HOST%%-*}
+
+case "$HOST" in
+	*stanix*)
+		OS="stanix"
+		;;
+	*linux*)
+		OS="linux"
+		;;
+	*)
+		echo "unsuported host : $HOST"
+		exit 1
+esac
+
+echo "#generated automatically by ./configure" > config.mk
+echo "HOST=$HOST" >> config.mk
+echo "ARCH=$ARCH" >> config.mk
+echo "OS=$OS" >> config.mk
+echo "PREFIX=$PREFIX" >> config.mk
+echo "CC=$CC" >> config.mk
+echo "LD=$LD" >> config.mk
+echo "AR=$AR" >> config.mk
+echo "SYSROOT=$SYSROOT" >> config.mk

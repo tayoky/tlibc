@@ -1,6 +1,13 @@
 #ifndef SYSCALL_H
 #define SYSCALL_H
 
+#ifdef X86_64
+#ifndef x86_64
+#define x86_64
+#endif
+#endif
+
+#ifdef x86_64
 static inline long __syscall0(long n)
 {
 	long ret;
@@ -27,6 +34,9 @@ static inline __syscall3(long n,long a1,long a2,long a3) {
     asm volatile ("int $0x80"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3) : "memory"); 
     return ret; 
 }
+#else
+#error unsupported architecture
+#endif
 
 #define SYS_exit            0
 #define SYS_open            1

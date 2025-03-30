@@ -6,6 +6,6 @@ tlibc.a
 
 #sysroot
 sysroot/*
-include/unistd.h
-include/stanix/syscall.h
-src/stanix/unistd.c
+
+#config
+config.mk

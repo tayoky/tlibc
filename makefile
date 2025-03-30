@@ -1,6 +1,7 @@
 MAKEFLAGS += --no-builtin-rules
 
-SYSROOT = sysroot
+include config.mk
+
 TARGET = stanix
 
 #first get all the src
@@ -30,20 +31,20 @@ CFLAGS = -Wall \
 	-fno-stack-check \
 	-fno-PIC \
 	-m64 \
-	-march=x86-64 \
-	-mno-mmx \
 	-mno-red-zone \
-	-mcmodel=kernel\
 	-nostdlib
+
+include ${ARCH}.mk
+
 CFLAGS += --sysroot=./ -isystem ./include -isystem ./include/${TARGET}
 
 all : ${OUT} crt0.o
 
 ${OUT} : ${OBJ}
-	ar rcs ${OUT} ${OBJ}
+	${AR} rcs ${OUT} ${OBJ}
 
 %.o : %.c
-	${CC} ${CFLAGS} -r -o $@ -g -c $^
+	${CC} ${CFLAGS} -o $@ -g -c $^
 %.o : %.s
 	${NASM} ${ASMFLAGS} $< -o $@
 
@@ -60,3 +61,5 @@ install : header all
 	mkdir -p ${SYSROOT}/usr/lib 
 	cp crt0.o ${SYSROOT}/usr/lib 
 	cp ${OUT} ${SYSROOT}/usr/lib/libc.a
+config.mk :
+	$(error run ./configure before running make)

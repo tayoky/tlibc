@@ -42,7 +42,7 @@ struct dirent *readdir(DIR *dir){
 	//stupid POSIX api ...
 	//there are no function for the raw readdir syscall
 
-	if(__set_errno(__syscall3(SYS_readdir,dir->fd,&ret,dir->offset)) < 0){
+	if(__set_errno(__syscall3(SYS_readdir,dir->fd,&ret,(long)dir->offset)) < 0){
 		return NULL;
 	}
 	

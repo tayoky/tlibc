@@ -30,8 +30,6 @@ CFLAGS = -Wall \
 	-fno-stack-protector \
 	-fno-stack-check \
 	-fno-PIC \
-	-m64 \
-	-mno-red-zone \
 	-nostdlib
 
 include ${ARCH}.mk
@@ -44,12 +42,12 @@ ${OUT} : ${OBJ}
 	${AR} rcs ${OUT} ${OBJ}
 
 %.o : %.c
-	${CC} ${CFLAGS} -o $@ -g -c $^
+	${CC} ${CFLAGS} -D${ARCH} -o $@ -g -c $^
 %.o : %.s
 	${NASM} ${ASMFLAGS} $< -o $@
 
 clean : 
-	rm -f ${OBJ}
+	rm -f ${OBJ} crt0.o
 
 #install the header
 header : 

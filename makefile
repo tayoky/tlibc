@@ -42,7 +42,7 @@ ${OUT} : ${OBJ}
 	${AR} rcs ${OUT} ${OBJ}
 
 %.o : %.c
-	${CC} ${CFLAGS} -D${ARCH} -o $@ -g -c $^
+	${CC} ${CFLAGS} -D${ARCH} -o $@ -c $^
 %.o : %.s
 	${NASM} ${ASMFLAGS} $< -o $@
 

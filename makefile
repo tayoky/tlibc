@@ -34,9 +34,9 @@ CFLAGS = -Wall \
 
 include ${ARCH}.mk
 
-CFLAGS += --sysroot=./ -isystem ./include -isystem ./include/${TARGET}
+CFLAGS += --sysroot=${SYSROOT} -isystem ${SYSROOT}/include -isystem ./include/${TARGET}
 
-all : ${OUT} crt0.o
+all : header ${OUT} crt0.o
 
 ${OUT} : ${OBJ}
 	${AR} rcs ${OUT} ${OBJ}
@@ -61,3 +61,4 @@ install : header all
 	cp ${OUT} ${SYSROOT}/usr/lib/libc.a
 config.mk :
 	$(error run ./configure before running make)
+.mk :

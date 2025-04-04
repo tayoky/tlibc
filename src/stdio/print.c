@@ -2,6 +2,8 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <ctype.h>
+#include <string.h>
 #include <limits.h>
 
 int sprintf(char * str,const char *fmt,...){
@@ -30,10 +32,11 @@ count++;\
 maxlen--;\
 if(maxlen <= 0) return count
 
-static int print_uint(char *buf,size_t maxlen,uint64_t value,uint64_t base){
+static int print_uint(char *buf,size_t maxlen,uint64_t value,uint64_t base,size_t padding,char padding_char){
 	char str[64];
+	memset(str,padding_char,64);
 	char figures[] = "0123456789ABCDEF";
-	int count;
+	int count = 0;
 	uint64_t i = 63;
 	str[63] = '\0';
 	do{
@@ -41,6 +44,10 @@ static int print_uint(char *buf,size_t maxlen,uint64_t value,uint64_t base){
 		str[i] = figures[value % base];
 		value /= base;
 	} while (value);
+
+	if(padding > 0 && (63 - padding) < i){
+		i = 63 - padding;
+	}
 	
 	size_t len = 0;
 	while(str[i]){
@@ -48,6 +55,17 @@ static int print_uint(char *buf,size_t maxlen,uint64_t value,uint64_t base){
 		len++;
 		i++;
 	}
+
+	//print padding last if neccesary
+	if(padding < 0 && -padding > len){
+		padding = -padding;
+		padding -= len;
+		while(padding > 0){
+			OUT(padding_char);
+			padding--;
+		}
+	}
+
 	return len;
 }
 
@@ -56,30 +74,102 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 	while(*fmt){
 		if(*fmt == '%'){
 			fmt++;
-			if(*fmt == 'c'){
-				OUT(va_arg(args,int));
+
+			//default padding
+			char padding_char = ' ';
+			size_t padding = 0;
+
+			switch(*fmt){
+			case ' ':
+			case '0':
+				padding_char = *fmt;
+				fmt++;
+				break;
+			}
+
+			//read the padding
+			int sign = 1;
+			if(*fmt == '-'){
+				sign = -1;
 				fmt++;
 			}
-			if(*fmt == 's'){
+			while(isdigit(*fmt)){
+				padding *= 10;
+				padding += (*fmt) - '0';
+				fmt++;
+			}
+			padding *= sign;
+
+			//not integer cases
+			switch(*fmt){
+			case 'c':
+				while(padding > 1){
+					OUT(padding_char);
+					padding--;
+				}
+				OUT(va_arg(args,int));
+				while(padding < -1){
+					OUT(padding_char);
+					padding++;
+				}
+				fmt++;
+				continue;
+			case 's':
 				char *str = va_arg(args,char *);
+				size_t str_len = strlen(str);
+
+				//print padding first if neccesary
+				if(padding > 0 && padding > str_len){
+					padding -= str_len;
+					while(padding > 0){
+						OUT(padding_char);
+						padding--;
+					}
+				}
+
+				//print the string
 				while(*str){
 					OUT(*str);
 					str++;
 				}
-			}
-			if(*fmt == '%'){
+
+				//print padding last if neccesary
+				if(padding < 0 && -padding > str_len){
+					padding = -padding;
+					padding -= str_len;
+					while(padding > 0){
+						OUT(padding_char);
+						padding--;
+					}
+				}
+
+				fmt++;
+				continue;
+			case '%':
 				OUT('%');
+				fmt++;
+				continue;
 			}
 
+			//it's an integer
 			uint64_t value = 0;
-			if(*fmt == 'l'){
+			switch(*fmt){
+			case 'l':
+				fmt++;
+				if(*fmt == 'l'){
+					fmt++;
+					value = va_arg(args,long long);
+					break;
+				}
 				value = va_arg(args,long);
-				fmt++;
-			}else if (*fmt == 'h'){
+				break;
+			case 'h':
 				value = va_arg(args,int);
 				fmt++;
-			} else {
+				break;
+			default:
 				value = va_arg(args,int);
+				break;
 			}
 
 			size_t size;
@@ -94,7 +184,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 					value = (uint64_t) -(int64_t)value;
 				}
 			case 'u':
-				size = print_uint(buf,maxlen,value,10);
+				size = print_uint(buf,maxlen,value,10,padding,padding_char);
 				maxlen -= size;
 				buf += size;
 				count += size;
@@ -105,7 +195,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 			case 'p':
 			case 'x':
 			case 'X':
-				size = print_uint(buf,maxlen,value,16);
+				size = print_uint(buf,maxlen,value,16,padding,padding_char);
 				maxlen -= size;
 				buf += size;
 				count += size;
@@ -114,7 +204,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 				}
 				break;
 			case 'o':
-				size = print_uint(buf,maxlen,value,8);
+				size = print_uint(buf,maxlen,value,8,padding,padding_char);
 				maxlen -= size;
 				buf += size;
 				count += size;

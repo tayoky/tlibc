@@ -21,8 +21,12 @@ long int ftell(FILE *stream){
 }
 
 void rewind(FILE *stream){
-	if(!stream) return __set_errno(-EBADF);
+	if(!stream){
+		__set_errno(-EBADF);
+		return;
+	}
 	stream->errno = 0;
 	stream->eof = 0;
-	return __set_errno(lseek(stream->fd,0,SEEK_SET));
+	__set_errno(lseek(stream->fd,0,SEEK_SET));
+	return;
 }

@@ -5,6 +5,8 @@
 #include <ctype.h>
 #include <string.h>
 #include <limits.h>
+#include <sys/types.h>
+#include <sys/type.h>
 
 int sprintf(char * str,const char *fmt,...){
 	va_list args;
@@ -32,7 +34,7 @@ count++;\
 maxlen--;\
 if(maxlen <= 0) return count
 
-static int print_uint(char *buf,size_t maxlen,uint64_t value,uint64_t base,size_t padding,char padding_char){
+static int print_uint(char *buf,size_t maxlen,uint64_t value,uint64_t base,ssize_t padding,char padding_char){
 	char str[64];
 	memset(str,padding_char,64);
 	char figures[] = "0123456789ABCDEF";
@@ -45,7 +47,7 @@ static int print_uint(char *buf,size_t maxlen,uint64_t value,uint64_t base,size_
 		value /= base;
 	} while (value);
 
-	if(padding > 0 && (63 - padding) < i){
+	if(padding > 0 && (63 - padding) < (ssize_t)i){
 		i = 63 - padding;
 	}
 	
@@ -57,7 +59,7 @@ static int print_uint(char *buf,size_t maxlen,uint64_t value,uint64_t base,size_
 	}
 
 	//print padding last if neccesary
-	if(padding < 0 && -padding > len){
+	if(padding < 0 && -padding > (ssize_t)len){
 		padding = -padding;
 		padding -= len;
 		while(padding > 0){
@@ -77,7 +79,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 
 			//default padding
 			char padding_char = ' ';
-			size_t padding = 0;
+			ssize_t padding = 0;
 
 			switch(*fmt){
 			case ' ':
@@ -119,7 +121,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 				size_t str_len = strlen(str);
 
 				//print padding first if neccesary
-				if(padding > 0 && padding > str_len){
+				if(padding > 0 && padding > (ssize_t)str_len){
 					padding -= str_len;
 					while(padding > 0){
 						OUT(padding_char);
@@ -134,7 +136,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 				}
 
 				//print padding last if neccesary
-				if(padding < 0 && -padding > str_len){
+				if(padding < 0 && -padding > (ssize_t)str_len){
 					padding = -padding;
 					padding -= str_len;
 					while(padding > 0){
@@ -183,6 +185,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 					OUT('-');
 					value = (uint64_t) -(int64_t)value;
 				}
+				//fallthrough
 			case 'u':
 				size = print_uint(buf,maxlen,value,10,padding,padding_char);
 				maxlen -= size;

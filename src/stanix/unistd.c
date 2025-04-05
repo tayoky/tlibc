@@ -59,7 +59,7 @@ int pipe(int pipefd[2]){
 	return __set_errno(__syscall1(SYS_pipe,(long)pipefd));
 }
 
-int execve(const char *pathname,const char **argv,const char **envp){
+int execve(const char *pathname,const char * const *argv,const char * const *envp){
 	return __set_errno(__syscall3(SYS_execve,(long)pathname,(long)argv,(long)envp));
 }
 

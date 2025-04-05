@@ -16,8 +16,8 @@ typedef struct heap_segment_struct{
 }heap_segment;
 
 typedef struct {
-	uint64_t start;
-	uint64_t lenght;
+	uintptr_t start;
+	uintptr_t lenght;
 	heap_segment *first_seg;
 }heap_info;
 
@@ -30,7 +30,7 @@ heap_info heap;
 
 void __init_heap(void){
 	//get the heap start and initial size
-	heap.start = sbrk(INITIAL_HEAP_SIZE);
+	heap.start = (uintptr_t)sbrk(INITIAL_HEAP_SIZE);
 	heap.lenght = INITIAL_HEAP_SIZE;
 
 	//init the first seg
@@ -47,8 +47,8 @@ void *malloc(size_t amount){
 	while (current_seg->lenght < amount || current_seg->magic != HEAP_SEG_MAGIC_FREE){
 		if(current_seg->next == NULL){
 			//no more segment need to make kheap bigger
-			uint64_t old_heap_size = sbrk(amount - current_seg->lenght + sizeof(heap_segment) + 1);
-			current_seg->lenght += sbrk(0) - old_heap_size;
+			uintptr_t old_heap_size = (uintptr_t)sbrk(amount - current_seg->lenght + sizeof(heap_segment) + 1);
+			current_seg->lenght += (uintptr_t)sbrk(0) - old_heap_size;
 			break;
 		}
 		current_seg = current_seg->next;

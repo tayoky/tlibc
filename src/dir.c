@@ -30,7 +30,10 @@ int closedir(DIR *dir){
 	}
 	if(close(dir->fd)>=0){
 		free(dir);
+		return -1;
 	}
+	
+	return 0;
 }
 
 struct dirent *readdir(DIR *dir){
@@ -42,7 +45,7 @@ struct dirent *readdir(DIR *dir){
 	//stupid POSIX api ...
 	//there are no function for the raw readdir syscall
 
-	if(__set_errno(__syscall3(SYS_readdir,dir->fd,&ret,(long)dir->offset)) < 0){
+	if(__set_errno(__syscall3(SYS_readdir,dir->fd,(long)&ret,(long)dir->offset)) < 0){
 		return NULL;
 	}
 	

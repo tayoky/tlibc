@@ -45,7 +45,7 @@ int usleep(useconds_t usec);
 
 int pipe(int pipefd[2]);
 
-int execve(const char *pathname,const char *argv[],const char *envp[]);
+int execve(const char *pathname,const char * const argv[],const char * const envp[]);
 
 pid_t fork(void);
 
@@ -56,9 +56,9 @@ int mkdir(const char *pathname,mode_t mode);
 int execl(const char *pathname, const char *arg, ... /*, (char *) NULL */);
 int execlp(const char *file, const char *arg, ... /*, (char *) NULL */);
 int execle(const char *pathname, const char *arg, ... /*, (char *) NULL, char *const envp[] */);
-int execv(const char *pathname, char *const argv[]);
-int execvp(const char *file, char *const argv[]);
-int execvpe(const char *file, char *const argv[], char *const envp[]);
+int execv(const char *pathname, const char *const argv[]);
+int execvp(const char *file, const char *const argv[]);
+int execvpe(const char *file, const char *const argv[],const char *const envp[]);
 
 //cwd management
 

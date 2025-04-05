@@ -38,7 +38,7 @@ char *strstr(const char *str1,const char *str2){
 	size_t str2_len = strlen(str2) + 1;
 	while(*str1){
 		//check all char
-		for(int i=0;i<str2_len;i++){
+		for(size_t i=0;i<str2_len;i++){
 			if(!str2[i]){
 				//all str2 was found
 				return (char *)str1;

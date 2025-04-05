@@ -109,7 +109,7 @@ size_t fread(void * ptr, size_t size, size_t n, FILE *stream){
 		return 0;
 	}
 
-	if(rsize < n){
+	if((size_t)rsize < n){
 		stream->eof = 1;
 	}
 
@@ -127,7 +127,7 @@ size_t fwrite(void * ptr, size_t size, size_t n, FILE *stream){
 		return 0;
 	}
 
-	if(wsize < n){
+	if((size_t)wsize < n){
 		stream->eof = 1;
 	}
 
@@ -164,8 +164,10 @@ int vprintf(const char *fmt, va_list args){
 }
 
 FILE *fdopen(int handle, char *type){
+	(void)type;
 	if(handle < 0){
-		return __set_errno(handle);
+		__set_errno(handle);
+		return NULL;
 	}
 
 	FILE *stream = malloc(sizeof(FILE));
@@ -187,5 +189,7 @@ void perror(const char *string){
 }
 
 int fflush(FILE *stream){
+	(void)stream;
+	//TODO : fflush here when i add buffering
 	return 0;
 }

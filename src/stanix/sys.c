@@ -6,7 +6,7 @@
 #include <sys/wait.h>
 
 int ioctl(int fd,unsigned long op,void *arg){
-	return __set_errno(__syscall3(SYS_ioctl,fd,op,arg));
+	return __set_errno(__syscall3(SYS_ioctl,fd,op,(long)arg));
 }
 
 int fstat(int fd,struct stat *st){

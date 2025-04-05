@@ -15,7 +15,7 @@ void __init_environ(int envc,char **envp){
 	//copy it to normal memory
 
 	environ = malloc((envc + 1) * sizeof(char *));
-	for (size_t i = 0; i < envc; i++){
+	for (int i = 0; i < envc; i++){
 		environ[i] = envp[i];
 	}
 	//last NULL entry

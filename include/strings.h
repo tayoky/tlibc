@@ -7,8 +7,8 @@
 #define strncasecmp strnicmp
 
 #define bcmp memcmp
-//TODO replace this with memmove
-#define bcopy(src,dest,size) (void)memcpy(dest,src,size)
+
+#define bcopy(src,dest,size) (void)memmove(dest,src,size)
 
 #define bzero(mem,size) (void)memset(mem,0,size)
 

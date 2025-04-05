@@ -1,7 +1,8 @@
 #ifndef STRING_H
 #define STRING_H
 
-typedef unsigned long size_t;
+#include <sys/types.h>
+#include <sys/type.h>
 
 //str
 

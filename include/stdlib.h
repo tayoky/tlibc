@@ -1,9 +1,10 @@
 #ifndef STDLIB_H
 #define STDLIB_H
 
-void exit(int status);
+#include <sys/types.h>
+#include <sys/type.h> 
 
-typedef unsigned long size_t;
+void exit(int status);
 
 void *malloc(size_t amount);
 void free(void *ptr);

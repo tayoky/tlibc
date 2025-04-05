@@ -30,11 +30,12 @@ CFLAGS = -Wall \
 	-fno-stack-protector \
 	-fno-stack-check \
 	-fno-PIC \
-	-nostdlib
+	-nostdlib \
+	-nostdinc 
 
 include ${ARCH}.mk
 
-CFLAGS += --sysroot=${SYSROOT} -isystem ${SYSROOT}/include -isystem ./include/${TARGET}
+CFLAGS += --sysroot=${SYSROOT} -isystem ${SYSROOT}/include -isystem ${SYSROOT}/usr/include/ -I ./include/
 
 all : header ${OUT} crt0.o
 

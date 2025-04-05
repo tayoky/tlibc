@@ -1,9 +1,10 @@
 #ifndef STDIO_H
 #define STDIO_H
 
+#include <sys/types.h>
+#include <sys/type.h>
 #include <stdarg.h>
 
-typedef unsigned long size_t;
 typedef size_t fpos_t;
 
 int sprintf(char * str,const char *fmt,...);

@@ -4,10 +4,12 @@
 #include <stdint.h>
 #include <errno.h>
 #include <stdio.h>
+#include <tlibc.h>
+
 //environement variable manipulation
 char **environ;
 
-void __init_environ(int argc,char **argv,int envc,char **envp){
+void __init_environ(int envc,char **envp){
 	//envp is created by the kernel
 	//so we can't realloc it
 	//copy it to normal memory

@@ -183,9 +183,7 @@ int feof(FILE *stream){
 }
 
 void perror(const char *string){
-	fprintf(stderr,"%s",string);
-	fprintf(stderr," : %s\n",strerror(errno));
-	abort();
+	fprintf(stderr,"%s : %s\n",string,strerror(errno));
 }
 
 int fflush(FILE *stream){

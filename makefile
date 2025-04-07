@@ -51,14 +51,14 @@ clean :
 
 #install the header
 header : 
-	mkdir -p ${SYSROOT}/usr/include/sys
-	cp ./include/*.h ${SYSROOT}/usr/include
-	cp ./include/${TARGET}/*.h ${SYSROOT}/usr/include
-	cp ./include/${TARGET}/sys/*.h ${SYSROOT}/usr/include/sys
+	mkdir -p ${PREFIX}/include/sys
+	cp ./include/*.h ${PREFIX}/include
+	cp ./include/${TARGET}/*.h ${PREFIX}/include
+	cp ./include/${TARGET}/sys/*.h ${PREFIX}/include/sys
 install : header all
-	mkdir -p ${SYSROOT}/usr/lib 
-	cp crt0.o ${SYSROOT}/usr/lib 
-	cp ${OUT} ${SYSROOT}/usr/lib/libc.a
+	mkdir -p ${PREFIX}/lib 
+	cp crt0.o ${PREFIX}/lib 
+	cp ${OUT} ${PREFIX}/lib/libc.a
 config.mk :
 	$(error run ./configure before running make)
 .mk :

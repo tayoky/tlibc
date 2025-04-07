@@ -50,11 +50,17 @@ clean :
 	rm -f ${OBJ} crt0.o
 
 #install the header
-header : 
+header :
 	mkdir -p ${PREFIX}/include/sys
-	cp ./include/*.h ${PREFIX}/include
-	cp ./include/${TARGET}/*.h ${PREFIX}/include
-	cp ./include/${TARGET}/sys/*.h ${PREFIX}/include/sys
+	echo "//TARGET=${TARGET}" > config.h
+	echo "//ARCH=${ARCH}" >> config.h
+	echo "//DATE=$(shell date)" >> config.h
+	echo ""  >> config.h
+	$(foreach FILE , $(shell echo include/*.h include/${TARGET}/*.h) , cat credit.h config.h ${FILE} > ${PREFIX}/include/$(shell basename ${FILE}) &&) true
+	$(foreach FILE , $(shell echo include/${TARGET}/sys/*.h) , cat credit.h config.h ${FILE} > ${PREFIX}/include/sys/$(shell basename ${FILE}) &&) true
+#	cp ./include/*.h ${PREFIX}/include
+#	cp ./include/${TARGET}/*.h ${PREFIX}/include
+#	cp ./include/${TARGET}/sys/*.h ${PREFIX}/include/sys
 install : header all
 	mkdir -p ${PREFIX}/lib 
 	cp crt0.o ${PREFIX}/lib 

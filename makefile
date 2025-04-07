@@ -30,8 +30,7 @@ CFLAGS = -Wall \
 	-fno-stack-protector \
 	-fno-stack-check \
 	-fno-PIC \
-	-nostdlib \
-	-nostdinc 
+	-nostdlib 
 
 include ${ARCH}.mk
 

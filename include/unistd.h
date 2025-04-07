@@ -5,8 +5,8 @@
 #include <sys/types.h>
 
 //we can't include stdint because of namespace pollution
-typedef signed   long long intptr_t;
-typedef unsigned long long uintptr_t;
+typedef signed   long intptr_t;
+typedef unsigned long uintptr_t;
 
 #ifndef SEEK_SET
 #define SEEK_SET 0

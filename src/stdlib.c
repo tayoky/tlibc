@@ -46,9 +46,21 @@ void *malloc(size_t amount){
 
 	while (current_seg->lenght < amount || current_seg->magic != HEAP_SEG_MAGIC_FREE){
 		if(current_seg->next == NULL){
-			//no more segment need to make kheap bigger
-			uintptr_t old_heap_size = (uintptr_t)sbrk(amount - current_seg->lenght + sizeof(heap_segment) + 1);
-			current_seg->lenght += (uintptr_t)sbrk(0) - old_heap_size;
+			//no more segment need to make heap bigger
+			//if last is free make it bigger else create a new seg from scratch
+			if(current_seg->magic == HEAP_SEG_MAGIC_FREE){
+				uintptr_t old_heap_size = (uintptr_t)sbrk(amount - current_seg->lenght + sizeof(heap_segment) + 1);
+				current_seg->lenght += (uintptr_t)sbrk(0) - old_heap_size;
+			} else {
+				uintptr_t old_heap_size = (uintptr_t)sbrk(amount + sizeof(heap_segment) * 2  + 8);
+				heap_segment *new_seg = (heap_segment *)((uintptr_t)current_seg + current_seg->lenght + sizeof(heap_segment));
+				new_seg->lenght = (uintptr_t)sbrk(0) - old_heap_size - sizeof(heap_segment);
+				new_seg->magic = HEAP_SEG_MAGIC_FREE;
+				new_seg->next = NULL;
+				new_seg->prev = current_seg;
+				current_seg->next = new_seg;
+				current_seg = current_seg->next;
+			}
 			break;
 		}
 		current_seg = current_seg->next;

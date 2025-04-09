@@ -52,12 +52,12 @@ clean :
 #install the header
 header :
 	mkdir -p ${PREFIX}/include/sys
-	echo "//TARGET=${TARGET}" > config.h
-	echo "//ARCH=${ARCH}" >> config.h
-	echo "//DATE=$(shell date)" >> config.h
-	echo ""  >> config.h
-	$(foreach FILE , $(shell echo include/*.h include/${TARGET}/*.h) , cat credit.h config.h ${FILE} > ${PREFIX}/include/$(shell basename ${FILE}) &&) true
-	$(foreach FILE , $(shell echo include/${TARGET}/sys/*.h) , cat credit.h config.h ${FILE} > ${PREFIX}/include/sys/$(shell basename ${FILE}) &&) true
+	@echo "//TARGET=${TARGET}" > config.h
+	@echo "//ARCH=${ARCH}" >> config.h
+	@echo "//DATE=$(shell date)" >> config.h
+	@echo ""  >> config.h
+	@$(foreach FILE , $(shell echo include/*.h include/${TARGET}/*.h) , cat credit.h config.h ${FILE} > ${PREFIX}/include/$(shell basename ${FILE}) &&) true
+	@$(foreach FILE , $(shell echo include/${TARGET}/sys/*.h) , cat credit.h config.h ${FILE} > ${PREFIX}/include/sys/$(shell basename ${FILE}) &&) true
 #	cp ./include/*.h ${PREFIX}/include
 #	cp ./include/${TARGET}/*.h ${PREFIX}/include
 #	cp ./include/${TARGET}/sys/*.h ${PREFIX}/include/sys

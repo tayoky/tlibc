@@ -58,6 +58,8 @@ void perror(const char *string);
 
 int fflush(FILE *stream);
 
+int remove(const char *pathname);
+
 #define PRINTF_MAX 1024
 
 #ifndef SEEK_SET

@@ -191,3 +191,14 @@ int fflush(FILE *stream){
 	//TODO : fflush here when i add buffering
 	return 0;
 }
+
+int remove(const char *pathname){
+	int ret = unlink(pathname);
+
+	//if it is a dir, use rmdir
+	if(errno == EISDIR){
+		ret = rmdir(pathname);
+	}
+
+	return ret;
+}

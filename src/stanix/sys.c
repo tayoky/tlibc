@@ -4,6 +4,7 @@
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <sys/module.h>
 
 int ioctl(int fd,unsigned long op,void *arg){
 	return __set_errno(__syscall3(SYS_ioctl,fd,op,(long)arg));
@@ -28,4 +29,12 @@ pid_t wait(int *status);
 
 pid_t waitpid(pid_t pid, int *status, int options){
 	return __set_errno(__syscall3(SYS_waitpid,(long)pid,(long)status,(long)options));
+}
+
+int insmod(const char *pathname,const char *argv){
+	return __set_errno(__syscall2(SYS_insmod,(long)pathname,(long)argv));
+}
+
+int rmmod(const char *name){
+	return __set_errno(__syscall1(SYS_rmmod,(long)name));
 }

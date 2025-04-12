@@ -203,6 +203,42 @@ typedef struct {
 #define STT_LOPROC  13
 #define STT_HIPROC  15
 
+//relocation
+
+//32-bit ELF relocation
+typedef struct {
+	Elf32_Addr r_offset;
+	Elf32_Word r_info;
+} Elf32_Rel;
+
+//32-bit ELF relocation with addend
+typedef struct {
+	Elf32_Addr r_offset;
+	Elf32_Word r_info;
+	Elf32_Sword r_addend;
+} Elf32_Rela;
+
+//64-bit relocation
+typedef struct {
+	Elf64_Addr r_offset; //Address of reference
+	Elf64_Xword r_info;  //Symbol index and type of relocation
+} Elf64_Rel;
+
+//64-bit relocation with addend
+typedef struct {
+	Elf64_Addr r_offset;   //Address of reference
+	Elf64_Xword r_info;    //Symbol index and type of relocation
+	Elf64_Sxword r_addend; //Constant part of expression
+} Elf64_Rela;
+
+#define ELF32_R_SYM(i) ((i)>>8)
+#define ELF32_R_TYPE(i) ((unsigned char)(i))
+#define ELF32_R_INFO(s,t) (((s)<<8)+(unsigned char)(t))
+
+#define ELF64_R_SYM(i) ((i) >> 32)
+#define ELF64_R_TYPE(i) ((i) & 0xffffffffL)
+#define ELF64_R_INFO(s, t) (((s) << 32) + ((t) & 0xffffffffL))
+
 
 //program header
 

@@ -31,7 +31,7 @@ pid_t waitpid(pid_t pid, int *status, int options){
 	return __set_errno(__syscall3(SYS_waitpid,(long)pid,(long)status,(long)options));
 }
 
-int insmod(const char *pathname,const char *argv){
+int insmod(const char *pathname,const char **argv){
 	return __set_errno(__syscall2(SYS_insmod,(long)pathname,(long)argv));
 }
 

@@ -52,7 +52,7 @@ void _exit(int status){
 }
 
 unsigned int sleep(unsigned int seconds){
-	return (int)usleep(seconds * 1000000) / 1000000;
+	return usleep(seconds * 1000000);
 }
 int usleep(useconds_t usec){
 	return __syscall1(SYS_usleep,usec);

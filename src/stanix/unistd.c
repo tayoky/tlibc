@@ -89,3 +89,14 @@ char *getcwd(char *buf, size_t size){
 int chdir(const char *path){
 	return __set_errno(__syscall1(SYS_chdir,(long)path));
 }
+
+int isatty(int fd){
+	int ret = __syscall1(SYS_isatty,(long)fd);
+	//isatty is a bit diferent at it should return 0 and not -1;
+	if(ret < 0){
+		errno = -ret;
+		return 0;
+	}
+
+	return ret;
+}

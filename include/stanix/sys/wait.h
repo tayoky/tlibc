@@ -3,10 +3,10 @@
 
 #include <sys/types.h>
 
-#define WIFEXITED(status)   status & ((uint64_t)1 << 32)
-#define WIFSIGNALED(status) status & ((uint64_t)1 << 33)
-#define WCOREDUMP(status)   status & ((uint64_t)1 << 34)
-#define WIFSTOPPED(status)  status & ((uint64_t)1 << 35)
+#define WIFEXITED(status)   status & (1UL << 32)
+#define WIFSIGNALED(status) status & (1UL << 33)
+#define WCOREDUMP(status)   status & (1UL << 34)
+#define WIFSTOPPED(status)  status & (1UL << 35)
 
 #define WEXITSTATUS(status) status & 0xFFFFFFFF
 #define WTERMSIG WEXITSTATUS

@@ -42,6 +42,10 @@ void __init_heap(void){
 }
 
 void *malloc(size_t amount){
+	//align amount
+	if(amount & 0b111){
+		amount += 8 - (amount & 0b111);
+	}
 	heap_segment *current_seg = heap.first_seg;
 
 	while (current_seg->lenght < amount || current_seg->magic != HEAP_SEG_MAGIC_FREE){

@@ -91,9 +91,15 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 
 			//read the padding
 			int sign = 1;
-			if(*fmt == '-'){
+			switch(*fmt ){
+			case '-':
 				sign = -1;
 				fmt++;
+				break;
+			case '*':
+				padding = va_arg(args,int);
+				fmt++;
+				goto skip_padding_read;
 			}
 			while(isdigit(*fmt)){
 				padding *= 10;
@@ -101,6 +107,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 				fmt++;
 			}
 			padding *= sign;
+			skip_padding_read:
 
 			//not integer cases
 			switch(*fmt){

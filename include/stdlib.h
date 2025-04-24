@@ -25,6 +25,8 @@ double atof(const char *str);
 int putenv(char *str);
 char *getenv(const char *name);
 
+int system(const char *command);
+
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
 

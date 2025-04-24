@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <sys/wait.h>
+#include <errno.h>
 
 void exit(int status){
 	_exit(status);
@@ -146,4 +148,39 @@ void *realloc(void *ptr,size_t new_size){
 
 void abort(void){
 	return exit(EXIT_FAILURE);
+}
+
+
+int system(const char *command){
+	char *shell = getenv("SHELL");
+	if(!shell){
+		shell = "/bin/sh";
+	}
+	if(command == NULL){
+		//check if a shell is availible
+		return system("echo test") == 0;
+	} else {
+		pid_t child = fork();
+		if(!child){
+			char *argv[] = {
+				shell,
+				"-c",
+				command,
+				NULL
+			};
+			execvp(shell,argv);
+			//pass errno trought the parent
+			exit(127 + errno);
+		}
+		if(child < 0){
+			return -1;
+		}
+		int status = 0;
+		waitpid(child,&status,0);
+		if(WEXITSTATUS(status) > 127){
+			errno = WEXITSTATUS(status) - 127;
+			return -1;
+		}
+		return WEXITSTATUS(status);
+	}
 }

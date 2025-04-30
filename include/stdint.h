@@ -42,9 +42,13 @@ typedef unsigned int       uint_fast32_t;
 typedef unsigned long long uint_fast64_t;
 
 //max
-typedef int64_t  int_max;
-typedef uint64_t uint_max;
-
+#ifdef i386
+typedef int32_t  intmax_t;
+typedef uint32_t uintmax_t;
+#else
+typedef int64_t  intmax_t;
+typedef uint64_t uintmax_t;
+#endif
 
 //ptr
 #ifdef i386

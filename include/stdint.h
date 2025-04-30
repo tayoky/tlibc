@@ -47,7 +47,12 @@ typedef uint64_t uint_max;
 
 
 //ptr
+#ifdef i386
+typedef signed   int intptr_t;
+typedef unsigned int uintptr_t;
+#else
 typedef signed   long intptr_t;
 typedef unsigned long uintptr_t;
+#endif
 
 #endif

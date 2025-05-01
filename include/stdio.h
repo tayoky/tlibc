@@ -49,7 +49,7 @@ int fputc(int c,FILE *stream);
 int putc(int c,FILE *stream);
 int putchar(int c);
 
-int fputs (char *string, int n, FILE *stream);
+int fputs (char *string,FILE *stream);
 int puts(char *string);
 
 int feof(FILE *stream);

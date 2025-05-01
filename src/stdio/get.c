@@ -69,13 +69,8 @@ int putchar(int c){
 	return fputc(c,stdout);
 }
 
-int fputs (char *string, int n, FILE *stream){
-	for (int i = 0; i < n; i++){
-		if(!string[i]){
-			n = i;
-		}
-	}
-	if(write(stream->fd,string,n) < 0){
+int fputs (char *string,FILE *stream){
+	if(write(stream->fd,string,strlen(string)) < 0){
 		return -1;
 	}
 	return 0;

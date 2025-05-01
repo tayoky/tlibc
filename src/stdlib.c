@@ -165,10 +165,10 @@ int system(const char *command){
 			char *argv[] = {
 				shell,
 				"-c",
-				command,
+				(char *)command,
 				NULL
 			};
-			execvp(shell,argv);
+			execvp(shell,(char **)argv);
 			//pass errno trought the parent
 			exit(127 + errno);
 		}

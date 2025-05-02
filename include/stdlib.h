@@ -26,6 +26,11 @@ strto(long long,strtoll)
 strto(unsigned long,strtoul)
 strto(unsigned long long,strtoull)
 #undef strto
+#define strtd(type,name) type name(const char *str, char **end);
+strtd(float,strtof)
+strtd(double,strtod)
+strtd(long double,strtold)
+#undef strtd
 
 
 char *realpath(const char *path,char *resolved_path);

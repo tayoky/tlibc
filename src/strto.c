@@ -52,7 +52,62 @@ static int char2digit(char c){
 	return integer * sign;\
 }
 
+//it support both . and , 
+#define strtd(type,name) type name(const char *str, char **end){\
+	long long integer = 0;\
+	long long pow = 0;\
+	char sign = 1;\
+	if(end) *end = (char *)str;\
+\
+	/*ignore space*/\
+	while(isspace(*str)){\
+		if(!*str){\
+			return 0;\
+		}\
+		str++;\
+	}\
+\
+	/*handle + and -*/\
+	switch (*str){\
+	case '-':\
+		sign = -1;\
+		/*fallthrough*/\
+	case '+':\
+		str++;\
+		break;\
+	\
+	default:\
+		break;\
+	}\
+\
+	/*find the divisor and base number*/\
+	while(*str){\
+		if(isdigit(*str)){\
+			pow *= 10;\
+			integer *= 10;\
+			integer += (*str) - '0';\
+		} else if (*str == '.' || *str == ','){\
+			pow = 1;\
+		} else {\
+			break;\
+		}\
+		str++;\
+		if(end) *end = (char *)str;\
+	}\
+	integer *= sign;\
+	if(pow == 0){\
+		pow = 1;\
+	}\
+\
+	/*TODO : add exposant support here*/\
+\
+	return (type)integer/(type)pow;\
+}
+
 strto(long,strtol)
 strto(long long,strtoll)
 strto(unsigned long,strtoul)
 strto(unsigned long long,strtoull)
+strtd(float,strtof)
+strtd(double,strtod)
+strtd(long double,strtold)

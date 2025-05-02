@@ -20,6 +20,14 @@ long int atol(const char *str);
 int atoi(const char *str);
 double atof(const char *str);
 
+#define strto(type,name) type name(const char *str, char **end,int base);
+strto(long,strtol)
+strto(long long,strtoll)
+strto(unsigned long,strtoul)
+strto(unsigned long long,strtoull)
+#undef strto
+
+
 //environement varirables
 
 int putenv(char *str);

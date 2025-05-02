@@ -28,7 +28,9 @@ strto(unsigned long long,strtoull)
 #undef strto
 
 
-//environement varirables
+char *realpath(const char *path,char *resolved_path);
+
+//environement variables
 
 int putenv(char *str);
 char *getenv(const char *name);

@@ -80,6 +80,6 @@ int remove(const char *pathname);
 #define BUFSIZ 4096
 #endif
 
-#define EOF -1000
+#define EOF -1
 
 #endif

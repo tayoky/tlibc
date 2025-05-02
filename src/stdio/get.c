@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stddef.h>
 #include <string.h>
+#include <limits.h>
 #undef errno
 
 struct _FILE{
@@ -30,27 +31,31 @@ int getchar(void){
 	return(fgetc(stdin));
 }
 
-char *fgets (char *string, int n, FILE *stream){
+char *fgets(char *string, int n, FILE *stream){
 	//read until '\n'
 	int c = 0;
 	do
 	{
-		if(n <= 0){
-			return string;
+		if(n <= 1){
+			break;
 		}
 		c = fgetc(stream);
+
+		//if EOF quit immediatlely
+		if(c == EOF){
+			break;
+		}
+
 		*string = (char)c;
 		string++;
 		n--;
-	} while (c != '\n' && c != EOF);
-	
-	string--;
+	} while (c != '\n');
+
 	*string = '\0';
 	return string;
 }
 char *gets(char *buffer){
-	//TODO replace by INT32_MAX when it will be added to stdint.h
-	return fgets(buffer,1111111,stdin);
+	return fgets(buffer,INT_MAX,stdin);
 }
 
 
@@ -69,7 +74,7 @@ int putchar(int c){
 	return fputc(c,stdout);
 }
 
-int fputs (char *string,FILE *stream){
+int fputs(char *string,FILE *stream){
 	if(write(stream->fd,string,strlen(string)) < 0){
 		return -1;
 	}

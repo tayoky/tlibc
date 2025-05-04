@@ -16,6 +16,7 @@ int strncmp(const char *str1,const  char *str2,size_t n);
 
 char *strchr(const char *str, int c);
 char *strrchr(const char *str, int c);
+char *strpbrk(char *str,char *search);
 
 char *strcat(char * dest, const char * src);
 

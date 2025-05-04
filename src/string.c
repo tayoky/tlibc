@@ -109,6 +109,18 @@ char *strrchr(const char *str, int c){
 	return NULL;
 }
 
+char *strpbrk(char *str,char *search){
+	while(*str){
+		for (size_t i = 0; i < strlen(search); i++){
+			if(*str == search[i]){
+				return str;
+			}
+		}
+		str++;
+	}
+	return NULL;
+}
+
 char *strcat(char * dest, const char * src){
 	while(*dest){
 		dest++;

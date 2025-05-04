@@ -131,10 +131,14 @@ void *calloc(size_t num,size_t size){
 }
 
 void *realloc(void *ptr,size_t new_size){
+	if(!ptr){
+		return malloc(new_size);
+	}
 	void *new_buf = malloc(new_size);
 	if(!new_buf){
 		return NULL;
 	}
+
 	size_t old_size = ((heap_segment*)((uintptr_t)ptr - sizeof(heap_segment)))->lenght;
 
 	if(new_size > old_size){
@@ -168,7 +172,7 @@ int system(const char *command){
 				(char *)command,
 				NULL
 			};
-			execvp(shell,(char **)argv);
+			execvp(shell,(const char * const*)argv);
 			//pass errno trought the parent
 			exit(127 + errno);
 		}

@@ -109,7 +109,7 @@ size_t fread(void * ptr, size_t size, size_t n, FILE *stream){
 		return 0;
 	}
 
-	if((size_t)rsize < n){
+	if((size_t)rsize < size * n){
 		stream->eof = 1;
 	}
 
@@ -127,7 +127,7 @@ size_t fwrite(void * ptr, size_t size, size_t n, FILE *stream){
 		return 0;
 	}
 
-	if((size_t)wsize < n){
+	if((size_t)wsize < size * n){
 		stream->eof = 1;
 	}
 
@@ -166,7 +166,7 @@ int vprintf(const char *fmt, va_list args){
 FILE *fdopen(int handle, char *type){
 	(void)type;
 	if(handle < 0){
-		__set_errno(handle);
+		__set_errno(-EBADF);
 		return NULL;
 	}
 
@@ -196,7 +196,7 @@ int remove(const char *pathname){
 	int ret = unlink(pathname);
 
 	//if it is a dir, use rmdir
-	if(errno == EISDIR){
+	if(ret && errno == EISDIR){
 		ret = rmdir(pathname);
 	}
 

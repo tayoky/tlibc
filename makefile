@@ -56,8 +56,8 @@ header :
 	@echo "//ARCH=${ARCH}" >> config.h
 	@echo "//DATE=$(shell date)" >> config.h
 	@echo ""  >> config.h
-	@$(foreach FILE , $(shell echo include/*.h include/${TARGET}/*.h) , cat credit.h config.h ${FILE} > ${PREFIX}/include/$(shell basename ${FILE}) &&) true
-	@$(foreach FILE , $(shell echo include/${TARGET}/sys/*.h) , cat credit.h config.h ${FILE} > ${PREFIX}/include/sys/$(shell basename ${FILE}) &&) true
+	@$(foreach FILE , $(shell echo include/*.h include/${TARGET}/*.h) , cat credit.h config.h ${FILE} > ${PREFIX}/include/$(shell basename ${FILE}) && echo "[installing $(shell basename ${FILE})]" &&) true
+	@$(foreach FILE , $(shell echo include/${TARGET}/sys/*.h) , cat credit.h config.h ${FILE} > ${PREFIX}/include/sys/$(shell basename ${FILE}) && echo "[installing sys/$(shell basename ${FILE})]" &&) true
 #	cp ./include/*.h ${PREFIX}/include
 #	cp ./include/${TARGET}/*.h ${PREFIX}/include
 #	cp ./include/${TARGET}/sys/*.h ${PREFIX}/include/sys

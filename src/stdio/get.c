@@ -16,7 +16,10 @@ int fgetc(FILE *stream){
  	unsigned char c = 0;
 	ssize_t rsize = read(stream->fd,&c,1);
 	if(rsize < 0){
-		return __set_errno(rsize);
+		stream->errno = errno;
+		//we normally return -1 on error
+		//but here -1 is EOF
+		return -2;
 	}
 	if(rsize == 0){
 		stream->eof = 1;
@@ -59,11 +62,11 @@ char *gets(char *buffer){
 }
 
 
-
 int fputc(int c,FILE *stream){
 	ssize_t wsize = write(stream->fd,&c,1);
 	if(wsize < 0){
-		return __set_errno(wsize);
+		stream->errno = errno;
+		return -1;
 	}
 	return 0;
 }
@@ -76,15 +79,18 @@ int putchar(int c){
 
 int fputs(char *string,FILE *stream){
 	if(write(stream->fd,string,strlen(string)) < 0){
+		stream->errno = errno;
 		return -1;
 	}
 	return 0;
 }
 int puts(char *string){
 	if(write(stdout->fd,string,strlen(string)) < 0){
+		stdout->errno = errno;
 		return -1;
 	}
 	if(putchar('\n') < 0){
+		stdout->errno = errno;
 		return -1;
 	}
 	return 0;

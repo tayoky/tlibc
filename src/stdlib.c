@@ -55,7 +55,7 @@ void *malloc(size_t amount){
 			//no more segment need to make heap bigger
 			//if last is free make it bigger else create a new seg from scratch
 			if(current_seg->magic == HEAP_SEG_MAGIC_FREE){
-				uintptr_t old_heap_size = (uintptr_t)sbrk(amount - current_seg->lenght + sizeof(heap_segment) + 1);
+				uintptr_t old_heap_size = (uintptr_t)sbrk(amount - current_seg->lenght + sizeof(heap_segment) + 8);
 				current_seg->lenght += (uintptr_t)sbrk(0) - old_heap_size;
 			} else {
 				uintptr_t old_heap_size = (uintptr_t)sbrk(amount + sizeof(heap_segment) * 2  + 8);
@@ -75,7 +75,7 @@ void *malloc(size_t amount){
 	//we find a good segment
 
 	//if big enougth cut it
-	if(current_seg->lenght >= amount + sizeof(heap_segment) + 1){
+	if(current_seg->lenght >= amount + sizeof(heap_segment) + 8){
 		//big enougth
 		heap_segment *new_seg = (heap_segment *)((uint64_t)current_seg + amount + sizeof(heap_segment));
 		new_seg->lenght = current_seg->lenght - (sizeof(heap_segment) + amount);

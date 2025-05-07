@@ -58,11 +58,12 @@ struct termios {
 #define ECHO    1UL << 2
 #define ECHOE   1UL << 3
 #define ECHOK   1UL << 4
-#define ECHOCTL 1UL << 5
-#define ECHOKE  1UL << 6
-#define NOFLSH  1UL << 7
-#define TOSTOP  1UL << 8
-#define IEXTEN  1UL << 9
+#define ECHONL  1UL << 5
+#define ECHOCTL 1UL << 6
+#define ECHOKE  1UL << 7
+#define NOFLSH  1UL << 8
+#define TOSTOP  1UL << 9
+#define IEXTEN  1UL << 10
 
 #define TCSANOW   0
 #define TCSADRAIN 1

@@ -34,6 +34,17 @@ static inline __syscall3(long n,long a1,long a2,long a3) {
     asm volatile ("int $0x80"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3) : "memory"); 
     return ret; 
 }
+static inline __syscall4(long n,long a1,long a2,long a3,long a4) { 
+    long ret; 
+    asm volatile ("int $0x80"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3), "c"(a4): "memory"); 
+    return ret; 
+}
+static inline __syscall5(long n,long a1,long a2,long a3,long a4,long a5) { 
+    long ret; 
+	register long r8 __asm__("r8") = a5;
+    asm volatile ("int $0x80"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3), "c"(a4), "r" (r8): "memory"); 
+    return ret; 
+}
 #else
 #ifdef AARCH64
 static inline long __syscall0(long n)
@@ -96,5 +107,6 @@ static inline __syscall3(long n,long a1,long a2,long a3) {
 #define SYS_insmod          26
 #define SYS_rmmod           27
 #define SYS_isatty          28
+#define SYS_openpty         29
 
 #endif

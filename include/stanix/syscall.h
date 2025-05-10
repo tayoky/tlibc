@@ -78,35 +78,36 @@ static inline __syscall3(long n,long a1,long a2,long a3) {
 #endif
 #endif
 
-#define SYS_exit            0
-#define SYS_open            1
-#define SYS_close           2
-#define SYS_read            3
-#define SYS_write           4
-#define SYS_seek            5
-#define SYS_dup             6
-#define SYS_dup2            7
-#define SYS_sbrk            8
-#define SYS_ioctl           9
-#define SYS_usleep          10
-#define SYS_sleepuntil      11
-#define SYS_gettimeoftheday 12
-#define SYS_settimeoftheday 13
-#define SYS_pipe            14
-#define SYS_execve          15
-#define SYS_fork            16
-#define SYS_mkdir           17
-#define SYS_unlink          18
-#define SYS_rmdir           19
-#define SYS_readdir         20
-#define SYS_stat            21
-#define SYS_fstat           22
-#define SYS_getcwd          23
-#define SYS_chdir           24
-#define SYS_waitpid         25
-#define SYS_insmod          26
-#define SYS_rmmod           27
-#define SYS_isatty          28
-#define SYS_openpty         29
+#define SYS_exit         0
+#define SYS_open         1
+#define SYS_close        2
+#define SYS_read         3
+#define SYS_write        4
+#define SYS_seek         5
+#define SYS_dup          6
+#define SYS_dup2         7
+#define SYS_sbrk         8
+#define SYS_ioctl        9
+#define SYS_usleep       10
+#define SYS_sleepuntil   11
+#define SYS_gettimeofday 12
+#define SYS_settimeofday 13
+#define SYS_pipe         14
+#define SYS_execve       15
+#define SYS_fork         16
+#define SYS_mkdir        17
+#define SYS_unlink       18
+#define SYS_rmdir        19
+#define SYS_readdir      20
+#define SYS_stat         21
+#define SYS_fstat        22
+#define SYS_getcwd       23
+#define SYS_chdir        24
+#define SYS_waitpid      25
+#define SYS_insmod       26
+#define SYS_rmmod        27
+#define SYS_isatty       28
+#define SYS_openpty      29
+#define SYS_poll         30
 
 #endif

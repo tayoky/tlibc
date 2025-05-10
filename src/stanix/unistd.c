@@ -6,6 +6,7 @@
 #include <sys/type.h>
 #include <sys/types.h>
 #include <stdio.h>
+#include <poll.h>
 
 ssize_t read(int fd, const void *buffer, size_t count){
 	return __set_errno(__syscall3(SYS_read,fd,(long)buffer,count));
@@ -59,7 +60,7 @@ int usleep(useconds_t usec){
 }
 
 int gettimeofday(struct timeval *tv,struct timezone *tz){
-	return __set_errno(__syscall2(SYS_gettimeoftheday,(long)tv,(long)tz));
+	return __set_errno(__syscall2(SYS_gettimeofday,(long)tv,(long)tz));
 }
 
 int pipe(int pipefd[2]){
@@ -99,4 +100,9 @@ int isatty(int fd){
 	}
 
 	return ret;
+}
+
+//technicly not part of unistd.h but anyway
+int poll(struct pollfd *fds, nfds_t nfds, int timeout){
+	return __set_errno(__syscall3(SYS_poll,(long)fds,(long)nfds,(long)timeout));
 }

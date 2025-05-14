@@ -4,37 +4,21 @@
 #include <sys/type.h>
 #include <sys/types.h>
 
-#define O_RDONLY	00000000
-#define O_WRONLY	00000001
-#define O_RDWR		00000002
-#ifndef O_CREAT
-#define O_CREAT		00000100	
-#endif
-#ifndef O_EXCL
-#define O_EXCL		00000200	
-#endif
-#ifndef O_NOCTTY
-#define O_NOCTTY	00000400	
-#endif
-#ifndef O_TRUNC
-#define O_TRUNC		00001000	
-#endif
-#ifndef O_APPEND
-#define O_APPEND	00002000
-#endif
-#ifndef O_DIRECTORY
-#define O_DIRECTORY	00200000	/* must be a directory */
-#endif
-#ifndef O_NOFOLLOW
-#define O_NOFOLLOW	00400000	/* don't follow links */
-#endif
-#ifndef O_CLOEXEC
-#define O_CLOEXEC	02000000	/* set close_on_exec */
-#endif
+#define O_RDONLY	0x0000000 //open for read only
+#define O_WRONLY	0x0000001 //open for write only
+#define O_RDWR		0x0000002 //open for both read and write
+#define O_CREAT		0x0000010 //create the file if it don't exist
+#define O_EXCL		0x0000020 //trigger an error if can't create the file
+#define O_NOCTTY	0x0000040 //if open tty don't make it the controlling tty
+#define O_TRUNC		0x0000080 //truncate the file to be empty
+#define O_APPEND	0x0000100 //go to the end of the file before each write
+#define	O_NONBLOCK	0x0000200 //don't block on read/write
+#define O_DIRECTORY	0x0000400 //must be a directory
+#define O_CLOEXEC	0x0000800 //set close_on_exec
+#define O_NOFOLLOW	0x0001000 //don't follow links
 
 
 int open(const char *pathname, int flags, ... /* mode_t mode */ );
-
 int creat(const char *pathname, mode_t mode);
 
 #endif

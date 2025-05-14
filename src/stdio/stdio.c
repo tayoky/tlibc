@@ -99,7 +99,10 @@ int fclose(FILE *stream){
 }
 
 size_t fread(void * ptr, size_t size, size_t n, FILE *stream){
-	if(!stream)return __set_errno(-EBADF);
+	if(!stream){
+		__set_errno(-EBADF);
+		return 0;
+	}
 
 	ssize_t rsize = read(stream->fd,ptr,size * n);
 
@@ -113,11 +116,14 @@ size_t fread(void * ptr, size_t size, size_t n, FILE *stream){
 		stream->eof = 1;
 	}
 
-	return (size_t)rsize;
+	return ((size_t)rsize) / size;
 }
 
 size_t fwrite(void * ptr, size_t size, size_t n, FILE *stream){
-	if(!stream)return __set_errno(-EBADF);
+	if(!stream){
+		__set_errno(-EBADF);
+		return 0;
+	}
 
 	ssize_t wsize = write(stream->fd,ptr,size * n);
 
@@ -131,7 +137,7 @@ size_t fwrite(void * ptr, size_t size, size_t n, FILE *stream){
 		stream->eof = 1;
 	}
 
-	return (size_t)wsize;
+	return ((size_t)wsize) / size;
 }
 
 int fprintf(FILE *stream, const char *fmt, ...){

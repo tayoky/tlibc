@@ -11,7 +11,7 @@ static int is_leap(long year){
 		return 0;
 	}
 
-	//excecptioh for mutiple of 100 tha can't be divide by 400
+	//exception for mutiple of 100 that can't be divided by 400
 	if((year % 400) && !(year % 100)){
 		return 0;
 	}
@@ -60,22 +60,21 @@ char *asctime(const struct tm *timeptr){
 }
 
 char *asctime_r(const struct tm *timeptr, char *buf){
-    static char wday_name[7][3] = {
+    static const char *wday_name[7] = {
         "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
     };
-    static char mon_name[12][3] = {
+    static const char *mon_name[] = {
         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     };
-    static char result[26];
 
-    sprintf(buf,"%s %s %2d %2d:%2d:%2d %d\n",
+    sprintf(buf,"%s %s %2d %02d:%02d:%02d %d\n",
         wday_name[timeptr->tm_wday],
         mon_name[timeptr->tm_mon],
         timeptr->tm_mday, timeptr->tm_hour,
         timeptr->tm_min, timeptr->tm_sec,
         1900 + timeptr->tm_year);
-    return result;
+    return buf;
 }
 
 clock_t    clock(void);

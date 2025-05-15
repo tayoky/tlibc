@@ -4,14 +4,19 @@
 #include <sys/type.h>
 
 struct timeval {
-	time_t      tv_sec;     /* seconds */
-	suseconds_t tv_usec;    /* microseconds */
+	time_t      tv_sec;  //seconds
+	suseconds_t tv_usec; //microseconds
+};
+
+struct timespec {
+	time_t tv_sec; //seconds
+	long tv_nsec;  //nanoseconds
 };
 
 struct timezone {
 	long stub;
 };
 
-int gettimeofday(struct timeval *tv,struct timezone *tz);
+int gettimeofday(struct timeval *tv, struct timezone *tz);
 
 #endif

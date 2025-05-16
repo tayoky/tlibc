@@ -60,7 +60,7 @@ char *asctime(const struct tm *timeptr){
 }
 
 char *asctime_r(const struct tm *timeptr, char *buf){
-    static const char *wday_name[7] = {
+    static const char *wday_name[] = {
         "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
     };
     static const char *mon_name[] = {
@@ -134,7 +134,7 @@ struct tm *gmtime_r(const time_t *clock, struct tm *tm){
 		year++;
 	}
 
-	tm->tm_year = year - 1970;
+	tm->tm_year = year - 1900;
 	tm->tm_yday = day;
 	
 	int month = 1;
@@ -147,7 +147,7 @@ struct tm *gmtime_r(const time_t *clock, struct tm *tm){
 	}
 
 	tm->tm_mon = month - 1;
-	tm->tm_mday = day;
+	tm->tm_mday = day + 1;
 
 	return tm;
 }

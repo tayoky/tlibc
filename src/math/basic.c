@@ -4,10 +4,7 @@
 
 //abs
 
-int abs(int x){
-	int mask = x >> 31;
-	return (x^mask) + mask;
-}
+//no need to do classic abs it's aready in stdlib
 
 long labs(long x){
 	long mask = x >> 63;

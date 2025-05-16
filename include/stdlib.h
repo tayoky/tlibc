@@ -32,6 +32,7 @@ strtd(double,strtod)
 strtd(long double,strtold)
 #undef strtd
 
+int abs(int);
 
 char *realpath(const char *path,char *resolved_path);
 

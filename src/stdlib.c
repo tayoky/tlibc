@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <limits.h>
 
 void exit(int status){
 	_exit(status);
@@ -187,4 +188,9 @@ int system(const char *command){
 		}
 		return WEXITSTATUS(status);
 	}
+}
+
+int abs(int x){
+	int mask = x >> (sizeof(int) * CHAR_BIT - 1);
+	return (x^mask) + mask;
 }

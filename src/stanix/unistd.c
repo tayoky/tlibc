@@ -106,3 +106,7 @@ int isatty(int fd){
 int poll(struct pollfd *fds, nfds_t nfds, int timeout){
 	return __set_errno(__syscall3(SYS_poll,(long)fds,(long)nfds,(long)timeout));
 }
+
+pid_t getpid(){
+	return __set_errno(__syscall0(SYS_getpid));
+}

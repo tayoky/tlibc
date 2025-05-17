@@ -12,6 +12,9 @@ int vsprintf(char * buf,const char *fmt,va_list args);
 int snprintf(char * str,size_t maxlen, const char *fmt,...);
 int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args);
 
+int sscanf(const char *buf,char *fmt,...);
+int vsscanf(const char *buf,const char *fmt,va_list args);
+
 struct _FILE;
 typedef struct _FILE FILE;
 

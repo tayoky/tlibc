@@ -1,4 +1,6 @@
 #include <signal.h>
+#include <errno.h>
+#include <syscall.h>
 
 int sigaddset(sigset_t *sigset, int signum){
 	*sigset |= sigmask(signum);
@@ -18,4 +20,8 @@ int sigemptyset(sigset_t *sigset){
 int sigfillset(sigset_t *sigset){
 	*sigset = (sigset_t)(-1);
 	return 0;
+}
+
+int sigprocmask(int how, const sigset_t *set, sigset_t *oldset){
+	return __set_errno(_syscall3(SYS_sigprogmask,how,(long)set,(long)oldset));
 }

@@ -71,5 +71,6 @@ int sigaddset(sigset_t *sigset, int signum);
 int sigdelset(sigset_t *sigset, int signum);
 int sigemptyset(sigset_t *sigset);
 int sigfillset(sigset_t *sigset);
+int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
 
 #endif

@@ -73,6 +73,8 @@ int chdir(const char *path);
 
 int isatty(int fd);
 
+pid_t getpid();
+
 #ifndef NULL
 #define NULL ((void*)0)
 #endif

@@ -111,9 +111,9 @@ static inline __syscall3(long n,long a1,long a2,long a3) {
 #define SYS_poll         30
 #define SYS_sigprogmask  31
 #define SYS_sigaction    32
-#define SYS_wait         33
-#define SYS_suspend      34
-#define SYS_pending      35
+#define SYS_sigwait      33
+#define SYS_sigsuspend   34
+#define SYS_sigpending   35
 #define SYS_kill         36
 #define SYS_getpid       37
 

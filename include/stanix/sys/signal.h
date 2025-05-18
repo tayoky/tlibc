@@ -67,10 +67,16 @@ struct	sigaction {
 #define	SIG_UNBLOCK	2 //unblock specified signal set
 #define	SIG_SETMASK	3 //set specified signal set
 
+typedef typeof(void (int))  *sighandler_t;
+
 int sigaddset(sigset_t *sigset, int signum);
 int sigdelset(sigset_t *sigset, int signum);
 int sigemptyset(sigset_t *sigset);
 int sigfillset(sigset_t *sigset);
 int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
+int sigpending(sigset_t *set);
+int kill(pid_t pid, int sig);
+int sigaction(int signum, const struct sigaction *act,struct sigaction * oldact);
+sighandler_t signal(int signum, sighandler_t handler);
 
 #endif

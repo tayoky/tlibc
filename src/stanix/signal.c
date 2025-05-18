@@ -1,6 +1,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <syscall.h>
+#include <unistd.h>
 
 int sigaddset(sigset_t *sigset, int signum){
 	*sigset |= sigmask(signum);
@@ -32,6 +33,10 @@ int sigpending(sigset_t *set){
 
 int kill(pid_t pid, int sig){
 	return __set_errno(__syscall2(SYS_kill,pid,sig));
+}
+
+int raise(int sig){
+	return kill(getpid(),sig);
 }
 
 int sigaction(int signum, const struct sigaction *act,struct sigaction * oldact){

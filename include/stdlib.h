@@ -43,6 +43,10 @@ char *getenv(const char *name);
 
 int system(const char *command);
 
+//tmp files
+int mkostemp(char *template, int flags);
+int mkstemp(char *template);
+
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
 

@@ -67,7 +67,7 @@ struct	sigaction {
 #define	SIG_UNBLOCK	2 //unblock specified signal set
 #define	SIG_SETMASK	3 //set specified signal set
 
-typedef typeof(void (int))  *sighandler_t;
+typedef void (*sighandler_t)(int);
 
 int sigaddset(sigset_t *sigset, int signum);
 int sigdelset(sigset_t *sigset, int signum);

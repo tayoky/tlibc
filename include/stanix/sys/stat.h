@@ -36,7 +36,7 @@ struct stat {
 #define S_IWOTH 0x200
 #define S_IXOTH 0x100
 #define S_IRWXO S_IROTH | S_IWOTH | S_IXOTH
-#define S_ISVTX 800 //restriction deletion bit
+#define S_ISVTX 0x800 //restriction deletion bit
 
 //files types
 #define S_IFBLK 0x01000 //block device
@@ -48,12 +48,12 @@ struct stat {
 
 //types test
 
-#define S_ISBLK(m)  m & S_IFBLK //Test for a block special file. 
-#define S_ISCHR(m)  m & S_IFCHR //Test for a character special file. 
-#define S_ISDIR(m)  m & S_IFDIR //Test for a directory. 
-#define S_ISFIFO(m) m & S_IFIFO //Test for a pipe or FIFO special file. 
-#define S_ISREG(m)  m & S_IFREG //Test for a regular file. 
-#define S_ISLNK(m)  m & S_IFLNK //Test for a symbolic link. 
+#define S_ISBLK(m)  (m & S_IFBLK) //Test for a block special file. 
+#define S_ISCHR(m)  (m & S_IFCHR) //Test for a character special file. 
+#define S_ISDIR(m)  (m & S_IFDIR) //Test for a directory. 
+#define S_ISFIFO(m) (m & S_IFIFO) //Test for a pipe or FIFO special file. 
+#define S_ISREG(m)  (m & S_IFREG) //Test for a regular file. 
+#define S_ISLNK(m)  (m & S_IFLNK) //Test for a symbolic link. 
 
 //functions
 int fstat(int fd,struct stat *st);

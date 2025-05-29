@@ -1,6 +1,8 @@
 MAKEFLAGS += --no-builtin-rules
 
+ifeq ($(findstring $(MAKECMDGOALS),clean header),)
 include config.mk
+endif
 
 TARGET = stanix
 
@@ -31,8 +33,9 @@ CFLAGS = -Wall \
 	-fno-stack-check \
 	-fno-PIC \
 	-nostdlib 
-
+ifeq ($(findstring $(MAKECMDGOALS),clean header),)
 include ${ARCH}.mk
+endif
 
 CFLAGS += --sysroot=${SYSROOT} -isystem ${SYSROOT}/include -isystem ${SYSROOT}/usr/include/ -I ./include/
 

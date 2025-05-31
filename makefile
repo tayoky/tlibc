@@ -7,22 +7,17 @@ endif
 TARGET = stanix
 
 #first get all the src
-SRC_C = $(shell find src -maxdepth 1 -name "*.c") $(shell find src/stdio -name "*.c") $(shell find src/${TARGET} -name "*.c") $(shell find src/math -name "*.c")
-SRC_ASM = $(shell find src -maxdepth 1 -name "*.s") src/setjmp/${ARCH}.s
-OBJ = ${SRC_C:.c=.o} ${SRC_ASM:.s=.o}
-
-OUT = tlibc.a
-
-#default nasm
-NASM = nasm
+C_SRC_DIR = stdio ${TARGET} ${ARCH}
+C_SRC = $(shell find src -maxdepth 1 -name "*.c") $(foreach DIR, ${C_SRC_DIR}, $(shell find src/${DIR} -name "*.c" -or -name "*.s"))
+C_OBJ = $(addsuffix .o, $(basename ${C_SRC}))
+M_SRC_DIR = generic ${ARCH}
+M_SRC = $(shell find math -maxdepth 1 -name "*.c") $(foreach DIR, ${M_SRC_DIR}, $(shell find math/${DIR} -name "*.c" -or -name "*.s"))
+M_OBJ = $(addsuffix .o, $(basename ${M_SRC}))
 
 #ld flags
 LDFLAGS += \
 	-nostdlib \
 	-static \
-#nasm flags
-ASMFLAGS += -Wall \
-	-f elf64
 
 #cc flags
 CFLAGS = -Wall \
@@ -33,21 +28,20 @@ CFLAGS = -Wall \
 	-fno-stack-check \
 	-fno-PIC \
 	-nostdlib 
-ifeq ($(findstring $(MAKECMDGOALS),clean header),)
-include ${ARCH}.mk
-endif
 
 CFLAGS += --sysroot=${SYSROOT} -isystem ${SYSROOT}/include -isystem ${SYSROOT}/usr/include/ -I ./include/
 
-all : header ${OUT} crt0.o
+all : header tlibc.a libm.a crt0.o
+	echo ${C_OBJ}
 
-${OUT} : ${OBJ}
-	${AR} rcs ${OUT} ${OBJ}
-
+tlibc.a : ${C_OBJ}
+	${AR} rcs $@ $^
+libm.a : ${M_OBJ}
+	${AR} rcs $@ $^
 %.o : %.c
 	${CC} ${CFLAGS} -D${ARCH} -o $@ -c $^
 %.o : %.s
-	${NASM} ${ASMFLAGS} $< -o $@
+	${AS} ${ASFLAGS} $^ -o $@
 
 clean : 
 	rm -f ${OBJ} crt0.o
@@ -66,8 +60,9 @@ header :
 #	cp ./include/${TARGET}/sys/*.h ${PREFIX}/include/sys
 install : header all
 	mkdir -p ${PREFIX}/lib 
-	cp crt0.o ${PREFIX}/lib 
-	cp ${OUT} ${PREFIX}/lib/libc.a
+	cp crt*.o ${PREFIX}/lib 
+	cp tlibc.a ${PREFIX}/lib/libc.a
+	cp libm.a ${PREFIX}/lib/libm.a
 config.mk :
 	$(error run ./configure before running make)
 .mk :

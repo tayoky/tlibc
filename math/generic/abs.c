@@ -1,4 +1,5 @@
 #include <math.h>
+#include <limits.h>
 
 //very basic math
 
@@ -6,15 +7,13 @@
 
 //no need to do classic abs it's aready in stdlib
 
-long labs(long x){
-	long mask = x >> 63;
-	return (x^mask) + mask;
+#define xabs(type,name) type name(type x){\
+	type mask = x >> ((sizeof(type) * CHAR_BIT) - 1);\
+	return (x^mask) - mask;\
 }
 
-long long llabs(long long x){
-	long long mask = x >> (sizeof(x) * 8 -1);
-	return (x^mask) + mask;
-}
+xabs(long,labs)
+xabs(long long,llabs)
 
 
 double fabs(double x){

@@ -1,20 +1,6 @@
 #include <math.h>
-#include <limits.h>
 
-//very basic math
-
-//abs
-
-//no need to do classic abs it's aready in stdlib
-
-#define xabs(type,name) type name(type x){\
-	type mask = x >> ((sizeof(type) * CHAR_BIT) - 1);\
-	return (x^mask) - mask;\
-}
-
-xabs(long,labs)
-xabs(long long,llabs)
-
+//NOTE integer abs (abs labs llabs) are in sydlib not in math
 
 double fabs(double x){
 	if(x < 0){

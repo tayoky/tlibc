@@ -9,7 +9,6 @@
 	long double name##l(long double x);
 
 //abs
-ifunc(abs)
 ffunc(fabs)
 
 ffunc(cos)

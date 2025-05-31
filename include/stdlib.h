@@ -33,6 +33,8 @@ strtd(long double,strtold)
 #undef strtd
 
 int abs(int);
+long labs(long);
+long long llabs(long long);
 
 char *realpath(const char *path,char *resolved_path);
 

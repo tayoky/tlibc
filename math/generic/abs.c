@@ -1,27 +1,24 @@
 #include <math.h>
+#include <limits.h>
+#include "use-ieee.h"
 
-//NOTE integer abs (abs labs llabs) are in sydlib not in math
+//NOTE integer abs (abs labs llabs) are in stdlib not in math
 
-double fabs(double x){
-	if(x < 0){
-		return -x;
-	} else {
-		return x;
-	}
+#ifdef USE_IEEE754
+#define template(type,name) type name(type x){\
+	/*we clear the sign bit to make sure the number is postitive(faster than classic if/else)*/\
+	return x & ((1 << ((sizeof(type) * CHAR_BIT) - 1)) - 1);\
 }
-
-long double fabsl(long double x){
-	if(x < 0){
-		return -x;
-	} else {
-		return x;
-	}
+#else
+#define template(type,name) type name(type x){\
+	if(x < 0){\
+		return -x;\
+	} else {\
+		return x;\
+	}\
 }
+#endif
 
-float fabsf(float x){
-	if(x < 0){
-		return -x;
-	} else {
-		return x;
-	}
-}
+template(float,fabsf)
+template(double,fabs)
+template(long double,fabsl)

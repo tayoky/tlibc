@@ -2,7 +2,7 @@
 *.o
 
 #build
-tlibc.a
+*.a
 
 #sysroot
 sysroot/*

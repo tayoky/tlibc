@@ -14,6 +14,10 @@ ffunc(fabs)
 
 ffunc(cos)
 ffunc(sin)
+ffunc(tan)
+
+ffunc(fmin)
+ffunc(fmax)
 
 ffunc(sqrt)
 

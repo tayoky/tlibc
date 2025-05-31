@@ -1,28 +1,25 @@
 #include <math.h>
 
-#define PI 3.1415926535f
-
 #define DEG2RAD PI / 180.0f
-#define HALF_PI PI * 0.5f
-#define TPC 16.0f * (PI - 2.0f * 1.4142135623730950488016887242097f) / (PI * PI * PI)
+#define TPC 16.0f * (M_PI - 2.0f * 1.4142135623730950488016887242097f) / (M_PI * M_PI * M_PI)
 
 long double cosl(long double a) {
-	float n = fabsl(a) / (2.0f * PI);
+	float n = fabsl(a) / (2.0f * M_PI);
 
-	n = (n - ((long double) (int) n)) * PI * 2.0f;
+	n = (n - ((long double) (int) n)) * M_PI * 2.0f;
     
-	if (n > PI)
-		n = PI * 2.0f - n;
+	if (n > M_PI)
+		n = M_PI * 2.0f - n;
 
 	long double res = 0.0f;
 
-	if (n < PI * 0.25f)
+	if (n < M_PI * 0.25f)
 		res = 1.0f - 0.48f * n * n;
-	else if (n < PI * 0.75f) {
-		long double x = n - HALF_PI;
-		res = HALF_PI - n + TPC * x * x * x;
+	else if (n < M_PI * 0.75f) {
+		long double x = n - M_PI_2;
+		res = M_PI_2 - n + TPC * x * x * x;
 	} else {
-		n = n - PI;
+		n = n - M_PI;
 		res = 0.48f * n * n - 1.0f;
 	}
 
@@ -30,7 +27,7 @@ long double cosl(long double a) {
 }
 
 long double sinl(long double x){
-	return cosl(x - PI * 0.5f);
+	return cosl(x - M_PI_2);
 }
 
 double cos(double x){

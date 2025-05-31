@@ -24,6 +24,12 @@ ffunc(sqrt)
 #undef ifunc
 #undef ffunc
 
+//constant
 
+#define M_PI 3.1415926535f
+#define M_PI_2 (M_PI * 0.5f)
+#define M_PI_4 (M_PI * 0.25f)
+#define M_1_PI (1.0f / M_PI)
+#define M_2_PI (2.0f / M_PI)
 
 #endif

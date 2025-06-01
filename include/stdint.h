@@ -1,5 +1,10 @@
-#ifndef STDINT_H
-#define STDINT_H
+
+
+//TCC don't provide stdint
+#ifdef __tinycc__
+#ifndef _STDINT_H
+#define _STDINT_H
+#include <stddef.h>
 
 //signed
 typedef signed char        int8_t;
@@ -30,10 +35,10 @@ typedef unsigned long long uint_least64_t;
 //now fast
 
 //signed fast
-typedef signed char        int8fast8_t;
-typedef signed int         int8fast16_t;
-typedef signed int         int8fast32_t;
-typedef signed long long   int8fast64_t;
+typedef signed char        int_fast8_t;
+typedef signed int         int_fast16_t;
+typedef signed int         int_fast32_t;
+typedef signed long long   int_fast64_t;
 
 //unsigned fast
 typedef unsigned char      uint_fast8_t;
@@ -51,12 +56,13 @@ typedef uint64_t uintmax_t;
 #endif
 
 //ptr
-#ifdef i386
-typedef signed   int intptr_t;
-typedef unsigned int uintptr_t;
-#else
-typedef signed   long intptr_t;
-typedef unsigned long uintptr_t;
+#ifndef __intptr_t_defined
+#define __intptr_t_defined 1
+typedef __PTRDIFF_TYPE__ intptr_t;
+typedef __SIZE_TYPE__    uintptr_t;
 #endif
 
+#endif
+#else
+#include_next <stdint.h>
 #endif

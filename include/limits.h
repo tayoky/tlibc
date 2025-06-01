@@ -59,14 +59,11 @@
 
 #ifdef __PTRDIFF_MAX__
 #define SSIZE_MAX __PTRDIFF_MAX__
-#define PTRDIFF_MAX __PTRDIFF_MAX__
 #else
 #define SSIZE_MAX LONG_MAX
-#define PTRDIFF_MAX LONG_MAX
 #endif
 
 #define SSIZE_MIN (-SSIZE_MAX -1)
-#define PTRDIFF_MIN (-PTRDIFF_MAX -1)
 
 #define PATH_MAX 256
 

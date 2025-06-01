@@ -1,6 +1,29 @@
 #ifndef MATH_H
 #define MATH_H
 
+#include <limits.h>
+
+typedef float float_t;
+typedef double double_t;
+
+//macro
+#define fpclassify(x)
+#define isfinite(x) __builtin_isfinite(x)
+#define isinf(x) __buitin_isinf_sign(x)
+#define isnan(x) __builtin_isnan(x)
+#define isnormal(x)
+#if defined(__GNUC__) && !defined(__clang__)
+#define signbit(x) __builtin_signbit(x)
+#else
+#define signbit(x) (x < 0)
+#endif
+#define isgreater(x,y) (x > y)
+#define isgreaterequal(x,y) (x >= y)
+#define isless(x,y) (x < y)
+#define islessequal(x,y) (x <= y)
+#define islessgreater(x,y) (x != y)
+#define isunordered(x,y) (isnan(x) || isnan(y))
+
 #define ifunc(name) int name(int x);\
 	long l##name(long x);\
 	long long ll##name(long long x);

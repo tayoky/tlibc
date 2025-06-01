@@ -5,7 +5,7 @@
 
 #define template(type,name) type name(type x){\
 	if(isnan(x))return x;\
-	return signbit(x) ? x : x;\
+	return signbit(x) ? -x : x;\
 }
 
 template(float,fabsf)

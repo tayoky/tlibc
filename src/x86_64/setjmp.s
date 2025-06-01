@@ -18,6 +18,7 @@ setjmp:
 	;return 0
 	xor %rax, %rax
 	ret
+.size setjmp, .-setjmp
 
 .globl longjmp
 .type longjmp @function
@@ -42,3 +43,4 @@ longjmp:
 	;return to the saved rip
 	mov (%rdi), %rsi
 	jmp *%rsi
+.size longjmp, .-longjmp

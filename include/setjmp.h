@@ -4,7 +4,9 @@
 #include <stdint.h>
 
 #ifdef x86_64
-typedef uintptr_t jmp_buf[7];
+typedef uint64_t jmp_buf[7];
+#elif defined(__aarch64__)
+typedef uint64_t jmp_buf[13];
 #else
 typedef uintptr_t jmp_buf[8];
 #endif

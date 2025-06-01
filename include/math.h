@@ -7,6 +7,9 @@
 #define ffunc(name) float name##f(float x);\
 	double name(double x);\
 	long double name##l(long double x);
+#define ffunc2(name) float name##f(float x,float y);\
+	double name(double x,double y);\
+	long double name##l(long double x,long double y);
 
 //abs
 ffunc(fabs)
@@ -15,8 +18,8 @@ ffunc(cos)
 ffunc(sin)
 ffunc(tan)
 
-ffunc(fmin)
-ffunc(fmax)
+ffunc2(fmin)
+ffunc2(fmax)
 
 ffunc(sqrt)
 

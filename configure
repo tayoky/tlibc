@@ -4,21 +4,31 @@ rm -f $(dirname $0)/config.mk
 
 HOST=""
 
-PREFIX="/usr/local"
+if [ "$PREFIX" = "" ] ; then
+	PREFIX="/usr/local"
+fi
 
 SYSROOT=$(realpath ./sysroot)
 
 for i in "$@"; do
 	case $i in
-		--with-sysroot=*)
+		--sysroot=*|--with-sysroot=*)
 			SYSROOT="${i#*=}"
 			shift # past argument=value
 			;;
-		--with-CC=*)
+		--cc=*|--with-CC=*)
 			CC="${i#*=}"
 			shift # past argument=value
 			;;
-		--with-LD=*)
+		--ar=*|--with-AR=*)
+			AR="${i#*=}"
+			shift # past argument=value
+			;;
+		--as=*|--with-AS=*)
+			AS="${i#*=}"
+			shift # past argument=value
+			;;
+		--ld=*|--with-LD=*)
 			LD="${i#*=}"
 			shift # past argument=value
 			;;
@@ -64,6 +74,15 @@ if [ "$LD" = "" ] ; then
 	fi
 fi
 
+if [ "$AS" = "" ] ; then
+	if ${PREV}as --version > /dev/null ; then
+		AS="${PREV}as"
+	else
+		echo "error : no assembler found"
+		exit 1
+	fi
+fi
+
 if [ "$AR" = "" ] ; then
 	if ${PREV}ar --version > /dev/null ; then
 		AR="${PREV}ar"
@@ -100,4 +119,5 @@ echo "PREFIX=$PREFIX" >> config.mk
 echo "CC=$CC" >> config.mk
 echo "LD=$LD" >> config.mk
 echo "AR=$AR" >> config.mk
+echo "AS=$AS" >> config.mk
 echo "SYSROOT=$SYSROOT" >> config.mk

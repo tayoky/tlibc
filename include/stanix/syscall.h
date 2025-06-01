@@ -1,13 +1,7 @@
-#ifndef SYSCALL_H
-#define SYSCALL_H
+#ifndef _SYSCALL_H
+#define _SYSCALL_H
 
-#ifdef X86_64
-#ifndef x86_64
-#define x86_64
-#endif
-#endif
-
-#ifdef x86_64
+#ifdef __x86_64__
 static inline long __syscall0(long n)
 {
 	long ret;
@@ -29,53 +23,57 @@ static inline long __syscall2(long n, long a1, long a2)
 	return ret;
 }
 
-static inline __syscall3(long n,long a1,long a2,long a3) { 
+static inline long __syscall3(long n,long a1,long a2,long a3) { 
     long ret; 
     asm volatile ("int $0x80"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3) : "memory"); 
     return ret; 
 }
-static inline __syscall4(long n,long a1,long a2,long a3,long a4) { 
+static inline long __syscall4(long n,long a1,long a2,long a3,long a4) { 
     long ret; 
     asm volatile ("int $0x80"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3), "c"(a4): "memory"); 
     return ret; 
 }
-static inline __syscall5(long n,long a1,long a2,long a3,long a4,long a5) { 
+static inline long __syscall5(long n,long a1,long a2,long a3,long a4,long a5) { 
     long ret; 
 	register long r8 __asm__("r8") = a5;
     asm volatile ("int $0x80"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3), "c"(a4), "r" (r8): "memory"); 
     return ret; 
 }
-#else
-#ifdef AARCH64
+#elif defined(__aarch64__)
 static inline long __syscall0(long n)
 {
 	long ret;
-	//asm volatile ("int $0x80" : "=a"(ret) : "a"(n) : "rcx", "r11", "memory");
+	//asm("svc" : "=0"(ret) : "8"(n) : "memory");
 	return ret;
 }
 
 static inline long __syscall1(long n, long a1)
 {
 	long ret;
-	//asm volatile ("int $0x80" : "=a"(ret) : "a"(n), "D"(a1) : "memory");
+	//asm volatile ("svc" :  "=a"(ret) : "a"(n), "D"(a1) : "memory");
 	return ret;
 }
 
 static inline long __syscall2(long n, long a1, long a2)
 {
 	long ret;
-	//asm volatile ("int $0x80" : "=a"(ret) : "a"(n), "D"(a1), "S"(a2) : "rcx", "r11", "memory");
+	//asm volatile ("svc" : "=a"(ret) : "a"(n), "D"(a1), "S"(a2) : "rcx", "r11", "memory");
 	return ret;
 }
 
-static inline __syscall3(long n,long a1,long a2,long a3) { 
+static inline long __syscall3(long n,long a1,long a2,long a3) { 
     long ret; 
-    //asm volatile ("int $0x80"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3) : "memory"); 
+    //asm volatile ("svc"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3) : "memory"); 
     return ret; 
+}
+
+static inline long __syscall5(long n,long a1,long a2,long a3,long a4,long a5){
+	long ret;
+	//asm volatile ("svc" : "=0" (ret) : "8" (n), "0" (a1), "1"(a2), "2"(a3), "3"(a4), "4"(a5) : "memory");
+	return ret;
 }
 #else
 #error unsupported architecture
-#endif
 #endif
 
 #define SYS_exit         0

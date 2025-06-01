@@ -55,7 +55,7 @@ int vsscanf(const char *buf,const char *fmt,va_list args){
 			case 'f':
 				switch(*fmt){
 				case 'd':
-					long integer = strtol(buf,&end,0);
+					;long integer = strtol(buf,&end,0);
 					if(end == buf){
 						return n;
 					}
@@ -67,7 +67,7 @@ int vsscanf(const char *buf,const char *fmt,va_list args){
 					}
 					break;
 				case 'f':
-					double flot = strtod(buf,&end);
+					;double flot = strtod(buf,&end);
 					if(end == buf){
 						return n;
 					}

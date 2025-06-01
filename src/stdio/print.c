@@ -124,7 +124,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 				fmt++;
 				continue;
 			case 's':
-				char *str = va_arg(args,char *);
+				;char *str = va_arg(args,char *);
 				size_t str_len = strlen(str);
 
 				//print padding first if neccesary

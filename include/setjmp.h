@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #ifdef x86_64
-typedef uintptr_t jmp_buf[8];
+typedef uintptr_t jmp_buf[7];
 #else
 typedef uintptr_t jmp_buf[8];
 #endif

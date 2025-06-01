@@ -9,19 +9,26 @@ typedef double double_t;
 //macro
 #define fpclassify(x)
 #define isfinite(x) __builtin_isfinite(x)
-#define isinf(x) __buitin_isinf_sign(x)
+#define isinf(x) __builtin_isinf_sign(x)
 #define isnan(x) __builtin_isnan(x)
 #define isnormal(x)
 #if defined(__GNUC__) && !defined(__clang__)
 #define signbit(x) __builtin_signbit(x)
+#define isgreater(x,y) __builtin_isgreater(x,y)
+#define isgreaterequal(x,y) __builtin_isgreaterequal(x,y)
+#define isless(x,y) __builtin_isless(x,y)
+#define islessequal(x,y) __builtin_islessequal(x,y)
+#define islessgreater(x,y) __builtin_islessgreater(x,y)
 #else
 #define signbit(x) (x < 0)
+#define func(x,y,op) (isunordered(x,y) ? NAN : (op))
+#define isgreater(x,y) func(x,y,x > y)
+#define isgreaterequal(x,y) func(x,y,x >= y)
+#define isless(x,y) func(x,y,x < y)
+#define islessequal(x,y) func(x,y,x <= y)
+#define islessgreater(x,y) func(x,y,x != y)
+#undef func
 #endif
-#define isgreater(x,y) (x > y)
-#define isgreaterequal(x,y) (x >= y)
-#define isless(x,y) (x < y)
-#define islessequal(x,y) (x <= y)
-#define islessgreater(x,y) (x != y)
 #define isunordered(x,y) (isnan(x) || isnan(y))
 
 #define ifunc(name) int name(int x);\
@@ -44,10 +51,14 @@ ffunc(tan)
 ffunc2(fmin)
 ffunc2(fmax)
 
+ffunc(floor)
+ffunc(ceil)
+
 ffunc(sqrt)
 
 #undef ifunc
 #undef ffunc
+#undef ffunc2
 
 //constant
 

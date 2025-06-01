@@ -48,14 +48,25 @@
 #define LONG_MIN (-LONG_MAX -1)
 #define ULONG_MAX (LONG_MAX * 2UL + 1)
 
-#ifdef __LLONG_MAX__
-#define LLONG_MAX __LLONG_MAX__
+#ifdef __LONG_LONG_MAX__
+#define LLONG_MAX __LONG_LONG_MAX__
 #else
 #define LLONG_MAX LONG_MAX
 #endif
 
 #define LLONG_MIN (-LLONG_MAX -1)
 #define ULLONG_MAX (LLONG_MAX * 2UL + 1)
+
+#ifdef __PTRDIFF_MAX__
+#define SSIZE_MAX __PTRDIFF_MAX__
+#define PTRDIFF_MAX __PTRDIFF_MAX__
+#else
+#define SSIZE_MAX LONG_MAX
+#define PTRDIFF_MAX LONG_MAX
+#endif
+
+#define SSIZE_MIN (-SSIZE_MAX -1)
+#define PTRDIFF_MIN (-PTRDIFF_MAX -1)
 
 #define PATH_MAX 256
 

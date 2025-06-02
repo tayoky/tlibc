@@ -41,8 +41,6 @@ CFLAGS += -Wall \
 	-fno-PIC \
 	-nostdlib 
 
-CFLAGS += --sysroot=${SYSROOT} -isystem ${SYSROOT}/include -isystem ${SYSROOT}/usr/include/ -I ./include/
-
 all : header tlibc.a libm.a crt/${ARCH}/crti.o crt/${ARCH}/crtn.o crt/${ARCH}/crt0-${TARGET}.o
 
 test-m:

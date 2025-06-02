@@ -2,5 +2,5 @@
 .globl sqrt
 .type sqrt @function
 sqrt:
-	sqrtsd xxm0, xxm0
+	sqrtsd %xmm0, %xmm0
 	ret

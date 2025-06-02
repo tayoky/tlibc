@@ -43,7 +43,7 @@ CFLAGS += -Wall \
 
 CFLAGS += --sysroot=${SYSROOT} -isystem ${SYSROOT}/include -isystem ${SYSROOT}/usr/include/ -I ./include/
 
-all : header tlibc.a libm.a crt0.o
+all : header tlibc.a libm.a crt/${ARCH}/crti.o crt/${ARCH}/crtn.o crt/${ARCH}/crt0-${TARGET}.o
 
 test-m:
 	@echo "C_SRC = ${C_SRC}"
@@ -73,8 +73,12 @@ header :
 	@$(foreach FILE , $(shell echo include/${TARGET}/sys/*.h) , cat credit.h config.h ${FILE} > ${PREFIX}/include/sys/$(shell basename ${FILE}) && echo "[installing sys/$(shell basename ${FILE})]" &&) true
 install : header all
 	@mkdir -p ${PREFIX}/lib
-	@echo "[install crt]"
-	@cp crt*.o ${PREFIX}/lib
+	@echo "[install crti.o]"
+	@cp crt/${ARCH}/crti.o ${PREFIX}/lib
+	@echo "[install crtn.o]"
+	@cp crt/${ARCH}/crtn.o ${PREFIX}/lib
+	@echo "[install crt0.o]"
+	@cp crt/${ARCH}/crt0-${TARGET}.o ${PREFIX}/lib/crt0.o
 	@echo "[install libc.a]"
 	@cp tlibc.a ${PREFIX}/lib/libc.a
 	@echo "[install libm.a]"

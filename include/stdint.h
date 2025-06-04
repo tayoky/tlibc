@@ -1,7 +1,7 @@
 
 
 //TCC don't provide stdint
-#ifdef __tinycc__
+#ifndef __tinycc__
 #ifndef _STDINT_H
 #define _STDINT_H
 #include <stddef.h>

@@ -40,6 +40,10 @@ int rmmod(const char *name){
 	return __set_errno(__syscall1(SYS_rmmod,(long)name));
 }
 
+int mount(const char *source,const char *target,const char *filesystemtype,unsigned long mountflags,const void *data){
+	return __set_errno(__syscall5(SYS_mount,(long)source,(long)target,(long)filesystemtype,(long)mountflags,(long)data));
+}
+
 int umount(const char *target){
 	return __set_errno(__syscall1(SYS_umount,(long)target));
 }

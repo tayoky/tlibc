@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/module.h>
+#include <sys/mount.h>
 
 int ioctl(int fd,unsigned long op,void *arg){
 	return __set_errno(__syscall3(SYS_ioctl,fd,op,(long)arg));
@@ -37,4 +38,8 @@ int insmod(const char *pathname,const char **argv){
 
 int rmmod(const char *name){
 	return __set_errno(__syscall1(SYS_rmmod,(long)name));
+}
+
+int umount(const char *target){
+	return __set_errno(__syscall1(SYS_umount,(long)target));
 }

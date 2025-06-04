@@ -114,5 +114,7 @@ static inline long __syscall5(long n,long a1,long a2,long a3,long a4,long a5){
 #define SYS_sigpending   35
 #define SYS_kill         36
 #define SYS_getpid       37
+#define SYS_mount        38
+#define SYS_umount       39
 
 #endif

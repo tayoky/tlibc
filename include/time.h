@@ -22,6 +22,9 @@ struct tm {
 typedef long clock_t;
 typedef int clockid_t;
 
+#define CLOCK_REALTIME  0
+#define CLOCK_MONOTONIC 1
+
 time_t time(time_t * tloc);
 struct tm *gmtime(const time_t *clock);
 struct tm *gmtime_r(const time_t *clock, struct tm *tm);
@@ -31,5 +34,6 @@ char *asctime(const struct tm *timeptr);
 char *asctime_r(const struct tm *timeptr, char *buf);
 char *ctime(const time_t *clock);
 char *ctime_r(const time_t *clock, char *buf);
+int clock_gettime(clockid_t clock_id, struct timespec *tp);
 
 #endif

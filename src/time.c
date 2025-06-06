@@ -1,6 +1,8 @@
+#include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <errno.h>
 
 static struct tm default_tm;
 static char default_buf[26];
@@ -79,7 +81,6 @@ char *asctime_r(const struct tm *timeptr, char *buf){
 
 clock_t    clock(void);
 int        clock_getres(clockid_t, struct timespec *);
-int        clock_gettime(clockid_t, struct timespec *);
 int        clock_settime(clockid_t, const struct timespec *);
 
 char *ctime(const time_t *clock){
@@ -164,6 +165,20 @@ time_t     mktime(struct tm *);
 int        nanosleep(const struct timespec *, struct timespec *);
 size_t     strftime(char *, size_t, const char *, const struct tm *);
 char      *strptime(const char *, const char *, struct tm *);
+
+int clock_gettime(clockid_t clock_id, struct timespec *tp){
+	struct timeval tv;
+	switch(clock_id){
+	case CLOCK_REALTIME:
+	case CLOCK_MONOTONIC:
+		gettimeofday(&tv,NULL);
+		tp->tv_sec = tv.tv_sec; 
+		tp->tv_nsec = tv.tv_usec * 1000; 
+		return 0;
+	default:
+		return -EINVAL;
+	}
+}
 
 time_t time(time_t * tloc){
 	struct timeval tv;

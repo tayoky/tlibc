@@ -8,6 +8,10 @@ if [ "$PREFIX" = "" ] ; then
 	PREFIX="/usr/local"
 fi
 
+if [ "$CFLAGS" = "" ] ; then
+	CFLAGS=""
+fi
+
 SYSROOT=$(realpath ./sysroot)
 
 for i in "$@"; do
@@ -32,6 +36,10 @@ for i in "$@"; do
 			LD="${i#*=}"
 			shift # past argument=value
 			;;
+		--cflags=*)
+			CFLAGS="${i#*=}"
+			shift # past argument=value
+			;;
 		--host=*)
 			HOST="${i#*=}"
 			shift # past argument=value
@@ -48,6 +56,10 @@ for i in "$@"; do
 			;;
 	esac
 done
+
+#make all path absolute
+SYSROOT=$(realpath "$SYSROOT")
+PREFIX=$(realpath "$PREFIX")
 
 #check tools
 if [ "$HOST" != "" ] ; then
@@ -114,6 +126,7 @@ esac
 echo "#generated automatically by ./configure" > config.mk
 echo "HOST=$HOST" >> config.mk
 echo "ARCH=$ARCH" >> config.mk
+echo "CFLAGS=$CFLAGS" >> config.mk
 echo "OS=$OS" >> config.mk
 echo "PREFIX=$PREFIX" >> config.mk
 echo "CC=$CC" >> config.mk

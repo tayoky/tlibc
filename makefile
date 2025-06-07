@@ -39,7 +39,9 @@ CFLAGS += -Wall \
 	-fno-stack-protector \
 	-fno-stack-check \
 	-fno-PIC \
-	-nostdlib 
+	-nostdlib \
+	-I include \
+	-I include/${TARGET}
 
 all : header tlibc.a libm.a crt/${ARCH}/crti.o crt/${ARCH}/crtn.o crt/${ARCH}/crt0-${TARGET}.o
 

@@ -107,11 +107,11 @@ char *strrchr(const char *str, int c){
 	return NULL;
 }
 
-char *strpbrk(char *str,char *search){
+char *strpbrk(const char *str,const char *search){
 	while(*str){
 		for (size_t i = 0; i < strlen(search); i++){
 			if(*str == search[i]){
-				return str;
+				return (char *)str;
 			}
 		}
 		str++;
@@ -126,7 +126,7 @@ char *strcat(char * dest, const char * src){
 	return strcpy(dest,src);
 }
 
-int stricmp(const char *str1, const char *str2){
+int strcasecmp(const char *str1, const char *str2){
 	while (*str1 || *str2) {
 		int c1 = tolower(*str1);
 		int c2 = tolower(*str2);
@@ -135,7 +135,7 @@ int stricmp(const char *str1, const char *str2){
 	}
 	return 0;
 }
-int strnicmp(const char *str1, const char *str2, size_t n){
+int strncasecmp(const char *str1, const char *str2, size_t n){
 	while (*str1 || *str2) {
 		if(n <= 0){
 			return 0;

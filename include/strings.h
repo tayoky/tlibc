@@ -1,10 +1,13 @@
 #ifndef STRINGS_H
 #define STRINGS_H
 
-#include <string.h>
 
-#define strcasecmp  stricmp
-#define strncasecmp strnicmp
+
+int strcasecmp(const char *,const char *);
+int strncasecmp(const char *,const char *);
+int memcmp(const void *,const void *,size_t n);
+void *memove(void *,const void *,size_t);
+void *memset(void *,int,size_t);
 
 #define bcmp memcmp
 

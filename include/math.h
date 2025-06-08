@@ -12,6 +12,8 @@ typedef double double_t;
 #define isinf(x) __builtin_isinf_sign(x)
 #define isnan(x) __builtin_isnan(x)
 #define isnormal(x)
+
+//builtin are only faster on GCC
 #if defined(__GNUC__) && !defined(__clang__)
 #define signbit(x) __builtin_signbit(x)
 #define isgreater(x,y) __builtin_isgreater(x,y)
@@ -29,6 +31,7 @@ typedef double double_t;
 #define islessgreater(x,y) func(x,y,x != y)
 #undef func
 #endif
+
 #define isunordered(x,y) (isnan(x) || isnan(y))
 
 #define ifunc(name) int name(int x);\
@@ -67,5 +70,7 @@ ffunc(sqrt)
 #define M_PI_4 (M_PI * 0.25f)
 #define M_1_PI (1.0f / M_PI)
 #define M_2_PI (2.0f / M_PI)
+#define NAN __builtin_nanf("")
+#define INFINITY __builtin_inff()
 
 #endif

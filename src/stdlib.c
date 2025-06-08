@@ -45,6 +45,9 @@ void __init_heap(void){
 }
 
 void *malloc(size_t amount){
+	if(!amount){
+		return NULL;
+	}
 	//align amount
 	if(amount & 0b111){
 		amount += 8 - (amount & 0b111);
@@ -134,6 +137,10 @@ void *calloc(size_t num,size_t size){
 void *realloc(void *ptr,size_t new_size){
 	if(!ptr){
 		return malloc(new_size);
+	}
+	if(!new_size){
+		free(ptr);
+		return NULL;
 	}
 	void *new_buf = malloc(new_size);
 	if(!new_buf){

@@ -23,7 +23,7 @@ C_OBJ = $(addsuffix .o, $(basename ${C_SRC}))
 
 #if a file exist in math/${ARCH} don't take the generic version in math/generic
 M_ARCH_SRC = $(shell find math/${ARCH} -name "*.c" -or -name "*.s")
-M_SRC = ${M_ARCH_SRC} $(filter-out $(foreach FILE,${M_ARCH_SRC},%/$(shell basename $(basename ${FILE})).%),$(shell find math/generic -name "*.c" ))
+M_SRC = ${M_ARCH_SRC} $(filter-out $(foreach FILE,${M_ARCH_SRC},math/generic/$(shell basename $(basename ${FILE})).%),$(shell find math/generic -name "*.c" ))
 M_OBJ = $(addsuffix .o, $(basename ${M_SRC}))
 
 #ld flags
@@ -46,10 +46,8 @@ CFLAGS += -Wall \
 all : header tlibc.a libm.a crt/${ARCH}/crti.o crt/${ARCH}/crtn.o crt/${ARCH}/crt0-${TARGET}.o
 
 test-m:
-	@echo "C_SRC = ${C_SRC}"
-	echo ${M_SRC}
-	echo ${M_ARCH_SRC}
-	echo $(foreach FILE,${M_ARCH_SRC},%/$(shell basename $(basename ${FILE})).%)
+	@echo M_SRC = ${M_SRC}
+	@echo $(foreach FILE,${M_ARCH_SRC},math/generic/$(shell basename $(basename ${FILE})).%)
 tlibc.a : ${C_OBJ}
 	${AR} rcs $@ $^
 libm.a : ${M_OBJ}

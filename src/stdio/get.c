@@ -13,7 +13,7 @@ struct _FILE{
 };
 
 int fgetc(FILE *stream){
- 	unsigned char c = 0;
+	unsigned char c = 0;
 	ssize_t rsize = read(stream->fd,&c,1);
 	if(rsize < 0){
 		stream->errno = errno;
@@ -27,18 +27,19 @@ int fgetc(FILE *stream){
 	}
 	return c;
 }
+
 int getc(FILE *stream){
 	return fgetc(stream);
 }
+
 int getchar(void){
-	return(fgetc(stdin));
+	return fgetc(stdin);
 }
 
 char *fgets(char *string, int n, FILE *stream){
 	//read until '\n'
 	int c = 0;
-	do
-	{
+	do {
 		if(n <= 1){
 			break;
 		}
@@ -57,22 +58,25 @@ char *fgets(char *string, int n, FILE *stream){
 	*string = '\0';
 	return string;
 }
+
 char *gets(char *buffer){
 	return fgets(buffer,INT_MAX,stdin);
 }
 
 
-int fputc(int c,FILE *stream){
-	ssize_t wsize = write(stream->fd,&c,1);
-	if(wsize < 0){
+int fputc(int lc,FILE *stream){
+	unsigned char c = (unsigned char)lc;
+	if(write(stream->fd,&c,1) < 0){
 		stream->errno = errno;
 		return -1;
 	}
 	return 0;
 }
+
 int putc(int c,FILE *stream){
 	return fputc(c,stream);
 }
+
 int putchar(int c){
 	return fputc(c,stdout);
 }
@@ -84,14 +88,10 @@ int fputs(char *string,FILE *stream){
 	}
 	return 0;
 }
+
 int puts(char *string){
-	if(write(stdout->fd,string,strlen(string)) < 0){
-		stdout->errno = errno;
+	if(fputs(string,stdout) < 0){
 		return -1;
 	}
-	if(putchar('\n') < 0){
-		stdout->errno = errno;
-		return -1;
-	}
-	return 0;
+	return putchar('\n');
 }

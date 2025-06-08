@@ -11,22 +11,25 @@ struct _FILE{
 
 int fseek(FILE *stream, long int offset, int origin){
 	if(!stream) return __set_errno(-EBADF);
+	fflush(stream);
 	stream->eof = 0;
-	return __set_errno(lseek(stream->fd,offset,origin));
+	if(lseek(stream->fd,offset,origin) < 0){
+		return -1;
+	} else {
+		return 0;
+	}
 }
 
 long int ftell(FILE *stream){
 	if(!stream) return __set_errno(-EBADF);
-	return __set_errno(lseek(stream->fd,0,SEEK_CUR));
+	return lseek(stream->fd,0,SEEK_CUR);
 }
 
 void rewind(FILE *stream){
-	if(!stream){
-		__set_errno(-EBADF);
-		return;
-	}
+	if(!stream) return (void)__set_errno(-EBADF);
+	fflush(stream);
 	stream->errno = 0;
 	stream->eof = 0;
-	__set_errno(lseek(stream->fd,0,SEEK_SET));
+	lseek(stream->fd,0,SEEK_SET);
 	return;
 }

@@ -1,17 +1,28 @@
 # todo
+## function
+next important function to do
+### libc
+- bsearch
+- qosrt
+- mktime
+- strptime
+### libm
+- pow
+- ldexp
+- atan acos asin
+## header
 list of all header to do  
 - [ ] assert.h
 - [ ] complex.h
-- [ ] ctype.h
-- [ ] errno.h
+- [ ] ctype.h (only isascii missing)
+- [x] errno.h
 - [ ] fenv.h
-- [ ] float.h
-- [ ] inttype.h
+- [x] inttype.h
 - [x] iso646.h
 - [ ] limits.h
 - [ ] locale.h
 - [ ] math.h
-- [ ] setjmp.h
+- [x] setjmp.h
 - [ ] signal.h
 - [x] stdarg.h
 - [x] stdbool.h

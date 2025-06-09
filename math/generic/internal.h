@@ -35,9 +35,12 @@ bits(ldbl,16)
 bits(ldbl,32)
 #elif __SIZEOF_LONG_DOUBLE__ == 8
 bits(ldbl,64)
+#elif __SIZEOF_LONG_DOUBLE__ == 16 && defined(__SIZEOF_INT128__)
+//modern compiler have a built in __int128_t
+typedef __int128_t  intldbl_t;
+typedef __uint128_t uintldbl_t;
 #else
-//#error unsupported long double size
-bits(ldbl,64)
+#error unsupported long double size
 #endif
 
 #undef bit

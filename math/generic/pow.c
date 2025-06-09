@@ -10,7 +10,7 @@ float powf(float n, float p) {
 
     if (E == 0) return 0.0f;
 
-    float new_exp = (((float) E) - 127.0f + log2_01(M / 8388608.0f)) * p;
+    float new_exp = (((float) E) - 127.0f + logf2_01(M / 8388608.0f)) * p;
 
     int newE = (new_exp < 0? new_exp - 1.0f : new_exp) + 127 + (new_exp < 0.0f);
 

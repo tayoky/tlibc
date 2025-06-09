@@ -59,6 +59,9 @@ ffunc(ceil)
 
 ffunc(sqrt)
 
+float log2f(float x);
+float powf(float x,float y);
+
 #undef ifunc
 #undef ffunc
 #undef ffunc2

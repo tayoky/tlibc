@@ -25,7 +25,7 @@ int isupper(int c){
 }
 
 int isblank(int c){
-	return isspace(c) || c == '\t';
+	return c ==  ' ' || c == '\t' || c == '\v';
 }
 
 int isspace(int c){
@@ -62,13 +62,21 @@ int ispunct(int c){
 }
 
 int iscntrl(int c){
-	return c == '\b' || c == '\n';
+	return c && (c <= 31 || c == 127);
 }
 
-int isgraph(int c){
-	return isalnum(c) || ispunct(c);
+int isgraph(int c){	
+	return c >= '!' && c <= '~';
 }
 
 int isprint(int c){
-	return isgraph(c) || isspace(c);
+	return isgraph(c) || c == ' ';
+}
+
+int isascii(int c){
+	return c <= 127;
+}
+
+int toascii(int c){
+	return c & 127;
 }

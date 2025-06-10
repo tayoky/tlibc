@@ -14,7 +14,7 @@ next important function to do
 list of all header to do  
 - [ ] assert.h
 - [ ] complex.h
-- [ ] ctype.h (only isascii missing)
+- [x] ctype.h
 - [x] errno.h
 - [ ] fenv.h
 - [x] inttype.h

@@ -1,11 +1,13 @@
 #ifndef CTYPE_H
 #define CTYPE_H
 
-int tolower(int C);
+int tolower(int c);
 int toupper(int c);
+int toascii(int c);
 
 int islower(int c);
 int isupper(int c);
+int isascii(int c);
 
 int isspace(int c);
 int isblank(int c);

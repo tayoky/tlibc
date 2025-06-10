@@ -34,6 +34,7 @@ char *asctime(const struct tm *timeptr);
 char *asctime_r(const struct tm *timeptr, char *buf);
 char *ctime(const time_t *clock);
 char *ctime_r(const time_t *clock, char *buf);
+time_t mktime(struct tm *);
 int clock_gettime(clockid_t clock_id, struct timespec *tp);
 
 #endif

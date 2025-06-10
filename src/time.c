@@ -161,7 +161,20 @@ struct tm *localtime_r(const time_t *clock, struct tm *tm){
 	return gmtime_r(clock,tm);
 }
 
-time_t     mktime(struct tm *);
+time_t mktime(struct tm *tm){
+	time_t sec = tm->tm_hour * 3600 + tm->tm_min * 60 + tm->tm_sec;
+	sec += tm->tm_yday * 86400;
+	long year = tm->tm_year + 1900;
+	while(year > 1970){
+		year--;
+		if(is_leap(year)){
+			sec += 366 * 86400;
+		} else {
+			sec += 365 * 86400;
+		}
+	}
+	return sec;
+}
 int        nanosleep(const struct timespec *, struct timespec *);
 size_t     strftime(char *, size_t, const char *, const struct tm *);
 char      *strptime(const char *, const char *, struct tm *);

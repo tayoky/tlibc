@@ -9,8 +9,14 @@
 #define template(type,name) type name(type x){\
 	if(signbit(x)) return NAN;\
 \
-	type start = 0;\
-	type end = x;\
+	type start,end;\
+	if(x < 1){\
+		start = x;\
+		end = 1;\
+	} else {\
+		start = 1;\
+		end = x;\
+	}\
 \
 	for(int i=0; i<20; i++){\
 		type n = (start + end)/2;\

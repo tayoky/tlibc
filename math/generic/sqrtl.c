@@ -4,8 +4,14 @@
 long double sqrtl(long double x){
 	if(signbit(x)) return NAN;
 
-	long double start = 0;
-	long double end = x;
+	long double start,end;
+	if(x < 1){
+		start = x;
+		end = 1;
+	} else {
+		start = 1;
+		end = x;
+	}
 
 	for(int i=0; i<20; i++){
 		long double n = (start + end)/2;

@@ -1,10 +1,10 @@
 #ifndef STRINGS_H
 #define STRINGS_H
 
-
+#include <sys/types.h>
 
 int strcasecmp(const char *,const char *);
-int strncasecmp(const char *,const char *);
+int strncasecmp(const char *,const char *,size_t);
 int memcmp(const void *,const void *,size_t n);
 void *memove(void *,const void *,size_t);
 void *memset(void *,int,size_t);

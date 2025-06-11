@@ -2,7 +2,6 @@
 #define STRING_H
 
 #include <sys/types.h>
-#include <sys/type.h>
 
 //str
 char *strcat(char * dest, const char * src);

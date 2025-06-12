@@ -30,7 +30,7 @@
 			end = n;\
 		}\
 	}\
-	return n;\
+	return (start + end)/2;\
 }
 
 template(float,sqrtf)

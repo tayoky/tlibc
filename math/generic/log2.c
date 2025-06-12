@@ -5,7 +5,7 @@
 #define template(type,name,itype,m_size,m_mask,e_mask) type log2##name(type n) {\
     if (n <= 0.0f) return -INFINITY;\
 \
-    itype E, M;\
+    type E, M;\
 \
     M = (*(itype *) &n) & (m_mask);\
     E = ((*(itype *) &n) >> (m_size)) & (e_mask);\

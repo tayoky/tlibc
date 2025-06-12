@@ -52,9 +52,15 @@ struct	sigaction {
 		void	(*__sa_handler)(int);
 		void	(*__sa_sigaction)(int, siginfo_t *, void *);
 	} __sigaction_u;
-	sigset_t sa_mask; //signal mask to apply
-	int	sa_flags;     //see signal options below
+	sigset_t sa_mask; /* signal mask to apply*/
+	int	sa_flags;     /* see signal options below*/
 };
+
+typedef struct {
+	void  *ss_sp;     /* base address of stack */
+	int    ss_flags;  /* flags */
+	size_t ss_size;   /* number of bytes in stack */
+} stack_t;
 
 //little trick so we can use .sa_handler and .sa_sigaction
 #define sa_handler      __sigaction_u.__sa_handler

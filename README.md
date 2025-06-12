@@ -11,11 +11,12 @@ a list of some software that can be compiled using tlibc
 # completion
 list of header and estimation of their completion
 
-- `string.h` : 90% to 95%
+- `string.h` : 95%
 - `strings.h` : 60%
 - `stdio.h` : 70%
 - `stdlib.h` : 20% to 30%
 - `stddef.h` : 100%
 - `stdint.h` : 100% (but need rewrite to use compiler's one)
-- `time.h` : 60%
-- `ctype.h` : 95% (only isascii missing)
+- `time.h` : 70%
+- `ctype.h` : 100%
+- `setjmp.h` : 100%

@@ -3,8 +3,7 @@
 next important function to do
 ### libc
 - bsearch
-- qosrt
-- mktime
+- qsort
 - strptime
 ### libm
 - pow
@@ -26,8 +25,8 @@ list of all header to do
 - [ ] signal.h
 - [x] stdarg.h
 - [x] stdbool.h
-- [ ] stddef.h
-- [ ] stdint.h
+- [x] stddef.h
+- [x] stdint.h
 - [ ] stdio.h
 - [ ] stdlib.h
 - [ ] string.h

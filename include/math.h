@@ -56,6 +56,7 @@ ffunc2(fmax)
 
 ffunc(floor)
 ffunc(ceil)
+ffunc(round)
 
 ffunc(sqrt)
 

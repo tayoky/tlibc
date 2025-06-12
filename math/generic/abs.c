@@ -10,4 +10,3 @@
 
 template(float,fabsf)
 template(double,fabs)
-template(long double,fabsl)

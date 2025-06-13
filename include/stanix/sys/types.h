@@ -11,6 +11,7 @@ typedef long nlink_t ;
 typedef long time_t;
 typedef unsigned long useconds_t;
 typedef long suseconds_t;
+typedef long off_t;
 
 //stupid bloat for posix API
 typedef long dev_t;
@@ -25,7 +26,6 @@ typedef long blkcnt_t;
 #define __PTRDIFF_TYPE__ signed long
 #endif
 
-typedef __SIZE_TYPE__ off_t;
 typedef __SIZE_TYPE__ size_t;
 typedef __PTRDIFF_TYPE__ ssize_t;
 #endif

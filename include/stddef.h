@@ -2,15 +2,17 @@
 #define STDDEF_H
 
 #include <sys/types.h>
-#include <sys/type.h>
 
 #ifndef NULL
 #define NULL (void *)0
 #endif
 
-typedef signed long long ptrdiff_t;
+#ifndef __WCHAR_TYPE__
+#define __WCHAR_TYPE__ unsigned int
+#endif
 
-typedef char wchar_t;
+typedef __PTRDIFF_TYPE__ ptrdiff_t;
+typedef __WCHAR_TYPE__ wchar_t;
 
 #define offsetof(struct_type,member) (size_t)&((struct struct_type *)0)->member
 

@@ -2,7 +2,6 @@
 #define STDIO_H
 
 #include <sys/types.h>
-#include <sys/type.h>
 #include <stdarg.h>
 
 typedef size_t fpos_t;
@@ -21,7 +20,7 @@ typedef struct _FILE FILE;
 FILE *fopen(const char *path,const char *mode);
 int fclose(FILE *stream);
 size_t fread(void * ptr, size_t size, size_t n, FILE *stream);
-size_t fwrite(void * ptr, size_t size, size_t n, FILE *stream);
+size_t fwrite(const void * ptr, size_t size, size_t n, FILE *stream);
 
 int fprintf(FILE *stream, const char *fmt, ...);
 int vfprintf(FILE *stream, const char *fmt, va_list args);
@@ -52,8 +51,8 @@ int fputc(int c,FILE *stream);
 int putc(int c,FILE *stream);
 int putchar(int c);
 
-int fputs (char *string,FILE *stream);
-int puts(char *string);
+int fputs(const char *string,FILE *stream);
+int puts(const char *string);
 
 int feof(FILE *stream);
 

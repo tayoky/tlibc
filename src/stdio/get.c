@@ -4,28 +4,10 @@
 #include <stddef.h>
 #include <string.h>
 #include <limits.h>
-#undef errno
-
-struct _FILE{
-	int fd;
-	long errno;
-	int eof;
-};
 
 int fgetc(FILE *stream){
 	unsigned char c = 0;
-	ssize_t rsize = read(stream->fd,&c,1);
-	if(rsize < 0){
-		stream->errno = errno;
-		//we normally return -1 on error
-		//but here -1 is EOF
-		return -2;
-	}
-	if(rsize == 0){
-		stream->eof = 1;
-		return EOF;
-	}
-	return c;
+	return fread(&c,sizeof(c),1,stream) ? c : EOF;
 }
 
 int getc(FILE *stream){
@@ -66,11 +48,7 @@ char *gets(char *buffer){
 
 int fputc(int lc,FILE *stream){
 	unsigned char c = (unsigned char)lc;
-	if(write(stream->fd,&c,1) < 0){
-		stream->errno = errno;
-		return -1;
-	}
-	return 0;
+	return fwrite(&c,sizeof(c),1,stream) ? lc : EOF;
 }
 
 int putc(int c,FILE *stream){
@@ -81,17 +59,13 @@ int putchar(int c){
 	return fputc(c,stdout);
 }
 
-int fputs(char *string,FILE *stream){
-	if(write(stream->fd,string,strlen(string)) < 0){
-		stream->errno = errno;
-		return -1;
-	}
-	return 0;
+int fputs(const char *str,FILE *stream){
+	return fwrite(str,sizeof(char),strlen(str),stream) ? 0 : -1;
 }
 
-int puts(char *string){
-	if(fputs(string,stdout) < 0){
+int puts(const char *str){
+	if(fputs(str,stdout) < 0){
 		return -1;
 	}
-	return putchar('\n');
+	return putchar('\n') != EOF ? 0 : -1 ;
 }

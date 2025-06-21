@@ -119,7 +119,7 @@ size_t fread(void * ptr, size_t size, size_t n, FILE *stream){
 	return ((size_t)rsize) / size;
 }
 
-size_t fwrite(void * ptr, size_t size, size_t n, FILE *stream){
+size_t fwrite(const void *ptr, size_t size, size_t n, FILE *stream){
 	if(!stream){
 		__set_errno(-EBADF);
 		return 0;

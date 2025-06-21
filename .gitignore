@@ -17,3 +17,7 @@ config.h
 *.sublime-workspace
 *.sublime-project
 *.code-workspace
+
+#os
+.DS_Store
+Thumbs.db

@@ -10,3 +10,10 @@ sysroot/*
 #config
 config.mk
 config.h
+
+#editor config
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+*.code-workspace

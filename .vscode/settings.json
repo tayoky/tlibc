@@ -1,0 +1,8 @@
+{
+	"files.associations": {
+		"syscall.h": "c",
+		"fcntl.h": "c",
+		"type_traits": "c",
+		"string.h": "c"
+	}
+}

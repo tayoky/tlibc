@@ -1,8 +1,7 @@
 #ifndef STDLIB_H
 #define STDLIB_H
 
-#include <sys/types.h>
-#include <sys/type.h> 
+#include <stddef.h> 
 
 void exit(int status);
 
@@ -48,6 +47,10 @@ int system(const char *command);
 //tmp files
 int mkostemp(char *template, int flags);
 int mkstemp(char *template);
+
+//wchar conversion
+int mbtowc(wchar_t *pwcs,const char *str,size_t n);
+size_t mbstowcs(wchar_t *pwcs,const char *str,size_t n);
 
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1

@@ -1,6 +1,8 @@
 #ifndef SYS_TERMIOS
 #define SYS_TERMIOS
 
+#include <sys/types.h>
+
 typedef char cc_t;
 typedef int speed_t;
 typedef unsigned int tcflag_t;
@@ -71,6 +73,8 @@ struct termios {
 
 int tcgetattr(int fd,struct termios *termios_p);
 int tcsetattr(int fd,int optional_actions,const struct termios *termios_p);
+pid_t tcgetpgrp(int fd);
+int tcsetpgrp(int fd,pid_t pgrp);
 void cfmakeraw(struct termios *termios_p);
 
 #endif

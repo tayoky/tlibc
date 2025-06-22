@@ -1,6 +1,8 @@
 #ifndef IOCTL_H
 #define IOCTL_H
 
+#include <sys/types.h>
+
 struct winsize {
 	unsigned short	ws_row;	   //rows, in characters
 	unsigned short	ws_col;	   //columns, in characters

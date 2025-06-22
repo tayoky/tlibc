@@ -19,6 +19,15 @@ int tcsetattr(int fd,int optional_actions,const struct termios *termios_p){
 	}
 }
 
+pid_t tcgetprgp(int fd){
+	pid_t pgrp;
+	return ioctl(fd,TIOCGPGRP,&pgrp) < 0 ? -1 : pgrp;
+}
+
+int tcsetpgrp(int fd,pid_t pgrp){
+	return ioctl(fd,TIOCSPGRP,&pgrp);
+}
+
 void cfmakeraw(struct termios *termios_p){
 	termios_p->c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);
 	termios_p->c_oflag &= ~OPOST;

@@ -76,7 +76,10 @@ int chdir(const char *path);
 
 int isatty(int fd);
 
+//process management
 pid_t getpid();
+pid_t tcgetpgrp(int fd);
+int tcsetpgrp(int fd,pid_t pgrp);
 
 #ifndef NULL
 #define NULL ((void*)0)

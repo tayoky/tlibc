@@ -1,5 +1,6 @@
 #include <sys/ioctl.h>
 #include <termios.h>
+#include <unistd.h>
 #include <errno.h>
 
 int tcgetattr(int fd,struct termios *termios_p){

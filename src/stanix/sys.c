@@ -6,6 +6,7 @@
 #include <sys/wait.h>
 #include <sys/module.h>
 #include <sys/mount.h>
+#include <sys/mman.h>
 
 int ioctl(int fd,unsigned long op,void *arg){
 	return __set_errno(__syscall3(SYS_ioctl,fd,op,(long)arg));
@@ -46,4 +47,21 @@ int mount(const char *source,const char *target,const char *filesystemtype,unsig
 
 int umount(const char *target){
 	return __set_errno(__syscall1(SYS_umount,(long)target));
+}
+
+void *mmap(void *addr,size_t length,int prot,int flags,int fd,off_t offset){
+	void *ret = (void *)__syscall6(SYS_mmap,(long)addr,length,prot,flags,fd,offset);
+	if(ret >  (void *)0xFFFFF00000000000){
+		errno = -(long)ret;
+		return map_failed;
+	}
+
+	return ret;
+}
+
+int munmap(void *addr,size_t length){
+	return __set_errno(__syscall2(SYS_munmap,(long)addr,length));
+}
+int mprotect(void *addr,size_t size,int prot){
+	return __set_errno(__syscall3(SYS_mprotect,(long)addr,size,prot));
 }

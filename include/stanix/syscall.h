@@ -4,7 +4,7 @@
 #ifdef __x86_64__
 static inline long __syscall0(long n){
 	long ret;
-	asm volatile ("int $0x80" : "=a"(ret) : "a"(n) : "rcx", "r11", "memory");
+	asm volatile ("int $0x80" : "=a"(ret) : "a"(n) : "memory");
 	return ret;
 }
 
@@ -16,7 +16,7 @@ static inline long __syscall1(long n, long a1){
 
 static inline long __syscall2(long n, long a1, long a2){
 	long ret;
-	asm volatile ("int $0x80" : "=a"(ret) : "a"(n), "D"(a1), "S"(a2) : "rcx", "r11", "memory");
+	asm volatile ("int $0x80" : "=a"(ret) : "a"(n), "D"(a1), "S"(a2) : "memory");
 	return ret;
 }
 
@@ -25,15 +25,25 @@ static inline long __syscall3(long n,long a1,long a2,long a3) {
     asm volatile ("int $0x80"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3) : "memory"); 
     return ret; 
 }
+
 static inline long __syscall4(long n,long a1,long a2,long a3,long a4){
 	long ret;
 	asm volatile ("int $0x80"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3), "c"(a4): "memory");
 	return ret; 
 }
+
 static inline long __syscall5(long n,long a1,long a2,long a3,long a4,long a5){
 	long ret;
 	register long r8 __asm__("r8") = a5;
-	asm volatile ("int $0x80"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3), "c"(a4), "r" (r8): "memory");
+	asm volatile ("int $0x80"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3), "c"(a4), "r"(r8): "memory");
+	return ret; 
+}
+
+static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,long a6){
+	long ret;
+	register long r8 __asm__("r8") = a5;
+	register long r9 __asm__("r9") = a6;
+	asm volatile ("int $0x80"  : "=a"(ret)  : "a"(n), "D"(a1), "S"(a2), "d"(a3), "c"(a4), "r"(r8), "r"(r9) : "memory");
 	return ret; 
 }
 #elif defined(__aarch64__)
@@ -82,6 +92,19 @@ static inline long __syscall5(long n,long a1,long a2,long a3,long a4,long a5){
 	asm("svc 0" : "=r"(ret) : "r"(num), "r"(r0), "r"(r1), "r"(r2), "r"(r3), "r"(r4) : "memory");
 	return ret;
 }
+
+static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,long a6){
+	register long ret asm("r0");
+	register long num asm("r8") = n;
+	register long r0 asm("r0")  = a1;
+	register long r1 asm("r1")  = a2;
+	register long r2 asm("r2")  = a3;
+	register long r3 asm("r3")  = a4;
+	register long r4 asm("r4")  = a5;
+	register long r5 asm("r5")  = a6;
+	asm("svc 0" : "=r"(ret) : "r"(num), "r"(r0), "r"(r1), "r"(r2), "r"(r3), "r"(r4), "r"(r5) : "memory");
+	return ret;
+}
 #else
 #error unsupported architecture
 #endif
@@ -126,5 +149,9 @@ static inline long __syscall5(long n,long a1,long a2,long a3,long a4,long a5){
 #define SYS_getpid       37
 #define SYS_mount        38
 #define SYS_umount       39
+#define SYS_mmap         40
+#define SYS_munmap       41
+#define SYS_mprotect     42
+#define SYS_msync        43
 
 #endif

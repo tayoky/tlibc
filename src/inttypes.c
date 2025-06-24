@@ -1,8 +1,9 @@
-#include "inttypes.h"
+#include <inttypes.h>
+#include <limits.h>
 
 intmax_t imaxabs(intmax_t j) {
-	intmax_t mask = j >> 63;
-	return (j + mask) ^ mask;
+	intmax_t mask = j >> (sizeof(intmax_t) * CHAR_BIT - 1);
+	return (j ^ mask) - mask;
 }
 
 imaxdiv_t imaxdiv(intmax_t numer, intmax_t denom) {

@@ -43,19 +43,19 @@ CFLAGS += -Wall \
 	-I include \
 	-I include/${TARGET}
 
-all : header tlibc.a libm.a crt/${ARCH}/crti.o crt/${ARCH}/crtn.o crt/${ARCH}/crt0-${TARGET}.o
+all : tlibc.a libm.a crt/${ARCH}/crti.o crt/${ARCH}/crtn.o crt/${ARCH}/crt0-${TARGET}.o
 
-test-m:
-	@echo M_SRC = ${M_SRC}
-	@echo $(foreach FILE,${M_ARCH_SRC},math/generic/$(shell basename $(basename ${FILE})).%)
 tlibc.a : ${C_OBJ}
 	${AR} rcs $@ $^
+
 libm.a : ${M_OBJ}
 	${AR} rcs $@ $^
+
 %.o : %.c
 	${CC} ${CFLAGS} -D${ARCH} -o $@ -c $^
+
 %.o : %.s
-	${AS} ${ASFLAGS} $^ -o $@
+	${AS} ${ASFLAGS} -o $@ $^
 
 clean : 
 	rm -f ${C_OBJ} ${M_OBJ} crt0.o
@@ -63,12 +63,9 @@ clean :
 #install the header
 header :
 	@mkdir -p ${PREFIX}/include/sys
-	@echo "//TARGET=${TARGET}" > config.h
-	@echo "//ARCH=${ARCH}" >> config.h
-	@echo "//DATE=$(shell date)" >> config.h
-	@echo ""  >> config.h
-	@$(foreach FILE , $(shell echo include/*.h include/${TARGET}/*.h) , cat credit.h config.h ${FILE} > ${PREFIX}/include/$(shell basename ${FILE}) && echo "[installing $(shell basename ${FILE})]" &&) true
-	@$(foreach FILE , $(shell echo include/${TARGET}/sys/*.h) , cat credit.h config.h ${FILE} > ${PREFIX}/include/sys/$(shell basename ${FILE}) && echo "[installing sys/$(shell basename ${FILE})]" &&) true
+	@$(foreach FILE , $(shell echo include/*.h include/${TARGET}/*.h) , cat prologue.h ${FILE} epilogue.h > ${PREFIX}/include/$(shell basename ${FILE}) && echo "[installing $(shell basename ${FILE})]" &&) true
+	@$(foreach FILE , $(shell echo include/${TARGET}/sys/*.h) , cat prologue.h ${FILE} epilogue.h > ${PREFIX}/include/sys/$(shell basename ${FILE}) && echo "[installing sys/$(shell basename ${FILE})]" &&) true
+
 install : header all
 	@mkdir -p ${PREFIX}/lib
 	@echo "[install crti.o]"

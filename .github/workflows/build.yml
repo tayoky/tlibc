@@ -1,0 +1,25 @@
+name: build tlibc
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+
+    - name: configure
+      run: mkdir -p sysroot/usr && ./configure --prefix=./sysroot/usr
+
+    - name: install header
+      run: make header
+
+    - name: build
+      run: make

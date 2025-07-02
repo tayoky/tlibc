@@ -34,6 +34,20 @@ size_t strlen(const char *str){
 	return index;
 }
 
+size_t strcspn(const char *str, const char *rej){
+	size_t len = 0;
+	while(*str){
+		for(int i=0;rej[i];i++){
+			if(*str == rej[i]){
+				return len;
+			}
+		}
+		str++;
+		len++;
+	}
+	return len;
+}
+
 char *strstr(const char *str1,const char *str2){
 	size_t str2_len = strlen(str2) + 1;
 	while(*str1){
@@ -151,7 +165,7 @@ int strncasecmp(const char *str1, const char *str2, size_t n){
 
 
 void *memcpy(void *dest, const void *src,size_t n){
-#ifdef x86_64
+#ifdef __x86_64__
 	asm("rep movsb"
 		: : "D" (dest),
 		    "S" (src),
@@ -178,7 +192,7 @@ void *memmove(void *dest, const void *src, size_t n){
 		return memcpy(dest,src,n);
 	}
 
-#ifdef x86_64
+#ifdef __x86_64__
 	asm("rep movsq"
 		: : "D" (dest),
 		    "S" (src),

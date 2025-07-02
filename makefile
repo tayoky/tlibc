@@ -65,7 +65,7 @@ header :
 	@mkdir -p ${PREFIX}/include/sys
 	@$(foreach FILE , $(shell echo include/*.h include/${TARGET}/*.h) , cat prologue.h ${FILE} epilogue.h > ${PREFIX}/include/$(shell basename ${FILE}) && echo "[installing $(shell basename ${FILE})]" &&) true
 	@$(foreach FILE , $(shell echo include/${TARGET}/sys/*.h) , cat prologue.h ${FILE} epilogue.h > ${PREFIX}/include/sys/$(shell basename ${FILE}) && echo "[installing sys/$(shell basename ${FILE})]" &&) true
-
+	@cp include/_cdefs.h ${PREFIX}/include/sys/cdefs.h
 install : header all
 	@mkdir -p ${PREFIX}/lib
 	@echo "[install crti.o]"

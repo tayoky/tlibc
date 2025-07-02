@@ -3,8 +3,11 @@
 #include <stdint.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <sys/mman.h>
 #include <errno.h>
 #include <limits.h>
+
+static char *brk_ptr = 0xFF0000000;
 
 void exit(int status){
 	_exit(status);
@@ -26,15 +29,18 @@ typedef struct {
 
 heap_info heap;
 
-#define INITIAL_HEAP_SIZE 4096
+#define PAGE_SIZE 4096
+#define PAGE_ALIGN_UP(x) (((x) + PAGE_SIZE - 1) / PAGE_SIZE * PAGE_SIZE)
 #define HEAP_SEG_MAGIC_FREE      0x1308
 #define HEAP_SEG_MAGIC_ALLOCATED 0x0505
 
 
 void __init_heap(void){
 	//get the heap start and initial size
-	heap.start = (uintptr_t)sbrk(INITIAL_HEAP_SIZE);
-	heap.lenght = INITIAL_HEAP_SIZE;
+	heap.start = (uintptr_t)brk_ptr;
+	mmap(brk_ptr,PAGE_SIZE,PROT_WRITE | PROT_READ,MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED,0,0);
+	brk_ptr += PAGE_SIZE;
+	heap.lenght = PAGE_SIZE;
 
 	//init the first seg
 	heap.first_seg = (heap_segment *)heap.start;
@@ -59,12 +65,14 @@ void *malloc(size_t amount){
 			//no more segment need to make heap bigger
 			//if last is free make it bigger else create a new seg from scratch
 			if(current_seg->magic == HEAP_SEG_MAGIC_FREE){
-				uintptr_t old_heap_size = (uintptr_t)sbrk(amount - current_seg->lenght + sizeof(heap_segment) + 8);
-				current_seg->lenght += (uintptr_t)sbrk(0) - old_heap_size;
+				mmap(brk_ptr,PAGE_ALIGN_UP(amount - current_seg->lenght + sizeof(heap_segment) + 8),PROT_WRITE | PROT_READ,MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED,0,0);
+				brk_ptr += PAGE_ALIGN_UP(amount - current_seg->lenght + sizeof(heap_segment) + 8);
+				current_seg->lenght += PAGE_ALIGN_UP(amount - current_seg->lenght + sizeof(heap_segment) + 8);
 			} else {
-				uintptr_t old_heap_size = (uintptr_t)sbrk(amount + sizeof(heap_segment) * 2  + 8);
+				mmap(brk_ptr,PAGE_ALIGN_UP(amount + sizeof(heap_segment) * 2  + 8),PROT_WRITE | PROT_READ,MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED,0,0);
+				brk_ptr += PAGE_ALIGN_UP(amount + sizeof(heap_segment) * 2  + 8);
 				heap_segment *new_seg = (heap_segment *)((uintptr_t)current_seg + current_seg->lenght + sizeof(heap_segment));
-				new_seg->lenght = (uintptr_t)sbrk(0) - old_heap_size - sizeof(heap_segment);
+				new_seg->lenght = PAGE_ALIGN_UP(amount + sizeof(heap_segment) * 2  + 8) - sizeof(heap_segment);
 				new_seg->magic = HEAP_SEG_MAGIC_FREE;
 				new_seg->next = NULL;
 				new_seg->prev = current_seg;

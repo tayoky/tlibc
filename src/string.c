@@ -128,8 +128,8 @@ char *strcat(char * dest, const char * src){
 
 int strcasecmp(const char *str1, const char *str2){
 	while (*str1 || *str2) {
-		int c1 = tolower(*str1);
-		int c2 = tolower(*str2);
+		int c1 = tolower(*(unsigned char *)str1);
+		int c2 = tolower(*(unsigned char *)str2);
 		if (c1 != c2) return c1 - c2;
 		str1++; str2++;
 	}
@@ -140,8 +140,8 @@ int strncasecmp(const char *str1, const char *str2, size_t n){
 		if(n <= 0){
 			return 0;
 		}
-		int c1 = tolower(*str1);
-		int c2 = tolower(*str2);
+		int c1 = tolower(*(unsigned char *)str1);
+		int c2 = tolower(*(unsigned char *)str2);
 		if (c1 != c2) return c1 - c2;
 		n--;
 		str1++; str2++;

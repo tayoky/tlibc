@@ -30,6 +30,7 @@ void *memmove(void *dest, const void *src, size_t n);
 void *memchr(const void *buf, int c, size_t count);
 
 const char *strerror(int errnum);
+char *strsignal(int signum);
 
 
 #ifndef NULL

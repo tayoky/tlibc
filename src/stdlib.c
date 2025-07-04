@@ -7,7 +7,7 @@
 #include <errno.h>
 #include <limits.h>
 
-static char *brk_ptr = 0xFF0000000;
+static char *brk_ptr = (char *)0xFF0000000;
 
 void exit(int status){
 	_exit(status);

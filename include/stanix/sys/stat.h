@@ -20,11 +20,11 @@ struct stat {
 	blkcnt_t  st_blocks;   //number of blocks allocated for this object
 };
 
-#define S_IRUSR 0x04
-#define S_IWUSR 0x02
-#define S_IXUSR 0x01
+#define S_IRUSR 0x400
+#define S_IWUSR 0x200
+#define S_IXUSR 0x100
 #define S_IRWXU S_IRUSR | S_IWUSR | S_IXUSR
-#define S_ISUID 0x08 //set uid bit
+#define S_ISUID 0x800 //set uid bit
 
 #define S_IRGRP 0x40
 #define S_IWGRP 0x20
@@ -32,11 +32,11 @@ struct stat {
 #define S_IRWXG S_IRGRP | S_IWGRP | S_IXGRP
 #define S_ISGID 0x80 //set gid bit
 
-#define S_IROTH 0x400
-#define S_IWOTH 0x200
-#define S_IXOTH 0x100
+#define S_IROTH 0x4
+#define S_IWOTH 0x2
+#define S_IXOTH 0x1
 #define S_IRWXO S_IROTH | S_IWOTH | S_IXOTH
-#define S_ISVTX 0x800 //restriction deletion bit
+#define S_ISVTX 0x8 //restriction deletion bit
 
 //files types
 #define S_IFBLK 0x01000 //block device

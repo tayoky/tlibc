@@ -37,7 +37,7 @@ if(maxlen <= 0) return count
 static int print_uint(char *buf,size_t maxlen,uint64_t value,uint64_t base,ssize_t padding,char padding_char){
 	char str[64];
 	memset(str,padding_char,64);
-	char figures[] = "0123456789ABCDEF";
+	static char figures[] = "0123456789ABCDEF";
 	int count = 0;
 	uint64_t i = 63;
 	str[63] = '\0';

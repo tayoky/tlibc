@@ -81,6 +81,7 @@ int sigemptyset(sigset_t *sigset);
 int sigfillset(sigset_t *sigset);
 int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
 int sigpending(sigset_t *set);
+int sigsuspend(const sigset_t *mask);
 int kill(pid_t pid, int sig);
 int raise(int sig);
 int sigaction(int signum, const struct sigaction *act,struct sigaction * oldact);

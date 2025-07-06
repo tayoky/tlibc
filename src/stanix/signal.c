@@ -33,6 +33,10 @@ int sigpending(sigset_t *set){
 	return __set_errno(__syscall1(SYS_sigpending,(long)set));
 }
 
+int sigsuspend(const sigset_t *mask){
+	return __set_errno(__syscall1(SYS_sigsuspend,(long)mask));
+}
+
 int kill(pid_t pid, int sig){
 	return __set_errno(__syscall2(SYS_kill,pid,sig));
 }

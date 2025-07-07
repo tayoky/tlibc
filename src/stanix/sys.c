@@ -26,6 +26,24 @@ int lstat(const char *pathname,struct stat *st){
 	return stat(pathname,st);
 }
 
+
+int chmod(const char *pathname, mode_t mode){
+	return __set_errno(__syscall2(SYS_chmod,(long)pathname,mode));
+}
+int fchmod(int fd, mode_t mode){
+	return __set_errno(__syscall2(SYS_fchmod,fd,mode));
+}
+
+int chown(const char *pathname, uid_t owner, gid_t group){
+	return __set_errno(__syscall3(SYS_chown,(long)pathname,owner,group));
+}
+int fchown(int fd, uid_t owner, gid_t group){
+	return __set_errno(__syscall3(SYS_fchown,fd,owner,group));
+}
+int lchown(const char *pathname, uid_t owner, gid_t group){
+	return chown(pathname,owner,group);
+}
+
 //TODO : make this when the kernel will get support for it
 pid_t wait(int *status);
 

@@ -59,5 +59,10 @@ struct stat {
 int fstat(int fd,struct stat *st);
 int stat(const char *pathname,struct stat *st);
 int lstat(const char *pathname,struct stat *st);
+int chmod(const char *pathname, mode_t mode);
+int fchmod(int fd, mode_t mode);
+int chown(const char *pathname, uid_t owner, gid_t group);
+int fchown(int fd, uid_t owner, gid_t group);
+int lchown(const char *pathname, uid_t owner, gid_t group);
 
 #endif

@@ -161,5 +161,9 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_setegid      49
 #define SYS_getgid       50
 #define SYS_getegid      51
+#define SYS_chmod        52
+#define SYS_fchmod       53
+#define SYS_chown        54
+#define SYS_fchown       55
 
 #endif

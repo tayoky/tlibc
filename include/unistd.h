@@ -81,6 +81,16 @@ pid_t getpid();
 pid_t tcgetpgrp(int fd);
 int tcsetpgrp(int fd,pid_t pgrp);
 
+//user management
+int setuid(uid_t uid);
+int seteuid(uid_t uid);
+uid_t getuid(void);
+uid_t geteuid(void);
+int setgid(gid_t gid);
+int setegid(gid_t gid);
+gid_t getgid(void);
+gid_t getegid(void);
+
 #ifndef NULL
 #define NULL ((void*)0)
 #endif

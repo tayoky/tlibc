@@ -153,5 +153,13 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_munmap       41
 #define SYS_mprotect     42
 #define SYS_msync        43
+#define SYS_setuid       44
+#define SYS_seteuid      45
+#define SYS_getuid       46
+#define SYS_geteuid      47
+#define SYS_setgid       48
+#define SYS_setegid      49
+#define SYS_getgid       50
+#define SYS_getegid      51
 
 #endif

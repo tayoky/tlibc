@@ -110,3 +110,28 @@ int poll(struct pollfd *fds, nfds_t nfds, int timeout){
 pid_t getpid(){
 	return __set_errno(__syscall0(SYS_getpid));
 }
+
+int setuid(uid_t uid){
+	return __set_errno(__syscall1(SYS_setuid,uid));
+}
+int seteuid(uid_t uid){
+	return __set_errno(__syscall1(SYS_seteuid,uid));
+}
+uid_t getuid(void){
+	return __set_errno(__syscall0(SYS_getuid));
+}
+uid_t geteuid(void){
+	return __set_errno(__syscall0(SYS_geteuid));
+}
+int setgid(gid_t gid){
+	return __set_errno(__syscall1(SYS_setgid,gid));
+}
+int setegid(gid_t gid){
+	return __set_errno(__syscall1(SYS_setegid,gid));
+}
+gid_t getgid(void){
+	return __set_errno(__syscall0(SYS_getgid));
+}
+gid_t getegid(void){
+	return __set_errno(__syscall0(SYS_getegid));
+}

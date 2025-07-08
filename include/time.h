@@ -36,5 +36,11 @@ char *ctime(const time_t *clock);
 char *ctime_r(const time_t *clock, char *buf);
 time_t mktime(struct tm *);
 int clock_gettime(clockid_t clock_id, struct timespec *tp);
+void tzset(void);
+
+
+extern char *tzname[2];
+extern long timezone;
+extern int daylight;
 
 #endif

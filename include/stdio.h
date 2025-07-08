@@ -9,6 +9,7 @@ struct _FILE{
 	int fd;
 	unsigned long errno;
 	int eof;
+	int unget;
 };
 typedef struct _FILE FILE;
 
@@ -56,8 +57,9 @@ int puts(const char *string);
 void clearerr(FILE *stream);
 int feof(FILE *stream);
 int ferror(FILE *stream);
-
 void perror(const char *string);
+
+int ungetc(int c,FILE *stream);
 
 int fflush(FILE *stream);
 

@@ -81,6 +81,7 @@ FILE *fopen(const char *path,const char *mode){
 	stream->fd = fd;
 	stream->errno = 0;
 	stream->eof = 0;
+	stream->unget = EOF;
 	return stream;
 }
 
@@ -97,8 +98,15 @@ size_t fread(void * ptr, size_t size, size_t n, FILE *stream){
 		__set_errno(-EBADF);
 		return 0;
 	}
-
-	ssize_t rsize = read(stream->fd,ptr,size * n);
+	size_t r = 0;
+	size_t size2read = size * n;
+	if(size2read > 0 && stream->unget != EOF){
+		*(unsigned char *)ptr = (unsigned char)stream->unget;
+		(char *)ptr ++;
+		size2read--;
+		r++;
+	}
+	ssize_t rsize = read(stream->fd,ptr,size2read);
 
 	if(rsize < 0){
 		//it's an error
@@ -110,7 +118,9 @@ size_t fread(void * ptr, size_t size, size_t n, FILE *stream){
 		stream->eof = 1;
 	}
 
-	return ((size_t)rsize) / size;
+	r+= (size_t)rsize;
+
+	return r/ size;
 }
 
 size_t fwrite(const void *ptr, size_t size, size_t n, FILE *stream){
@@ -174,6 +184,7 @@ FILE *fdopen(int handle, char *type){
 	stream->errno =0;
 	stream->fd = handle;
 	stream->eof = 0;
+	stream->unget = EOF;
 
 	return stream;
 }
@@ -196,8 +207,8 @@ void perror(const char *string){
 }
 
 int fflush(FILE *stream){
-	(void)stream;
 	//TODO : fflush here when we add buffering
+	stream->unget = EOF;
 	return 0;
 }
 
@@ -210,4 +221,14 @@ int remove(const char *pathname){
 	}
 
 	return ret;
+}
+
+int ungetc(int c,FILE *stream){
+	//TODO : move position indicator
+	if(stream->unget != EOF || c == EOF){
+		return EOF;
+	}
+	stream->eof = 0;
+	stream->unget = c;
+	return c;
 }

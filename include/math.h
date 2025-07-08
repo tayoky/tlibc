@@ -2,6 +2,7 @@
 #define MATH_H
 
 #include <limits.h>
+#include <float.h>
 
 typedef float float_t;
 typedef double double_t;
@@ -62,6 +63,10 @@ ffunc(sqrt)
 
 ffunc(log2)
 
+float ldexpf(float a,int exp);
+double ldexp(double a,int exp);
+long double ldexpl(long double a,int exp);
+
 float powf(float x,float y);
 
 #undef ifunc
@@ -75,7 +80,14 @@ float powf(float x,float y);
 #define M_PI_4 (M_PI * 0.25f)
 #define M_1_PI (1.0f / M_PI)
 #define M_2_PI (2.0f / M_PI)
+#ifndef NAN
 #define NAN __builtin_nanf("")
+#endif
+#ifndef INFINITY
 #define INFINITY __builtin_inff()
+#endif
+#define HUGE_VALF FLT_MAX
+#define HUGE_VAL  DBL_MAX
+#define HUGE_VALL LDBL_MAX
 
 #endif

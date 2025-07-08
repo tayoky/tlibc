@@ -135,3 +135,10 @@ gid_t getgid(void){
 gid_t getegid(void){
 	return __set_errno(__syscall0(SYS_getegid));
 }
+
+int setpgid(pid_t pid, pid_t pgid){
+	return __set_errno(__syscall2(SYS_setpgid,pid,pgid));
+}
+pid_t getpgid(pid_t pid){
+	return __set_errno(__syscall1(SYS_getpgid,pid));
+}

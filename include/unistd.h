@@ -80,6 +80,10 @@ int isatty(int fd);
 pid_t getpid();
 pid_t tcgetpgrp(int fd);
 int tcsetpgrp(int fd,pid_t pgrp);
+int setpgid(pid_t pid, pid_t pgid);
+pid_t getpgid(pid_t pid);
+pid_t getpgrp(void);
+int setpgrp(void);
 
 //user management
 int setuid(uid_t uid);

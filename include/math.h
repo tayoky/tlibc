@@ -86,8 +86,8 @@ float powf(float x,float y);
 #ifndef INFINITY
 #define INFINITY __builtin_inff()
 #endif
-#define HUGE_VALF FLT_MAX
-#define HUGE_VAL  DBL_MAX
-#define HUGE_VALL LDBL_MAX
+#define HUGE_VALF __builtin_huge_valf()
+#define HUGE_VAL  __builtin_huge_val()
+#define HUGE_VALL __builtin_huge_vall()
 
 #endif

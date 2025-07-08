@@ -58,7 +58,8 @@ libm.a : ${M_OBJ}
 	${AS} ${ASFLAGS} -o $@ $^
 
 clean : 
-	rm -f ${C_OBJ} ${M_OBJ} crt0.o
+	rm -f ${C_OBJ} ${M_OBJ} crt/*/crti.o crt/*/crtn.o crt/*/crt0-${TARGET}.o
+
 
 #install the header
 header :

@@ -3,7 +3,9 @@
 
 #include <stddef.h> 
 
+void _Exit(int status);
 void exit(int status);
+int atexit(void (*func)(void));
 
 void *malloc(size_t amount);
 void free(void *ptr);

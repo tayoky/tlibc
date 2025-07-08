@@ -8,11 +8,28 @@
 #include <limits.h>
 
 static char *brk_ptr = (char *)0xFF0000000;
+static void (*atexit_funcs[64])(void);
+static int atexit_count = 0;
+
+int atexit(void (*func)(void)){
+	if(atexit_count >= 64){
+		return -1;
+	}
+	atexit_funcs[atexit_count] = func;
+	atexit_count++;
+	return 0;
+}
 
 void exit(int status){
+	for(int i=atexit_count-1; i>=0; i--){
+		atexit_funcs[i]();
+	}
 	_exit(status);
 }
 
+void _Exit(int status){
+	_exit(status);
+}
 
 typedef struct heap_segment_struct{
 	uint64_t magic;

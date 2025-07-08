@@ -3,12 +3,6 @@
 #include <errno.h>
 #undef errno
 
-struct _FILE{
-	int fd;
-	unsigned long errno;
-	int eof;
-};
-
 int fseek(FILE *stream, long int offset, int origin){
 	if(!stream) return __set_errno(-EBADF);
 	fflush(stream);

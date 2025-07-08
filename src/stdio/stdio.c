@@ -7,12 +7,6 @@
 #include <errno.h>
 #undef errno
 
-struct _FILE{
-	int fd;
-	unsigned long errno;
-	int eof;
-};
-
 static FILE _stdin = {
 	.fd = 0,
 	.errno = 0,
@@ -184,8 +178,17 @@ FILE *fdopen(int handle, char *type){
 	return stream;
 }
 
+void clearerr(FILE *stream){
+	stream->eof = 0;
+	stream->errno = 0;
+}
+
 int feof(FILE *stream){
 	return stream->eof;
+}
+
+int ferror(FILE *stream){
+	return stream->errno;
 }
 
 void perror(const char *string){
@@ -194,7 +197,7 @@ void perror(const char *string){
 
 int fflush(FILE *stream){
 	(void)stream;
-	//TODO : fflush here when i add buffering
+	//TODO : fflush here when we add buffering
 	return 0;
 }
 

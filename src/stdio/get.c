@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include <errno.h>
-#include <unistd.h>
 #include <stddef.h>
 #include <string.h>
 #include <limits.h>

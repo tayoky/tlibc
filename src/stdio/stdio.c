@@ -102,6 +102,7 @@ size_t fread(void * ptr, size_t size, size_t n, FILE *stream){
 	size_t size2read = size * n;
 	if(size2read > 0 && stream->unget != EOF){
 		*(unsigned char *)ptr = (unsigned char)stream->unget;
+		stream->unget = EOF;
 		(char *)ptr ++;
 		size2read--;
 		r++;

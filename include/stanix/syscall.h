@@ -167,5 +167,6 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_fchown       55
 #define SYS_setpgid      56
 #define SYS_getpgid      57
+#define SYS_fcntl        58
 
 #endif

@@ -35,7 +35,7 @@ int vfprintf(FILE *stream, const char *fmt, va_list args);
 int printf(const char *fmt, ...);
 int vprintf(const char *fmt, va_list args);
 
-FILE *fdopen(int handle, char *type);
+FILE *fdopen(int handle,const char *type);
 
 //seek func
 int fseek(FILE *stream, long int offset, int origin);

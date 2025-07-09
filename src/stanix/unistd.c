@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <poll.h>
+#include <limits.h>
 
 ssize_t read(int fd, const void *buffer, size_t count){
 	return __set_errno(__syscall3(SYS_read,fd,(long)buffer,count));
@@ -141,4 +142,14 @@ int setpgid(pid_t pid, pid_t pgid){
 }
 pid_t getpgid(pid_t pid){
 	return __set_errno(__syscall1(SYS_getpgid,pid));
+}
+
+long pathconf(const char *pathname, int varcode){
+	(void)pathname;
+	switch(varcode){
+	case _PC_PATH_MAX:
+		return PATH_MAX;
+	default:
+		return __set_errno(-EINVAL);
+	}
 }

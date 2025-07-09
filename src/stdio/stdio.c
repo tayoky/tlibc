@@ -177,7 +177,7 @@ int vprintf(const char *fmt, va_list args){
 	return vfprintf(stdout,fmt,args);
 }
 
-FILE *fdopen(int handle, char *type){
+FILE *fdopen(int handle,const char *type){
 	(void)type;
 	if(handle < 0){
 		__set_errno(-EBADF);

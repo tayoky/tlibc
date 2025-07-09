@@ -17,8 +17,15 @@
 #define O_CLOEXEC	0x0000800 //set close_on_exec
 #define O_NOFOLLOW	0x0001000 //don't follow links
 
+#define F_DUPFD 0
+#define F_GETFD 1
+#define F_SETFD 2
+
+#define FD_CLOEXEC  0x10
+
 
 int open(const char *pathname, int flags, ... /* mode_t mode */ );
 int creat(const char *pathname, mode_t mode);
+int fcntl(int fd, int op, ... /* arg */ );
 
 #endif

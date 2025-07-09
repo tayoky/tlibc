@@ -95,6 +95,9 @@ int setegid(gid_t gid);
 gid_t getgid(void);
 gid_t getegid(void);
 
+long pathconf(const char *pathname, int varcode);
+#define _PC_PATH_MAX 0
+
 #ifndef NULL
 #define NULL ((void*)0)
 #endif

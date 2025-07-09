@@ -10,17 +10,20 @@
 static FILE _stdin = {
 	.fd = 0,
 	.errno = 0,
-	.eof = 0
+	.eof = 0,
+	.unget = EOF,
 };
 static FILE _stdout = {
 	.fd = 1,
 	.errno = 0,
-	.eof = 0
+	.eof = 0,
+	.unget = EOF,
 };
 static FILE _stderr = {
 	.fd = 2,
 	.errno = 0,
-	.eof = 0
+	.eof = 0,
+	.unget = EOF,
 };
 
 FILE *stdin = &_stdin;

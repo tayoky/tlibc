@@ -44,6 +44,10 @@ int lchown(const char *pathname, uid_t owner, gid_t group){
 	return chown(pathname,owner,group);
 }
 
+mode_t umask(mode_t mask){
+	return __set_errno(__syscall1(SYS_umask,mask));
+}
+
 //TODO : make this when the kernel will get support for it
 pid_t wait(int *status);
 

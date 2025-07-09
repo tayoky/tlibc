@@ -102,7 +102,7 @@ int vsscanf(const char *buf,const char *fmt,va_list args){
 	return n;
 }
 
-int sscanf(const char *buf,char *fmt,...){
+int sscanf(const char *buf,const char *fmt,...){
 	va_list args;
 	va_start(args,fmt);
 	int ret = vsscanf(buf,fmt,args);

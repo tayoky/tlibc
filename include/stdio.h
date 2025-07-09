@@ -20,7 +20,7 @@ int vsprintf(char * buf,const char *fmt,va_list args);
 int snprintf(char * str,size_t maxlen, const char *fmt,...);
 int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args);
 
-int sscanf(const char *buf,char *fmt,...);
+int sscanf(const char *buf,const char *fmt,...);
 int vsscanf(const char *buf,const char *fmt,va_list args);
 
 
@@ -36,6 +36,7 @@ int printf(const char *fmt, ...);
 int vprintf(const char *fmt, va_list args);
 
 FILE *fdopen(int handle,const char *type);
+int fileno(FILE *stream);
 
 //seek func
 int fseek(FILE *stream, long int offset, int origin);

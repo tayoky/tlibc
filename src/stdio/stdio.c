@@ -193,6 +193,10 @@ FILE *fdopen(int handle,const char *type){
 	return stream;
 }
 
+int fileno(FILE *stream){
+	return stream->fd;
+}
+
 void clearerr(FILE *stream){
 	stream->eof = 0;
 	stream->errno = 0;

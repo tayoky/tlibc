@@ -46,7 +46,6 @@ typedef struct {
 
 heap_info heap;
 
-#define PAGE_SIZE 4096
 #define PAGE_ALIGN_UP(x) (((x) + PAGE_SIZE - 1) / PAGE_SIZE * PAGE_SIZE)
 #define HEAP_SEG_MAGIC_FREE      0x1308
 #define HEAP_SEG_MAGIC_ALLOCATED 0x0505
@@ -72,9 +71,7 @@ void *malloc(size_t amount){
 		return NULL;
 	}
 	//align amount
-	if(amount & 0b111){
-		amount += 8 - (amount & 0b111);
-	}
+	amount = (amount + 7) & ~7;
 	heap_segment *current_seg = heap.first_seg;
 
 	while (current_seg->lenght < amount || current_seg->magic != HEAP_SEG_MAGIC_FREE){
@@ -120,7 +117,7 @@ void *malloc(size_t amount){
 	}
 
 	current_seg->magic = HEAP_SEG_MAGIC_ALLOCATED;
-	return (void *)current_seg + sizeof(heap_segment);
+	return (void *)((uintptr_t)current_seg + sizeof(heap_segment));
 }
 
 void free(void *ptr){

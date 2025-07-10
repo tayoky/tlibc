@@ -40,6 +40,7 @@ long labs(long);
 long long llabs(long long);
 void qsort_r(void *base,size_t n,size_t size,int (*compar)(const void*,const void *,void *),void *arg);
 void qsort(void *base,size_t n,size_t size,int (*compar)(const void*,const void *));
+void *bsearch(const void *key, const void *base, size_t n, size_t size, int (*compar)(const void *,const void *));
 
 char *realpath(const char *path,char *resolved_path);
 

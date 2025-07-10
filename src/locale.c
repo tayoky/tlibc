@@ -9,6 +9,8 @@ static const char *conv[LC_ALL];
 static struct __locale posix = {
 	.lconv = {
 		.decimal_point = ".",
+		.thousands_sep = "",
+		.grouping = {-1},
 	},
 	.time = {
 		.am = "AM",
@@ -21,6 +23,10 @@ static struct __locale posix = {
 		.d_fmt = "%m/%d/%y",
 		.t_fmt = "%H:%M:%S",
 		.t_fmt_ampm = "%l:%M:%S %p",
+	},
+	.messages = {
+		.yesexpr = "^[yY]",
+		.noexpr  = "^[nN]",
 	},
 };
 
@@ -96,6 +102,9 @@ char *setlocale(int category,const char *locale){
 	case LC_TIME:
 		_locale.time = l.time;
 		break;
+	case LC_MESSAGES:
+		_locale.messages = l.messages;
+		break;
 	}
 
 	return (char *)locale;
@@ -119,6 +128,12 @@ char *nl_langinfo_l(nl_item item, locale_t locale){
 	}
 
 	switch(item){
+	//LC_NUMERIC
+	case RADIXCHAR:
+		return locale->lconv.decimal_point;
+	case THOUSEP:
+		return locale->lconv.thousands_sep;
+	//LC_TIME
 	case D_T_FMT:
 		return locale->time.d_t_fmt;
 	case D_FMT:
@@ -131,6 +146,11 @@ char *nl_langinfo_l(nl_item item, locale_t locale){
 		return locale->time.am;
 	case PM_STR:
 		return locale->time.pm;
+	//LC_MESSAGES
+	case YESEXPR:
+		return locale->messages.yesexpr;
+	case NOEXPR:
+		return locale->messages.noexpr;
 	default:
 		return NULL;
 	}

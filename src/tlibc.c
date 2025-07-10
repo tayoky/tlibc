@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <locale.h>
 
 void __fini_tlibc(void){
 	fflush(NULL);
@@ -14,4 +15,6 @@ void __init_tlibc(int argc,char **argv,int envc,char **envp){
 	__init_environ(envc,envp);
 
 	atexit(__fini_tlibc);
+
+	setlocale(LC_ALL,"POSIX");
 }

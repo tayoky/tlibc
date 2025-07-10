@@ -47,6 +47,11 @@ struct locale_time {
 	char t_fmt_ampm[16];
 };
 
+struct locale_messages {
+	char yesexpr[8];
+	char noexpr[8];
+};
+
 struct __locale {
 	struct lconv lconv;
 	int mb_type;
@@ -54,6 +59,7 @@ struct __locale {
 	int tolower[256];
 	int toupper[256];
 	struct locale_time time;
+	struct locale_messages messages;
 }; 
 typedef struct __locale *locale_t;
 

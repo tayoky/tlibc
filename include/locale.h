@@ -75,4 +75,5 @@ typedef struct __locale *locale_t;
 
 char *setlocale(int category,const char *locale);
 struct lconv *localeconv(void);
+locale_t uselocale(locale_t locale);
 #endif

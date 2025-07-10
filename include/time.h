@@ -2,6 +2,7 @@
 #define TIME_H
 
 #include <sys/time.h>
+#include <locale.h>
 
 struct tm {
 	int tm_sec;          //Seconds. [0-60] 1 leap second
@@ -38,6 +39,7 @@ time_t mktime(struct tm *);
 int clock_gettime(clockid_t clock_id, struct timespec *tp);
 void tzset(void);
 size_t strftime(char *, size_t, const char *, const struct tm *);
+size_t strftime_l(char *buf, size_t size, const char *fmt, const struct tm *tm,locale_t locale);
 
 
 extern char *tzname[2];

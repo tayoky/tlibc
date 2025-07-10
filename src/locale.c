@@ -155,3 +155,10 @@ char *nl_langinfo_l(nl_item item, locale_t locale){
 		return NULL;
 	}
 }
+
+locale_t uselocale(locale_t locale){
+	if(locale){
+		_locale = *locale;
+	}
+	return &_locale;
+}

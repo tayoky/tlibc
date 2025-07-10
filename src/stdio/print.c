@@ -176,6 +176,13 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 				value = va_arg(args,int);
 				fmt++;
 				break;
+			case 'p':
+				value = va_arg(args,uintptr_t);
+				break;
+			case 'z':
+				value = va_arg(args,size_t);
+				fmt++;
+				break;
 			default:
 				value = va_arg(args,int);
 				break;

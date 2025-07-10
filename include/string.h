@@ -14,6 +14,7 @@ char *strrchr(const char *str, int c);
 char *strpbrk(const char *str,const char *search);
 char *strstr(const char *str1,const char *str2);
 size_t strcspn(const char *str, const char *rej);
+size_t strspn(const char *str, const char *accept);
 int strcasecmp(const char *str1, const char *str2);
 int strncasecmp(const char *str1, const char *str2, size_t n);
 

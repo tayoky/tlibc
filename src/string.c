@@ -48,6 +48,21 @@ size_t strcspn(const char *str, const char *rej){
 	return len;
 }
 
+size_t strspn(const char *str, const char *accept){
+	size_t len = 0;
+	while(*str){
+		for(int i=0;accept[i];i++){
+			if(*str == accept[i]){
+				str++;
+				len++;
+				continue;
+			}
+		}
+		return len;
+	}
+	return len;
+}
+
 char *strstr(const char *str1,const char *str2){
 	size_t str2_len = strlen(str2) + 1;
 	while(*str1){

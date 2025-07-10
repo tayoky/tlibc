@@ -66,5 +66,8 @@
 #define SSIZE_MIN (-SSIZE_MAX -1)
 
 #define PATH_MAX 256
+#define ATEXIT_MAX 63
+#define PAGESIZE 4096
+#define PAGE_SIZE PAGESIZE
 
 #endif

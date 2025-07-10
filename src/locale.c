@@ -82,7 +82,7 @@ char *setlocale(int category,const char *locale){
 		}
 	}
 
-	if(!strcmp(locale,"POSIX"))return NULL;
+	if(strcmp(locale,"POSIX"))return NULL;
 	conv[category] = locale;
 
 

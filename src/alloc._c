@@ -1,0 +1,101 @@
+#include <sys/mman.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#define PAGE_ALIGN_UP(x) (((x) + PAGE_SIZE - 1) / PAGE_SIZE * PAGE_SIZE)
+
+struct slab {
+	void *page;          //a pointer to the slab's page
+	struct slab *prev;
+	struct slab *next;
+	unsigned long type;
+};
+
+#define SLAB_PARTIAL 1
+#define SLAB_FULL    2
+
+struct cache {
+	unsigned long size;      //size of element is the slab
+	struct slab *first_slab; //pointer to the first slab of this cache
+};
+
+struct cache *caches;
+
+static size_t next_pow2(size_t x){
+	x--;
+	x |= x >> 1;
+	x |= x >> 2;
+	x |= x >> 4;
+	x |= x >> 8;
+	x |= x >> 16;
+#if __SIZEOF_SIZE_T__ == 8
+	x |= x >> 32;
+#endif
+	x++;
+	return x;
+}
+
+static void __init_heap(void){
+	size_t caches_count = 0;
+	size_t size = 1;
+	while(size < PAGE_SIZE){
+		caches_count++;
+		size *= 2;
+	}
+
+	caches = mmap(NULL,sizeof(struct cache) * caches_count,PROT_READ | PROT_WRITE,MAP_ANONYMOUS | MAP_PRIVATE,0,0);
+	if(caches == MAP_FAILED){
+		fprintf(stderr,"tlibc : failed to init caches mmap failed\n");
+		_Exit(EXIT_FAILURE);
+	}
+
+	size = 1;
+	for(int i=0; i<caches_count; i++){
+		caches[i].size = size;
+		caches[i].first_slab = NULL;
+		size *= 2;
+	}
+}
+
+static void *malloc(size_t amount){
+	if(!amount)return NULL;
+
+	if(amount >= PAGE_SIZE){
+		size_t *addr = mmap(NULL,PAGE_ALIGN_UP(amount + sizeof(size_t)),PROT_READ | PROT_WRITE,MAP_ANONYMOUS | MAP_FIXED,0,0);
+		if(addr == MAP_FAILED){
+			return NULL;
+		}
+
+		*addr = PAGE_ALIGN_UP(amount + sizeof(size_t));
+		addr++;
+		return addr;
+	}
+
+	//slab allocator time !!!
+	amount = next_pow2(amount);
+	struct cache *cache = caches;
+	while(cache->size != amount){
+		cache++;
+	}
+
+	//we have the cache now get the slab
+	struct slab *slab;
+	if(!cache->first_slab ||cache->first_slab->type == SLAB_FULL){
+		//allocate a new slab
+		void *page = mmap(NULL,PAGE_SIZE,PROT_READ | PROT_WRITE,MAP_ANONYMOUS | MAP_FIXED,0,0);
+		if(page == MAP_FAILED){
+			return NULL;
+		}
+		slab = mmap(NULL,sizeof(struct slab),PROT_READ | PROT_WRITE,MAP_ANONYMOUS | MAP_FIXED,0,0);
+		if(slab == MAP_FAILED){
+			munmap(page,PAGE_SIZE);
+			return NULL;
+		}
+		slab->page = page;
+
+	} else {
+		slab = cache->first_slab;
+	}
+
+}

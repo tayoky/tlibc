@@ -53,6 +53,7 @@ int system(const char *command);
 //tmp files
 int mkostemp(char *template, int flags);
 int mkstemp(char *template);
+int mkstemp(char *template);
 
 //wchar conversion
 int mbtowc(wchar_t *pwcs,const char *str,size_t n);

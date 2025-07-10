@@ -36,3 +36,14 @@ int mkostemp(char *template, int flags){
 int mkstemp(char *template){
 	return mkostemp(template,0);
 }
+
+char *mktemp(char *template){
+	int fd = mkstemp(template);
+	if(fd < 0){
+		template[0] = '\0';
+	} else {
+		close(fd);
+	}
+
+	return template;
+}

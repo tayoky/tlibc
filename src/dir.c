@@ -12,7 +12,7 @@ struct _DIR {
 
 static struct dirent ret;
 
-DIR *opendir(char *pathname){
+DIR *opendir(const char *pathname){
 	int fd = open(pathname,O_DIRECTORY);
 	if(fd < 0){
 		return NULL;

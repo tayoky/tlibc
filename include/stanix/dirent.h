@@ -12,7 +12,7 @@ typedef struct _DIR DIR;
 
 //WTF !!!! there are no raw readdir syscall ????
 
-DIR *opendir(char *pathname);
+DIR *opendir(const char *pathname);
 int closedir(DIR *dir);
 struct dirent *readdir(DIR *dir);
 void seekdir(DIR *dir,long int offset);

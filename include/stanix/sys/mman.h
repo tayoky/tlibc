@@ -14,6 +14,7 @@
 #define MAP_ANONYMOUS 0x20 /* don't use a file */
 
 #define map_failed (void*)-1
+#define MAP_FAILED (void*)-1
 
 void *mmap(void *addr,size_t length,int prot,int flags,int fd,off_t offset);
 int munmap(void *addr,size_t length);

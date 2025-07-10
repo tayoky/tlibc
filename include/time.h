@@ -37,6 +37,7 @@ char *ctime_r(const time_t *clock, char *buf);
 time_t mktime(struct tm *);
 int clock_gettime(clockid_t clock_id, struct timespec *tp);
 void tzset(void);
+size_t strftime(char *, size_t, const char *, const struct tm *);
 
 
 extern char *tzname[2];

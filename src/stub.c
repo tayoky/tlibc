@@ -3,5 +3,4 @@
 STUB(tmpfile)
 STUB(access)
 STUB(utime)
-STUB(fscanf)
 STUB(link)

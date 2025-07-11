@@ -65,7 +65,7 @@ typedef __SIZE_TYPE__    uintptr_t;
 
 #define INT_LEAST8_MIN	INT8_MIN
 #define INT_LEAST16_MIN	INT16_MIN
-#define INT_LEAST32_MIM INT32_MIN
+#define INT_LEAST32_MIN INT32_MIN
 #define INT_LEAST64_MIN	INT64_MIN
 
 #define INT_FAST8_MIN	INT8_MIN
@@ -112,6 +112,14 @@ typedef __SIZE_TYPE__    uintptr_t;
 
 #define UINTMAX_MAX	UINT64_MAX
 #define UINTPTR_MAX	UINT64_MAX
+
+#ifndef __SIZE_MAX__
+#include <limits.h> //we are goinf to use SSIZE_MAX
+#define __SIZE_MAX__ (SSIZE_MAX * 2 + 1)
+#endif
+#ifndef SIZE_MAX
+#define SIZE_MAX __SIZE_MAX__
+#endif
 
 // literal macros
 

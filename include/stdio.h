@@ -22,6 +22,8 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args);
 
 int sscanf(const char *buf,const char *fmt,...);
 int vsscanf(const char *buf,const char *fmt,va_list args);
+int fscanf(FILE *stream,const char *fmt,...);
+int vfscanf(FILE *stream,const char *fmt,va_list args);
 
 
 FILE *fopen(const char *path,const char *mode);

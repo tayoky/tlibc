@@ -98,6 +98,8 @@ gid_t getegid(void);
 long pathconf(const char *pathname, int varcode);
 #define _PC_PATH_MAX 0
 
+int getopt(int argc,char *const*argv,const char *optstring);
+
 #ifndef NULL
 #define NULL ((void*)0)
 #endif

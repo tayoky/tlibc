@@ -144,6 +144,10 @@ pid_t getpgid(pid_t pid){
 	return __set_errno(__syscall1(SYS_getpgid,pid));
 }
 
+int access(const char *pathname, int mode){
+	return __set_errno(__syscall2(SYS_access,(long)pathname,mode));
+}
+
 long pathconf(const char *pathname, int varcode){
 	(void)pathname;
 	switch(varcode){

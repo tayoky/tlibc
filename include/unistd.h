@@ -3,6 +3,7 @@
 
 #include <sys/type.h>
 #include <sys/types.h>
+#include <fcntl.h>
 
 //we can't include stdint because of namespace pollution
 #ifndef __intptr_t_defined
@@ -30,6 +31,8 @@ typedef __SIZE_TYPE__    uintptr_t;
 #ifndef STDERR_FILENO
 #define STDERR_FILENO 2
 #endif
+
+int access(const char *pathname, int mode);
 
 off_t lseek(int fd, off_t offset, int whence);
 

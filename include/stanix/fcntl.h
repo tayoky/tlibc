@@ -23,6 +23,11 @@
 
 #define FD_CLOEXEC  0x10
 
+#define F_OK 0x8
+#define R_OK 0x4
+#define W_OK 0x2
+#define X_OK 0x1
+
 
 int open(const char *pathname, int flags, ... /* mode_t mode */ );
 int creat(const char *pathname, mode_t mode);

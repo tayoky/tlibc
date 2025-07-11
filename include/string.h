@@ -33,6 +33,7 @@ void *memchr(const void *buf, int c, size_t count);
 const char *strerror(int errnum);
 char *strsignal(int signum);
 
+#define strcoll strcasecmp
 
 #ifndef NULL
 #define NULL (void *)0

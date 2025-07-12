@@ -33,6 +33,13 @@ size_t strlen(const char *str){
 	}
 	return index;
 }
+size_t strnlen(const char *str,size_t maxlen){
+	size_t index = 0;
+	while(index < maxlen && str[index]){
+		index++;
+	}
+	return index;
+}
 
 size_t strcspn(const char *str, const char *rej){
 	size_t len = 0;

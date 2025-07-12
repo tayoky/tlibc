@@ -19,6 +19,7 @@ int strcasecmp(const char *str1, const char *str2);
 int strncasecmp(const char *str1, const char *str2, size_t n);
 
 size_t strlen(const char *str);
+size_t strnlen(const char *str,size_t maxlen);
 
 char *strdup(const char *str);
 char *strndup(const char *str,size_t count);

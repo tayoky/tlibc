@@ -9,15 +9,15 @@ void _fini(void);
 
 typedef void (*func)(void);
 
-extern func _init_array_start[] __attribute__((weak));
-extern func _fini_array_start[] __attribute__((weak));
-extern func _init_array_end[] __attribute__((weak));
-extern func _fini_array_end[] __attribute__((weak));
+extern func __init_array_start[] __attribute__((weak));
+extern func __fini_array_start[] __attribute__((weak));
+extern func __init_array_end[] __attribute__((weak));
+extern func __fini_array_end[] __attribute__((weak));
 
 void __fini_tlibc(void){
 	_fini();
-	for (size_t i = 0; i < (_fini_array_end - _fini_array_start); i++){
-		_fini_array_start[i]();
+	for (ptrdiff_t i = 0; i < (__fini_array_end - __fini_array_start); i++){
+		__fini_array_start[i]();
 	}
 	fflush(NULL);
 }
@@ -33,8 +33,8 @@ void __init_tlibc(int argc,char **argv,int envc,char **envp){
 	setlocale(LC_ALL,"POSIX");
 
 	_init();
-	for (size_t i = 0; i < (_init_array_end - _init_array_start); i++){
-		_init_array_start[i]();
+	for (ptrdiff_t i = 0; i < (__init_array_end - __init_array_start); i++){
+		__init_array_start[i]();
 	}
 	
 }

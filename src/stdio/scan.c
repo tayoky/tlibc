@@ -165,7 +165,7 @@ integer:
 				goto integer;
 			case 'p':
 				if(width == sizeof(int))width = sizeof(uintptr_t);
-				//fallthrougt
+				//fallthrough
 			case 'x':
 			case 'X':
 				base = 16;

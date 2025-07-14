@@ -21,7 +21,7 @@ int creat(const char *pathname, mode_t mode){
 
 int fcntl(int fd, int op, ... /* arg */ ){
 	int arg = 0;
-	if(op == F_SETFD | op == F_DUPFD){
+	if(op == F_SETFD || op == F_DUPFD){
 		va_list args;
 		va_start(args,op);
 		arg = va_arg(args,int);

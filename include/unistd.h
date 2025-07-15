@@ -107,6 +107,9 @@ int getopt(int argc,char *const*argv,const char *optstring);
 #define NULL ((void*)0)
 #endif
 
-extern char **__environ;
+extern char **environ;
+extern int optind;
+extern int opterr;
+extern char *optarg;
 
 #endif

@@ -16,14 +16,13 @@ static FILE *passwd_file = NULL;
             return __set_errno(-ERANGE);\
         }
 #define PARSE_STR(var,end) var = buf;\
-    while((c = fgetc(stream) != end)){\
+    while((c = fgetc(stream)) != end){\
         if(c == EOF)return -1;\
         OUT(c);\
-        c ++;\
     }\
     OUT('\0');
 #define PARSE_INT(var,end) var = 0;\
-    while((c = fgetc(stream) != ':')){\
+    while((c = fgetc(stream)) != end){\
         if(c == EOF)return -1;\
         var *= 10;\
         var += c - '0';\

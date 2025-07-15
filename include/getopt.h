@@ -14,4 +14,8 @@ extern int optind;
 extern int opterr;
 extern char *optarg;
 
+#define no_argument       0
+#define required_argument 1
+#define optional_argument 2
+
 #endif

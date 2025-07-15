@@ -3,3 +3,4 @@
 STUB(tmpfile)
 STUB(utime)
 STUB(link)
+STUB(unsetenv)

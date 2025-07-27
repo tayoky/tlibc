@@ -171,6 +171,12 @@ typedef struct{
 #define SHT_LOUSER   0x80000000
 #define SHT_HIUSER   0xffffffff
 
+//sh_flags/sections flags
+#define SHF_WRITE     0x01
+#define SHF_ALLOC     0x02
+#define SHF_EXECINSTR 0x04
+#define SHF_MASKPROC  0xf0000000
+
 //symbols
 
 //32-bit ELF symbol

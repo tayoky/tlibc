@@ -58,7 +58,8 @@ int putchar(int c){
 }
 
 int fputs(const char *str,FILE *stream){
-	return fwrite(str,sizeof(char),strlen(str),stream) ? 0 : -1;
+	stream->errno = 0;
+	return !fwrite(str,sizeof(char),strlen(str),stream) && stream->errno ? -1 : 0;
 }
 
 int puts(const char *str){

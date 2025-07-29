@@ -14,16 +14,23 @@ char *strcpy(char *dest, const char *src){
 }
 
 char *strncpy(char *dest, const char *src,size_t n){
-	size_t index = 0;
-	while (src[index]){
-		dest[index] = src[index];
-		index++;
-		if(index >= n){
+	char *ret = dest;
+	while (*src){
+		*dest = *src;
+		src++;
+		dest++;
+		n--;
+		if(n <= 0){
 			return dest;
 		}
 	}
-	dest[index] = '\0';
-	return dest;
+
+	while(n > 0){
+		*dest = '\0';
+		dest++;
+		n--;
+	}
+	return ret;
 }
 
 size_t strlen(const char *str){

@@ -20,7 +20,7 @@ char *fgets(char *string, int n, FILE *stream){
 	//read until '\n'
 	int c = 0;
 	do {
-		if(n <= 1){
+		if(n <= 0){
 			break;
 		}
 		c = fgetc(stream);
@@ -35,7 +35,7 @@ char *fgets(char *string, int n, FILE *stream){
 		n--;
 	} while (c != '\n');
 
-	*string = '\0';
+	if(n >= 1)*string = '\0';
 	return string;
 }
 

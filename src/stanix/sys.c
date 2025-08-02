@@ -48,8 +48,9 @@ mode_t umask(mode_t mask){
 	return __set_errno(__syscall1(SYS_umask,mask));
 }
 
-//TODO : make this when the kernel will get support for it
-pid_t wait(int *status);
+pid_t wait(int *status){
+	return waitpid(-1,status,0);
+}
 
 pid_t waitpid(pid_t pid, int *status, int options){
 	return __set_errno(__syscall3(SYS_waitpid,(long)pid,(long)status,(long)options));

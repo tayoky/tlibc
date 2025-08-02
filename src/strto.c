@@ -35,18 +35,32 @@ static int char2digit(char c){
 	}\
 	/*automatic base*/\
 	if(base == 0){\
-		if(!strcmp("0x",str)) base = 16;\
-		else if(!strcmp("0X",str)) base = 16;\
-		else if(!strcmp("0b",str)) base = 2;\
-		else if(!strcmp("0",str))  base = 8;\
-		base = 10;\
+		if(*str == '0'){\
+			str++;\
+			switch(*str){\
+			case 'x':\
+			case 'X':\
+				base = 16;\
+				str++;\
+				break;\
+			case 'b':\
+				base = 2;\
+				str++;\
+				break;\
+			default:\
+				base = 8;\
+				break;\
+			}\
+		} else {\
+			base = 10;\
+		}\
 	}\
 \
 	while(char2digit(*str) < base){\
 		integer *= base;\
 		integer += char2digit(*str);\
-		if(end)*end = (char *)str;\
 		str++;\
+		if(end)*end = (char *)str;\
 	}\
 \
 	return integer * sign;\

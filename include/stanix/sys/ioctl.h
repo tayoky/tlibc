@@ -21,6 +21,9 @@ struct winsize {
 #define	TIOCGWINSZ 104 //get window size
 #define	TIOCSWINSZ 103 //set window size
 
+#define I_EJECT 501 //eject a device
+#define I_MODEL 502 //get the model of a device (reserve 256 char)
+
 int ioctl(int fd,unsigned long op,void *arg);
 
 #endif

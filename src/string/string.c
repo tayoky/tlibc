@@ -161,10 +161,10 @@ char *strpbrk(const char *str,const char *search){
 }
 
 char *strcat(char * dest, const char * src){
-	while(*dest){
-		dest++;
-	}
-	return strcpy(dest,src);
+	char *dst = dest;
+	while(*dst)dst++;
+	strcpy(dst,src);
+	return dest;
 }
 
 int strcasecmp(const char *str1, const char *str2){

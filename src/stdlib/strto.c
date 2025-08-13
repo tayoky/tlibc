@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <errno.h>
 #include <limits.h>
 #include <ctype.h>
 #include <string.h>
@@ -15,6 +16,11 @@ static int char2digit(char c){
 	type integer = 0;\
 	if(end)*end = (char *)str;\
 \
+	if(base >= 26){\
+		errno = EINVAL;\
+		return 0;\
+	}\
+	\
 	/*ignore space*/\
 	while(isspace(*str)){\
 		if(!*str){\
@@ -34,7 +40,8 @@ static int char2digit(char c){
 		break;\
 	}\
 	/*automatic base*/\
-	if(base == 0){\
+	switch(base){\
+	case 0:\
 		if(*str == '0'){\
 			str++;\
 			switch(*str){\
@@ -54,6 +61,16 @@ static int char2digit(char c){
 		} else {\
 			base = 10;\
 		}\
+		break;\
+	case 2:\
+		if(!strcmp(str,"0b"))str+=2;\
+		break;\
+	case 8:\
+		if(!strcmp(str,"0"))str++;\
+		break;\
+	case 16:\
+		if(!strcmp(str,"0x"))str+=2;\
+		break;\
 	}\
 \
 	while(char2digit(*str) < base){\

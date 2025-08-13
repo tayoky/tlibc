@@ -30,6 +30,8 @@ FILE *stdin = &_stdin;
 FILE *stdout = &_stdout;
 FILE *stderr = &_stderr;
 
+//TODO : move this to other files
+
 static int mode2flags(const char *mode){
 	int flags = 0;
 	//we don't care about binary of text mode
@@ -88,94 +90,6 @@ FILE *fopen(const char *path,const char *mode){
 	return stream;
 }
 
-int fclose(FILE *stream){
-	if(!stream)return __set_errno(-EBADF);
-
-	close(stream->fd);
-	free(stream);
-	return 0;
-}
-
-size_t fread(void * ptr, size_t size, size_t n, FILE *stream){
-	if(!stream){
-		__set_errno(-EBADF);
-		return 0;
-	}
-	size_t r = 0;
-	size_t size2read = size * n;
-	if(size2read > 0 && stream->unget != EOF){
-		*(unsigned char *)ptr = (unsigned char)stream->unget;
-		stream->unget = EOF;
-		(char *)ptr ++;
-		size2read--;
-		r++;
-	}
-	ssize_t rsize = read(stream->fd,ptr,size2read);
-
-	if(rsize < 0){
-		//it's an error
-		stream->errno = errno;
-		return 0;
-	}
-
-	if((size_t)rsize < size * n){
-		stream->eof = 1;
-	}
-
-	r+= (size_t)rsize;
-
-	return r/ size;
-}
-
-size_t fwrite(const void *ptr, size_t size, size_t n, FILE *stream){
-	if(!stream){
-		__set_errno(-EBADF);
-		return 0;
-	}
-
-	ssize_t wsize = write(stream->fd,ptr,size * n);
-
-	if(wsize < 0){
-		//it's an error
-		stream->errno = errno;
-		return 0;
-	}
-
-	if((size_t)wsize < size * n){
-		stream->eof = 1;
-	}
-
-	return ((size_t)wsize) / size;
-}
-
-int fprintf(FILE *stream, const char *fmt, ...){
-	va_list args;
-	va_start(args,fmt);
-	int ret = vfprintf(stream,fmt,args);
-	va_end(args);
-	return ret;
-}
-
-int vfprintf(FILE *stream, const char *fmt, va_list args){
-	if(!stream)return __set_errno(-EBADF);
-
-	char buf[PRINTF_MAX];
-	int size = vsnprintf(buf,PRINTF_MAX,fmt,args);
-
-	return fwrite(buf,size,1,stream);
-}
-
-int printf(const char *fmt, ...){
-	va_list args;
-	va_start(args, fmt);
-	int ret = vprintf(fmt,args);
-	va_end(args);
-	return ret;
-}
-
-int vprintf(const char *fmt, va_list args){
-	return vfprintf(stdout,fmt,args);
-}
 
 FILE *fdopen(int handle,const char *type){
 	(void)type;
@@ -191,56 +105,4 @@ FILE *fdopen(int handle,const char *type){
 	stream->unget = EOF;
 
 	return stream;
-}
-
-int fileno(FILE *stream){
-	return stream->fd;
-}
-
-void clearerr(FILE *stream){
-	stream->eof = 0;
-	stream->errno = 0;
-}
-
-int feof(FILE *stream){
-	return stream->eof;
-}
-
-int ferror(FILE *stream){
-	return stream->errno;
-}
-
-void perror(const char *string){
-	fprintf(stderr,"%s : %s\n",string,strerror(errno));
-}
-
-int fflush(FILE *stream){
-	if(stream == NULL){
-		//TODO : fflush all streams
-		return 0;
-	}
-	//TODO : fflush here when we add buffering
-	stream->unget = EOF;
-	return 0;
-}
-
-int remove(const char *pathname){
-	int ret = unlink(pathname);
-
-	//if it is a dir, use rmdir
-	if(ret && errno == EISDIR){
-		ret = rmdir(pathname);
-	}
-
-	return ret;
-}
-
-int ungetc(int c,FILE *stream){
-	//TODO : move position indicator
-	if(stream->unget != EOF || c == EOF){
-		return EOF;
-	}
-	stream->eof = 0;
-	stream->unget = c;
-	return c;
 }

@@ -2,34 +2,11 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <sys/wait.h>
 #include <sys/mman.h>
 #include <errno.h>
 #include <limits.h>
 
 static char *brk_ptr = (char *)0xFF0000000;
-static void (*atexit_funcs[64])(void);
-static int atexit_count = 0;
-
-int atexit(void (*func)(void)){
-	if(atexit_count >= 64){
-		return -1;
-	}
-	atexit_funcs[atexit_count] = func;
-	atexit_count++;
-	return 0;
-}
-
-void exit(int status){
-	for(int i=atexit_count-1; i>=0; i--){
-		atexit_funcs[i]();
-	}
-	_exit(status);
-}
-
-void _Exit(int status){
-	_exit(status);
-}
 
 typedef struct heap_segment_struct{
 	uint64_t magic;
@@ -149,13 +126,6 @@ void free(void *ptr){
 	}
 }
 
-void *calloc(size_t num,size_t size){
-	size *= num;
-	void *buf = malloc(size);
-	memset(buf,0,size);
-	return buf;
-}
-
 void *realloc(void *ptr,size_t new_size){
 	if(!ptr){
 		return malloc(new_size);
@@ -179,51 +149,3 @@ void *realloc(void *ptr,size_t new_size){
 	free(ptr);
 	return new_buf;
 }
-
-void abort(void){
-	return exit(EXIT_FAILURE);
-}
-
-
-int system(const char *command){
-	char *shell = getenv("SHELL");
-	if(!shell){
-		shell = "/bin/sh";
-	}
-	if(command == NULL){
-		//check if a shell is availible
-		return system("echo test") == 0;
-	} else {
-		pid_t child = fork();
-		if(!child){
-			char *argv[] = {
-				shell,
-				"-c",
-				(char *)command,
-				NULL
-			};
-			execvp(shell,(const char * const*)argv);
-			//pass errno trought the parent
-			exit(127 + errno);
-		}
-		if(child < 0){
-			return -1;
-		}
-		int status = 0;
-		waitpid(child,&status,0);
-		if(WEXITSTATUS(status) > 127){
-			errno = WEXITSTATUS(status) - 127;
-			return -1;
-		}
-		return WEXITSTATUS(status);
-	}
-}
-
-#define xabs(type,name) type name(type x){\
-	type mask = x >> ((sizeof(type) * CHAR_BIT) - 1);\
-	return (x^mask) - mask;\
-}
-
-xabs(int,abs)
-xabs(long,labs)
-xabs(long long,llabs)

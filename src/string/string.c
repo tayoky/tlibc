@@ -79,7 +79,7 @@ size_t strspn(const char *str, const char *accept){
 
 char *strstr(const char *str1,const char *str2){
 	size_t str2_len = strlen(str2) + 1;
-	while(*str1){
+	do{
 		//check all char
 		for(size_t i=0;i<str2_len;i++){
 			if(!str2[i]){
@@ -91,8 +91,7 @@ char *strstr(const char *str1,const char *str2){
 				break;
 			}
 		}
-		str1++;
-	}
+	}while(*(str1++));
 	return NULL;
 }
 
@@ -130,24 +129,23 @@ int strncmp(const char *str1,const  char *str2,size_t n){
 
 char *strchr(const char *str, int c){
 	while(*str){
-		if(*str == c){
+		if(*str == (char)c){
 			return (char *)str;
 		}
 		str++;
 	}
+	if(!c)return (char *)str;
 	return NULL;
 }
 
 char *strrchr(const char *str, int c){
-	//start with the right
-	int i = strlen(str);
-	while(i > 0){
-		if(str[i] == c){
-			return (char *)&str[i];
-		}
-		i--;
+	const char *best = NULL;
+	while(*str){
+		if(*str == (char)c)best = str;
+		str++;
 	}
-	return NULL;
+	if((char)c == 0)return (char *)str;
+	return (char *)best;
 }
 
 char *strpbrk(const char *str,const char *search){
@@ -194,22 +192,21 @@ int strncasecmp(const char *str1, const char *str2, size_t n){
 
 
 void *memcpy(void *dest, const void *src,size_t n){
+	void *prev = dest;
 #ifdef __x86_64__
 	asm("rep movsb"
-		: : "D" (dest),
+		: : "rdi" (dest),
 		    "S" (src),
 		    "c" (n));
 #else
-	void *prev = dest;
 	while(n > 0){
 		*(char *)dest = *(char *)src;
 		(char *)dest++;
 		(char *)src++;
 		n--;
 	}
-	dest = prev;
 #endif
-	return dest;
+	return prev;
 }
 
 void *memmove(void *dest, const void *src, size_t n){
@@ -223,8 +220,8 @@ void *memmove(void *dest, const void *src, size_t n){
 
 #ifdef __x86_64__
 	asm("rep movsq"
-		: : "D" (dest),
-		    "S" (src),
+		: : "rdi" (dest),
+		    "rsi" (src),
 		    "c" (n));
 #else
 	while(n < 0){
@@ -248,7 +245,7 @@ int memcmp(const void *buf1,const void *buf2,size_t count){
 
 void *memchr(const void *buf, int c, size_t count){
 	while(count){
-		if(*(char *)buf == c){
+		if(*(char *)buf == (char)c){
 			return (void *)buf;
 		}
 		buf++;

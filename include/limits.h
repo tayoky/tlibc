@@ -70,4 +70,6 @@
 #define PAGESIZE 4096
 #define PAGE_SIZE PAGESIZE
 
+#define MB_CUR_MAX 4
+
 #endif

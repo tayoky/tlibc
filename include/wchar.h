@@ -12,10 +12,15 @@ typedef __WINT_TYPE__ wint_t;
 
 #define WEOF EOF
 
+//maybee change size of this for UTF 7 ??
+typedef int mbstate_t;
+
 
 wint_t btowc(int c);
+int mbrtowc(wchar_t *dest,const char *s,size_t n,mbstate_t *ps);
 int mbtowc(wchar_t *dest,const char *s,size_t n);
 size_t mbstowcs(wchar_t *dest,const char *src,size_t n);
+int mbsinit(const mbstate_t *ps);
 
 wint_t fputwc(wchar_t wc,FILE *stream);
 int fputws(const wchar_t *ws,FILE *stream);

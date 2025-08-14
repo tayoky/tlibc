@@ -50,7 +50,11 @@ longjmp:
 .globl sigsetjmp
 .type sigsetjmp @function
 sigsetjmp:
+	push rdi
+	push rsi
 	call __sigsavemask
+	pop rsi
+	pop rdi
 	jmp setjmp
 .size sigsetjmp, .-sigsetjmp
 

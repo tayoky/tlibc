@@ -30,8 +30,11 @@ longjmp:
 	//if x1 is 0 set it to 1
 	cmp x1, xzr
 	bne skip
-	mov x1, xzr
+	mov x1, 1
 	skip:
+
+	//load return address
+	ldr lr, [x0]
 
 	//restore callee saved register
 	ldr x2 , [x0,8]
@@ -56,10 +59,8 @@ longjmp:
 .globl sigsetjmp
 .type sigsetjmp @function
 sigsetjmp:
-	sub sp, sp, 0x16
-	stp fp, lr, [sp]
+	stp fp, lr, [sp,#-16]!
 	bl __sigsavemask
-	ldp fp, lr, [sp]
-	add sp, sp, 0x16
+	ldp fp, lr, [sp],#16
 	b setjmp
 .size sigsetjmp, .-sigsetjmp

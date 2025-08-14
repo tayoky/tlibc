@@ -7,7 +7,7 @@
 #ifdef x86_64
 typedef uint64_t jmp_buf[8];
 #elif defined(__aarch64__)
-typedef uint64_t jmp_buf[13];
+typedef uint64_t jmp_buf[14];
 #else
 typedef uintptr_t jmp_buf[8];
 #endif

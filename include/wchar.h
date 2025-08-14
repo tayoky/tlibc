@@ -22,10 +22,15 @@ int mbtowc(wchar_t *dest,const char *s,size_t n);
 size_t mbstowcs(wchar_t *dest,const char *src,size_t n);
 int mbsinit(const mbstate_t *ps);
 
+
+wint_t fgetwc(FILE *stream);
+wint_t getwc(FILE *stream);
+wint_t getwchar(void);
+wchar_t *fgetws(wchar_t *ws, int n, FILE *stream);
 wint_t fputwc(wchar_t wc,FILE *stream);
-int fputws(const wchar_t *ws,FILE *stream);
 wint_t putwc(wchar_t wc,FILE *stream);
 wint_t putwchar(wchar_t wc);
+int fputws(const wchar_t *ws,FILE *stream);
 
 wchar_t *wcscat(wchar_t *dest,const wchar_t *src);
 wchar_t *wcschr(const wchar_t *ws,wchar_t wc);

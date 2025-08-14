@@ -52,3 +52,14 @@ longjmp:
 	mov x0, x1
 	ret
 .size longjmp, .-longjmp
+
+.globl sigsetjmp
+.type sigsetjmp @function
+sigsetjmp:
+	sub sp, sp, 0x16
+	stp fp, lr, [sp]
+	bl __sigsavemask
+	ldp fp, lr, [sp]
+	add sp, sp, 0x16
+	b setjmp
+.size sigsetjmp, .-sigsetjmp

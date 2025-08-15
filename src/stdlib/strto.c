@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdio.h>
 
 static int char2digit(char c){
 	if(c >= '0' && c <= '9')return c - '0';
@@ -12,9 +13,7 @@ static int char2digit(char c){
 }
 
 #define strto(type,name,max,min) type name(const char *str, char **end, int base){\
-	signed char sign = -1;\
-	/* the sign might look wrong but it's actualy good\
-	 * we keep the integer negative to avoid overflow */\
+	signed char sign = 1;\
 	type integer = 0;\
 	if(end)*end = (char *)str;\
 \
@@ -23,13 +22,11 @@ static int char2digit(char c){
 		return 0;\
 	}\
 	\
-	/*ignore space*/\
 	while(isspace(*str))str++;\
 \
-	/*handle negative numbers*/\
 	switch (*str){\
 	case '-':\
-		sign = 1;\
+		sign = -1;\
 		/*fallthrough*/\
 	case '+':\
 		str++;\
@@ -59,39 +56,39 @@ static int char2digit(char c){
 		}\
 		break;\
 	case 2:\
-		if(!strcmp(str,"0b"))str+=2;\
+		if(!strncasecmp(str,"0b",2)&& char2digit(str[2]) < 2)str+=2;\
 		break;\
 	case 8:\
-		if(!strcmp(str,"0"))str++;\
+		if(!strncasecmp(str,"0",1)&& char2digit(str[1]) < 8)str++;\
 		break;\
 	case 16:\
-		if(!strcmp(str,"0x"))str+=2;\
+		if(!strncasecmp(str,"0x",2) && char2digit(str[2]) < 16)str+=2;\
 		break;\
 	}\
 \
 	/* thanks dcraftbg for the overflow handling idea */\
 	while(char2digit(*str) < base){\
-		type save = integer;\
-		integer *= base;\
-		integer -= char2digit(*str);\
-		if((integer + char2digit(*str)) / base != save){\
+		if(end)*end = (char *)str+1;\
+		if(integer * base / base != integer){\
 			/*overflow*/\
 			errno = ERANGE;\
-			return sign == -1 ? max : min;\
+			return sign == 1 ? max : min;\
 		}\
+		integer *= base;\
+		if((sign == 1 && max - integer  < char2digit(*str)) ||  (sign == -1 && min - integer  > -char2digit(*str))){\
+			/*overflow*/\
+			errno = ERANGE;\
+			return sign == 1 ? max : min;\
+		}\
+		integer += sign * char2digit(*str);\
 		str++;\
-		if(end)*end = (char *)str;\
 	}\
 \
-	if(sign == -1 && integer == min){\
-		/* overflow */\
-		errno = ERANGE;\
-		return max;\
-	}\
-	return integer * sign;\
+	return integer;\
 }
 
 #define strtou(type,name,max) type name(const char *str, char **end, int base){\
+	signed char sign = 1;\
 	type integer = 0;\
 	if(end)*end = (char *)str;\
 \
@@ -100,14 +97,12 @@ static int char2digit(char c){
 		return 0;\
 	}\
 	\
-	/*ignore space*/\
 	while(isspace(*str))str++;\
 \
-	/*handle negative numbers*/\
 	switch (*str){\
 	case '-':\
-		 errno = ERANGE;\
-		 return 0;\
+		sign = -1;\
+		/*fallthrough*/\
 	case '+':\
 		str++;\
 		break;\
@@ -136,31 +131,35 @@ static int char2digit(char c){
 		}\
 		break;\
 	case 2:\
-		if(!strcmp(str,"0b"))str+=2;\
+		if(!strncasecmp(str,"0b",2)&& char2digit(str[2]) < 2)str+=2;\
 		break;\
 	case 8:\
-		if(!strcmp(str,"0"))str++;\
+		if(!strncasecmp(str,"0",1)&& char2digit(str[1]) < 8)str++;\
 		break;\
 	case 16:\
-		if(!strcmp(str,"0x"))str+=2;\
+		if(!strncasecmp(str,"0x",2) && char2digit(str[2]) < 16)str+=2;\
 		break;\
 	}\
 \
 	/* thanks dcraftbg for the overflow handling idea */\
 	while(char2digit(*str) < base){\
-		type save = integer;\
-		integer *= base;\
-		integer += char2digit(*str);\
-		if((integer - char2digit(*str)) / base != save){\
+		if(end)*end = (char *)str+1;\
+		if(integer * base / base != integer){\
 			/*overflow*/\
 			errno = ERANGE;\
 			return max;\
 		}\
+		integer *= base;\
+		if(integer + char2digit(*str) < integer){\
+			/*overflow*/\
+			errno = ERANGE;\
+			return max;\
+		}\
+		integer += char2digit(*str);\
 		str++;\
-		if(end)*end = (char *)str;\
 	}\
 \
-	return integer;\
+	return sign == 1 ? integer : max - integer + 1;\
 }
 
 //it support both . and , 

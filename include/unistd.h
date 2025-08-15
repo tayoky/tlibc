@@ -39,6 +39,9 @@ off_t lseek(int fd, off_t offset, int whence);
 ssize_t read(int fd, const void *buffer, size_t count);
 ssize_t write(int fd, const void *buffer, size_t count);
 
+int truncate(const char *path, off_t length);
+int ftruncate(int fd, off_t length);
+
 int dup(int oldfd);
 int dup2(int oldfd, int newfd);
 

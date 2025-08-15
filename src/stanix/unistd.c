@@ -157,3 +157,11 @@ long pathconf(const char *pathname, int varcode){
 		return __set_errno(-EINVAL);
 	}
 }
+
+int truncate(const char *path, off_t length){
+	return __set_errno(__syscall2(SYS_truncate,(long)path,(long)length));
+}
+
+int ftruncate(int fd, off_t length){
+	return __set_errno(__syscall2(SYS_ftruncate,fd,(long)length));
+}

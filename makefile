@@ -82,11 +82,11 @@ header :
 install : header all
 	@mkdir -p $(PREFIX)/lib
 	@echo "[install crti.o]"
-	@cp crt/$(ARCH)/crti.o $(PREFIX)/lib
+	@cp $(BUILDDIR)/crt/$(ARCH)/crti.o $(PREFIX)/lib
 	@echo "[install crtn.o]"
-	@cp crt/$(ARCH)/crtn.o $(PREFIX)/lib
+	@cp $(BUILDDIR)/crt/$(ARCH)/crtn.o $(PREFIX)/lib
 	@echo "[install crt0.o]"
-	@cp crt/$(ARCH)/crt0-$(TARGET).o $(PREFIX)/lib/crt0.o
+	@cp $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o $(PREFIX)/lib/crt0.o
 	@echo "[install libc.a]"
 	@cp tlibc.a $(PREFIX)/lib/libc.a
 	@echo "[install libm.a]"

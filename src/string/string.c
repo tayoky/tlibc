@@ -194,7 +194,7 @@ int strncasecmp(const char *str1, const char *str2, size_t n){
 void *memcpy(void *dest, const void *src,size_t n){
 	void *prev = dest;
 #ifdef __x86_64__
-	asm("cld : rep movsb"
+	asm("rep movsb"
 		: : "rdi" (dest),
 		    "rsi" (src),
 		    "c" (n));
@@ -219,9 +219,9 @@ void *memmove(void *dest, const void *src, size_t n){
 	}
 
 #ifdef __x86_64__
-	asm("std ; rep movsb"
-		: : "rdi" (dest+size),
-		    "rsi" (src+size),
+	asm("std ; rep movsb ; cld"
+		: : "rdi" ((char *)dest+n),
+		    "rsi" ((char *)src+n),
 		    "c" (n));
 #else
 	while(n < 0){

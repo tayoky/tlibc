@@ -2,6 +2,13 @@
 #define STDLIB_H
 
 #include <stddef.h> 
+#include <limits.h>
+
+int rand(void);
+int rand_r(unsigned int *seedp);
+void srand(unsigned int seed);
+
+#define RAND_MAX INT_MAX
 
 void _Exit(int status);
 void exit(int status);

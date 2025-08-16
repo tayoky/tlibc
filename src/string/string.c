@@ -34,18 +34,17 @@ char *strncpy(char *dest, const char *src,size_t n){
 }
 
 size_t strlen(const char *str){
-	size_t index = 0;
-	while (str[index]){
-		index ++;
+	size_t len = 0;
+	while (*str){
+		str++;
+		len++;
 	}
-	return index;
+	return len;
 }
+
 size_t strnlen(const char *str,size_t maxlen){
-	size_t index = 0;
-	while(index < maxlen && str[index]){
-		index++;
-	}
-	return index;
+	const char *end = memchr(str,'\0',maxlen);
+	return end ? end - str : maxlen;
 }
 
 size_t strcspn(const char *str, const char *rej){
@@ -69,10 +68,12 @@ size_t strspn(const char *str, const char *accept){
 			if(*str == accept[i]){
 				str++;
 				len++;
-				continue;
+				goto cont;
 			}
 		}
 		return len;
+cont:
+		continue;
 	}
 	return len;
 }

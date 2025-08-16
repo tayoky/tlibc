@@ -194,9 +194,9 @@ int strncasecmp(const char *str1, const char *str2, size_t n){
 void *memcpy(void *dest, const void *src,size_t n){
 	void *prev = dest;
 #ifdef __x86_64__
-	asm("rep movsb"
+	asm("cld : rep movsb"
 		: : "rdi" (dest),
-		    "S" (src),
+		    "rsi" (src),
 		    "c" (n));
 #else
 	while(n > 0){
@@ -219,9 +219,9 @@ void *memmove(void *dest, const void *src, size_t n){
 	}
 
 #ifdef __x86_64__
-	asm("rep movsq"
-		: : "rdi" (dest),
-		    "rsi" (src),
+	asm("std ; rep movsb"
+		: : "rdi" (dest+size),
+		    "rsi" (src+size),
 		    "c" (n));
 #else
 	while(n < 0){
@@ -256,16 +256,11 @@ void *memchr(const void *buf, int c, size_t count){
 
 char *strdup(const char *str){
 	char *newstr = malloc(strlen(str) + 1);
-	strcpy(newstr,str);
-	return newstr;
+	return strcpy(newstr,str);
 }
 
 char *strndup(const char *str,size_t count){
-	size_t len = strlen(str);
-	if(len >= count - 1){
-		len = count -1;
-	}
-
+	size_t len = strnlen(str,count);
 	char *newstr = malloc(len + 1);
 	newstr[len] = '\0';
 	return memcpy(newstr,str,len);

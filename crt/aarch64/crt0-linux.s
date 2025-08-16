@@ -9,6 +9,4 @@ _start:
 	bl __tlibc_init
 	ldp x0, x1, [sp]
 	add sp, sp, 16
-	bl main
-	bl exit
 .size _start, .-_start

@@ -194,11 +194,11 @@ int strncasecmp(const char *str1, const char *str2, size_t n){
 
 void *memcpy(void *dest, const void *src,size_t n){
 	void *prev = dest;
-#ifdef __x86_64__
-	asm("rep movsb"
-		: : "rdi" (dest),
-		    "rsi" (src),
-		    "c" (n));
+#if defined(__x86_64__) || defined(__i386__)
+	asm volatile("rep movsb"
+		: "+D" (dest),
+		  "+S" (src),
+		  "+c" (n));
 #else
 	while(n > 0){
 		*(char *)dest = *(char *)src;
@@ -219,18 +219,22 @@ void *memmove(void *dest, const void *src, size_t n){
 		return memcpy(dest,src,n);
 	}
 
-#ifdef __x86_64__
-	asm("std ; rep movsb ; cld"
-		: : "rdi" ((char *)dest+n),
-		    "rsi" ((char *)src+n),
-		    "c" (n));
+#if defined(__x86_64__) || defined(__i386__)
+	void *prev = dest;
+	asm volatile("std \n rep movsb \n cld"
+		: "=D" (dest),
+		  "=S" (src),
+		  "+c" (n)
+		: "D" ((char *)dest + n - 1),
+		  "S" ((char *)src  + n - 1));
+	return prev;
 #else
 	while(n < 0){
 		n--;
 		((char *)dest)[n] = ((char *)src)[n];
 	}
-#endif
 	return dest;
+#endif
 }
 
 int memcmp(const void *buf1,const void *buf2,size_t count){

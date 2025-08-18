@@ -88,7 +88,8 @@ int execvpe(const char *file,const char *const argv[],const char *const envp[]){
 	}
 
 	//we are going to modify this
-	path = strdup(path);
+	char *d = strdup(path);
+	path = d;
 
 	size_t path_count = 1;
 
@@ -111,6 +112,7 @@ int execvpe(const char *file,const char *const argv[],const char *const envp[]){
 			fclose(fd);
 			int ret = execve(full_filename,argv,envp);
 			free(full_filename);
+			free(d);
 			return ret;
 		}
 		free(full_filename);
@@ -119,7 +121,7 @@ int execvpe(const char *file,const char *const argv[],const char *const envp[]){
 		path += strlen(path) + 1;
 	}
 
-	free(path);
+	free(d);
 
 	//not found
 	return -ENOENT;

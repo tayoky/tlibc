@@ -6,7 +6,7 @@ with more than 200 functions tlibc can be used with program such as
 - all stanix userspace program
 - [tutils](https://github.com/tayoky/tutils)
 - [tsh](https://github.com/tayoky/tsh)
-- [tcc](https://github.com/tinycc/tinycc) (but segfault see [issue #4](https://github.com/tayoky/tlibc/issues/4))
+- [tcc](https://github.com/tinycc/tinycc)
 - binutils (but segfault with a NULL pointer)
 
 # completion

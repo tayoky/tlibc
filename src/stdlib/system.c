@@ -33,6 +33,6 @@ int system(const char *command){
 			errno = WEXITSTATUS(status) - 127;
 			return -1;
 		}
-		return WEXITSTATUS(status);
+		return status;
 	}
 }

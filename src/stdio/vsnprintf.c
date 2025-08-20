@@ -6,11 +6,15 @@
 #include <string.h>
 #include <sys/types.h>
 
-#define OUT(c) *buf = c;\
-buf++;\
+#define OUT(c) {if(maxlen != 1){\
+	if(buf){\
+		*buf = c;\
+		buf++;\
+	}\
+	if(maxlen)maxlen--;\
+}\
 count++;\
-maxlen--;\
-if(maxlen <= 0) return count
+}
 
 static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int padding,char padding_char,int min,int high){
 	char str[64];
@@ -26,8 +30,7 @@ static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int paddi
 		value /= base;
 	}
 
-	if(padding < 0){
-		padding = -padding;
+	if(padding > 0){
 		while(padding > 63 - i && padding > min){
 			padding--;
 			OUT(padding_char);
@@ -50,15 +53,25 @@ static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int paddi
 	}
 
 	//print padding last if neccesary
-	while(padding > len){
-		padding--;
+	while(-padding > len){
+		padding++;
 		OUT(padding_char);
 	}
 
 	return count;
 }
 
-#define print_uint(...) tmp = _print_uint(__VA_ARGS__);maxlen += tmp; count += tmp; buf += tmp
+#define print_uint(...) tmp = _print_uint(__VA_ARGS__);{\
+	count += tmp;\
+	if(buf)buf += (size_t)tmp > maxlen - 1 ? maxlen - 1 : tmp;\
+	if(maxlen){\
+		if((size_t)tmp > maxlen - 1){\
+			maxlen = 1;\
+		} else {\
+			maxlen -= tmp;\
+		}\
+	}\
+}
 
 #define T(var,type) if(lenght == sizeof(type) && !parsed){\
 		parsed = 1;\
@@ -82,12 +95,12 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 		fmt++;
 		char positive_sign = '\0';
 		char padding_char  = ' ';
-		int padding_sign   = 1; //minus one mean left
+		int padding_sign   = 1; //-1 mean pad with char at right
 		int alternate_form = 0;
 		//format specifier
 		//start by handling flags
 		//TODO : #
-		switch(*fmt){
+		for(;;) switch(*fmt){
 		case '#':
 			fmt++;
 			alternate_form = 1;
@@ -96,7 +109,6 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 			fmt++;
 			if(padding_sign == -1)break;
 			padding_char = '0';
-			padding_sign = -1;
 			break;
 		case '-':
 			fmt++;
@@ -133,8 +145,10 @@ finish_flags:;
 		}
 		//now we handle precision
 		int precision = -1;
+		int have_precision = 0;
 		if(*fmt == '.'){
 			fmt++;
+			have_precision = 1;
 			if(*fmt == '*'){
 				fmt++;
 				precision = va_arg(args,int);
@@ -193,7 +207,9 @@ finish_flags:;
 		int parsed = 0;
 		switch(*fmt){
 		case 'd':
-		case 'i':;
+		case 'i':
+			//precision on integer remove 0 flag
+			if(have_precision)padding_char = ' ';
 			intmax_t sint = 0;
 			T(sint,int)
 			T_CAST(sint,short)
@@ -208,8 +224,10 @@ finish_flags:;
 			if(sint < 0){
 				sint = -sint;
 				OUT('-');
+				if(width>0)width--;
 			} else if(positive_sign){
 				OUT(positive_sign);
+				if(width>0)width--;
 			}
 			print_uint(buf,maxlen,sint,10,width*padding_sign,padding_char,precision == -1 ? 1 : precision,0);
 			break;
@@ -217,7 +235,8 @@ finish_flags:;
 		case 'o':
 		case 'b':
 		case 'x':
-		case 'X':;
+		case 'X':
+			if(have_precision)padding_char = ' ';
 			intmax_t uint = 0;
 			T(uint,unsigned int)
 			T_CAST(uint,unsigned short)
@@ -230,7 +249,9 @@ finish_flags:;
 
 			if(positive_sign){
 				OUT(positive_sign);
+				if(width > 0)width--;
 			}
+			//FIXME : i think we need to decrease witdh on prefix
 			int base;
 			switch(*fmt){
 			case 'u':
@@ -238,13 +259,14 @@ finish_flags:;
 				break;
 			case 'o':
 				base = 8;
-				if(alternate_form){
+				if(uint && alternate_form){
+					//FIXME : should only be printed if first char != 0
 					OUT('0');
 				}
 				break;
 			case 'b':
 				base = 2;
-				if(alternate_form){
+				if(uint && alternate_form){
 					OUT('0');
 					OUT('b');
 				}
@@ -252,7 +274,7 @@ finish_flags:;
 			case 'x':
 			case 'X':
 				base = 16;
-				if(alternate_form){
+				if(uint && alternate_form){
 					OUT('0');
 					OUT(*fmt);
 				}
@@ -300,6 +322,10 @@ finish_flags:;
 		fmt++;
 	
 	}
-	OUT('\0');
+
+	//don't count the '\0'
+	if(buf){
+		*buf = '\0';
+	}
 	return count;
 }

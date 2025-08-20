@@ -86,7 +86,7 @@ static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int paddi
 
 #define print_uint(...) tmp = _print_uint(__VA_ARGS__);{\
 	count += tmp;\
-	if(buf)buf += (size_t)tmp > maxlen - 1 ? maxlen - 1 : tmp;\
+	if(buf)buf += (size_t)tmp > maxlen - 1 ? maxlen - 1 : (size_t)tmp;\
 	if(maxlen){\
 		if((size_t)tmp > maxlen - 1){\
 			maxlen = 1;\
@@ -267,7 +267,7 @@ finish_flags:;
 			T(uint,uintptr_t)
 
 			//FIXME : i think we need to decrease witdh on prefix
-			int base;
+			int base = 0;
 			switch(*fmt){
 			case 'u':
 				base = 10;

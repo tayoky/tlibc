@@ -16,7 +16,7 @@
 count++;\
 }
 
-static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int padding,char padding_char,int min,int high){
+static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int padding,char padding_char,int min,int high,char sign,int prefix){
 	char str[64];
 	static char h[] = "0123456789ABCDEF";
 	static char l[] = "0123456789abcdef";
@@ -24,13 +24,19 @@ static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int paddi
 	int count = 0;
 	int i = 63;
 	str[63] = '\0';
+	uint64_t v = value;
 	while(value){
 		i--;
 		str[i] = figures[value % base];
 		value /= base;
 	}
 
+	
+
 	if(padding > 0){
+		if(sign)padding--;
+		if(prefix && v && (base == 2 || base == 16))padding -= 2;
+		if(prefix && base == 8 && str[i] != '0' && min <= 63 - i)padding--;
 		while(padding > 63 - i && padding > min){
 			padding--;
 			OUT(padding_char);
@@ -38,23 +44,40 @@ static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int paddi
 		padding = 0;
 	}
 
-	int len = 0;
+	if(sign){
+		OUT(sign);
+	}
+
+	if(prefix && v){
+		switch(base){
+		case 2:
+			OUT('0');
+			OUT('b');
+			break;
+		case 16:
+			OUT('0');
+			OUT(high ? 'X' : 'x');
+			break;
+		}
+	}
+		
+	if(prefix && base == 8 && str[i] != '0' && min <= 63 - i){
+		OUT('0');
+	}
+
 
 	while(min > 63 - i){
 		min--;
-		len++;
 		OUT('0');
 	}
 	
 	while(str[i]){
 		OUT(str[i]);
-		len++;
 		i++;
 	}
 
 	//print padding last if neccesary
-	while(-padding > len){
-		padding++;
+	while(-padding > count){
 		OUT(padding_char);
 	}
 
@@ -145,10 +168,8 @@ finish_flags:;
 		}
 		//now we handle precision
 		int precision = -1;
-		int have_precision = 0;
 		if(*fmt == '.'){
 			fmt++;
-			have_precision = 1;
 			if(*fmt == '*'){
 				fmt++;
 				precision = va_arg(args,int);
@@ -209,7 +230,7 @@ finish_flags:;
 		case 'd':
 		case 'i':
 			//precision on integer remove 0 flag
-			if(have_precision)padding_char = ' ';
+			if(precision != -1)padding_char = ' ';
 			intmax_t sint = 0;
 			T(sint,int)
 			T_CAST(sint,short)
@@ -220,23 +241,21 @@ finish_flags:;
 			T(sint,ssize_t)
 			T(sint,ptrdiff_t)
 
-			//turn into a uint so we can call print_uint
+			char sign = 0;
 			if(sint < 0){
 				sint = -sint;
-				OUT('-');
-				if(width>0)width--;
+				sign = '-';
 			} else if(positive_sign){
-				OUT(positive_sign);
-				if(width>0)width--;
+				sign = positive_sign;
 			}
-			print_uint(buf,maxlen,sint,10,width*padding_sign,padding_char,precision == -1 ? 1 : precision,0);
+			print_uint(buf,maxlen,sint,10,width*padding_sign,padding_char,precision == -1 ? 1 : precision,0,sign,0);
 			break;
 		case 'u':
 		case 'o':
 		case 'b':
 		case 'x':
 		case 'X':
-			if(have_precision)padding_char = ' ';
+			if(precision != -1)padding_char = ' ';
 			intmax_t uint = 0;
 			T(uint,unsigned int)
 			T_CAST(uint,unsigned short)
@@ -247,10 +266,6 @@ finish_flags:;
 			T(uint,size_t)
 			T(uint,uintptr_t)
 
-			if(positive_sign){
-				OUT(positive_sign);
-				if(width > 0)width--;
-			}
 			//FIXME : i think we need to decrease witdh on prefix
 			int base;
 			switch(*fmt){
@@ -259,28 +274,16 @@ finish_flags:;
 				break;
 			case 'o':
 				base = 8;
-				if(uint && alternate_form){
-					//FIXME : should only be printed if first char != 0
-					OUT('0');
-				}
 				break;
 			case 'b':
 				base = 2;
-				if(uint && alternate_form){
-					OUT('0');
-					OUT('b');
-				}
 				break;
 			case 'x':
 			case 'X':
 				base = 16;
-				if(uint && alternate_form){
-					OUT('0');
-					OUT(*fmt);
-				}
 				break;
 			}
-			print_uint(buf,maxlen,uint,base,width*padding_sign,padding_char,precision == -1 ? 1 : precision,*fmt == 'X');
+			print_uint(buf,maxlen,uint,base,width*padding_sign,padding_char,precision == -1 ? 1 : precision,*fmt == 'X',positive_sign,alternate_form);
 			break;
 		case 's':
 		case 'c':;

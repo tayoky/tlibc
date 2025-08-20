@@ -72,4 +72,8 @@ struct input_request {
 #define IE_KEY_GRAPH 0x04  // printable key
 #define IE_KEY_GRPAH IE_KEY_GRAPH  //conserved 
 
+//ioctl
+#define I_INPUT_GET_CONTROL  1001
+#define I_INPUT_DROP_CONTROL 1002
+
 #endif

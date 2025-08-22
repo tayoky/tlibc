@@ -52,6 +52,7 @@ void _exit(int status);
 int close(int fd);
 
 int unlink(const char *pathname);
+int link(const char *oldpath, const char *newpath);
 int rmdir(const char *pathname);
 
 unsigned int sleep(unsigned int seconds);

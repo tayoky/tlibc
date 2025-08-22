@@ -169,9 +169,11 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_getpgid      57
 #define SYS_fcntl        58
 #define SYS_umask        59
-#define SYS_access       50
-#define SYS_utimes       51
-#define SYS_truncate     52
-#define SYS_ftruncate    53
+#define SYS_access       60
+#define SYS_utimes       61
+#define SYS_truncate     62
+#define SYS_ftruncate    63
+#define SYS_link         64
+#define SYS_rename       65
 
 #endif

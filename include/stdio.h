@@ -67,6 +67,7 @@ int ungetc(int c,FILE *stream);
 
 int fflush(FILE *stream);
 
+int rename(const char *oldpath, const char *newpath);
 int remove(const char *pathname);
 
 extern FILE *stdin;

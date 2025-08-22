@@ -2,4 +2,3 @@
 
 STUB(utime)
 STUB(link)
-STUB(unsetenv)

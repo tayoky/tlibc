@@ -3,13 +3,12 @@
 #include <errno.h>
 
 extern char **environ;
-
-char *getenv(const char *name){
+int unsetenv(const char *name){
 	//this is what we are searching
 	char *search = malloc(strlen(name) + 2);
 	if(!search){
 		errno = ENOMEM;
-		return NULL;
+		return -1;
 	}
 	strcpy(search,name);
 	strcat(search,"=");
@@ -30,8 +29,18 @@ char *getenv(const char *name){
 	if(!environ[key]){
 		//key not found
 		errno = ESRCH;
-		return NULL;
+		return -1;
 	}
 
-	return environ[key] + name_len;
+	//replace with last
+	int last = 0;
+	while(environ[last]){
+		last++;
+	}
+	last--;
+	environ[key] = environ[last];
+
+	//and replace last with null
+	environ[last] = NULL;
+	return 0;
 }

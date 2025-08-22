@@ -38,6 +38,7 @@ int printf(const char *fmt, ...);
 int vprintf(const char *fmt, va_list args);
 
 FILE *fdopen(int handle,const char *type);
+FILE *tmpfile(void);
 int fileno(FILE *stream);
 
 //seek func

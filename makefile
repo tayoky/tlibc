@@ -69,7 +69,7 @@ $(BUILDDIR)/%.o : %.s
 	$(AS) $(ASFLAGS) -o $@ $^
 
 clean : 
-	rm -f $(BUILDDIR)
+	rm -fr $(BUILDDIR)
 
 
 #install the header

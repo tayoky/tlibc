@@ -4,6 +4,8 @@
 #include <sys/types.h>
 #include <stdarg.h>
 
+//maybee should be equal to PATH_MAX from limits.h ???
+#define FILENAME_MAX 256
 
 struct _FILE{
 	int fd;
@@ -65,7 +67,12 @@ void perror(const char *string);
 
 int ungetc(int c,FILE *stream);
 
+#define _IONBF 0
+#define _IOFBF 1
+#define _IOLBF 2
+
 int fflush(FILE *stream);
+int setvbuf(FILE *stream, char *buf, int type, size_t size);
 
 int rename(const char *oldpath, const char *newpath);
 int remove(const char *pathname);

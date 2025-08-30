@@ -1,44 +1,70 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdio.h>
 
-//really bad realpath pls don't look at it
 char *realpath(const char *path,char *resolved_path){
+
+	//first let make an absolute path
+	char *abs;
 	if(path[0] == '/'){
-		if(resolved_path){
-			return strcpy(resolved_path,path);
-		} else {
-			return strdup(path);
+		abs = strdup(path);
+		if(!abs)return NULL;
+	} else {
+		//relative path
+		char cwd[256];
+		if(getcwd(cwd,sizeof(cwd)) < 0)return NULL;
+		abs = malloc(strlen(cwd) + strlen(path) + 2);
+		if(!abs)return NULL;
+
+		//now put the two togher
+		sprintf(abs,"%s/%s",cwd,path);
+	}
+
+	//now create the final path without useless . .. and /
+	if(!resolved_path)resolved_path = malloc(strlen(abs)+1);
+	if(!resolved_path)goto end;
+
+	char *dest = resolved_path;
+	char *src  = abs;
+	char last  = '\0';
+	while(*src){
+		if(*src == '/'){
+			// "/./" are useless
+			if(!strncmp(src,"/./",3) || !strcmp(src,"/.")){
+				//skip the "/." but keep the last /
+				src+=2;
+				continue;
+			}
+
+			//mutiples / next to each other is useless
+			if(last != '/')last = *(dest++) = *src;
+
+			// with "/../" we go back to parent
+			if(!strncmp(src,"/../",4) || !strcmp(src,"/..")){
+				//skip the "/.." but keep the last /
+				src += 3;
+
+				//if we have a / remove it
+				//don't remove if it is the first / else edge case like /.. don't work
+				if(dest > resolved_path + 1 && *(dest-1) == '/'){
+					dest--;
+				}
+
+				//remove until start or /
+				//NOTE : this work even on root because .. of root(nothing since we removed the /) is root(nothing)
+				while(dest > resolved_path && *(dest-1) != '/')dest--;
+				last = dest == resolved_path ? '\0' : *(dest-1);
+
+				continue;
+			}
+			src++;
+			continue;
 		}
+		last = *(dest++) = *(src++);
 	}
-
-	//we need to get cwd
-	char *cwd = malloc(256);
-	if(getcwd(cwd,256)){
-		free(cwd);
-		return NULL;
-	}
-	//if cwd is "/" convert to ""
-	if(!strcmp(cwd,"")){
-		free(cwd);
-		cwd = strdup("");
-		if(!cwd){
-			return NULL;
-		}
-	}
-
-	
-	if(!resolved_path){
-		resolved_path = malloc(strlen(cwd) + strlen(path) + 2);
-		if(!resolved_path){
-			free(cwd);
-			return NULL;
-		}
-	}
-
-	//good now put the two togher
-	strcpy(resolved_path,cwd);
-	strcat(resolved_path,cwd);
-
+	*dest = '\0';
+end:
+	free(abs);
 	return resolved_path;
 }

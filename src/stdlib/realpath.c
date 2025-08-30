@@ -13,7 +13,7 @@ char *realpath(const char *path,char *resolved_path){
 	} else {
 		//relative path
 		char cwd[256];
-		if(getcwd(cwd,sizeof(cwd)) < 0)return NULL;
+		if(!getcwd(cwd,sizeof(cwd)))return NULL;
 		abs = malloc(strlen(cwd) + strlen(path) + 2);
 		if(!abs)return NULL;
 

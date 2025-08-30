@@ -1,12 +1,23 @@
 #include <stdio.h>
+#include <unistd.h>
 
+extern FILE *__streams;
 
 int fflush(FILE *stream){
 	if(stream == NULL){
-		//TODO : fflush all streams
+		fflush(stdout);
+		fflush(stdin);
+		fflush(stderr);
+		stream = __streams;
+		while(stream){
+			fflush(stream);
+			stream = stream->next;
+		}
 		return 0;
 	}
-	//TODO : fflush here when we add buffering
 	stream->unget = EOF;
-	return 0;
+	if(stream->buftype == _IONBF) return 0;
+	ssize_t w = write(stream->fd,stream->buf,stream->usedsize);
+	stream->usedsize = 0;
+	return w < 0 ? -1 : 0;
 }

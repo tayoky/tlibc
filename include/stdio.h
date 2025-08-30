@@ -8,10 +8,16 @@
 #define FILENAME_MAX 256
 
 struct _FILE{
-	int fd;
+	struct _FILE *next;
+	struct _FILE *prev;
+	char *buf;
+	size_t bufsize;
+	size_t usedsize;
 	unsigned long errno;
+	int fd;
 	int eof;
 	int unget;
+	int buftype;
 };
 typedef struct _FILE FILE;
 

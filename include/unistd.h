@@ -101,6 +101,8 @@ int setgid(gid_t gid);
 int setegid(gid_t gid);
 gid_t getgid(void);
 gid_t getegid(void);
+char *getlogin(void);
+int getlogin_r(char *buf, size_t bufsize);
 
 long pathconf(const char *pathname, int varcode);
 #define _PC_PATH_MAX 0

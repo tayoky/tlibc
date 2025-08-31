@@ -49,7 +49,7 @@ CFLAGS += -Wall \
 	-I include \
 	-I include/$(TARGET)
 
-KFLAGS = $(CFLAGS) -mcmodel=large -DLIBK
+KFLAGS = $(CFLAGS) -mcmodel=large -DLIBK -Dmalloc=kmalloc -Dfree=kfree
 
 all : tlibc.a tlibk.a libm.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 

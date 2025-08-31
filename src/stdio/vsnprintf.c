@@ -285,6 +285,11 @@ finish_flags:;
 			}
 			print_uint(buf,maxlen,uint,base,width*padding_sign,padding_char,precision == -1 ? 1 : precision,*fmt == 'X',positive_sign,alternate_form);
 			break;
+		case 'p':
+			if(precision != -1)padding_char = ' ';
+			uint = (uintptr_t)va_arg(args,void *);
+			print_uint(buf,maxlen,uint,16,width*padding_sign,padding_char,precision == -1 ? 1 : precision,*fmt == 'X',positive_sign,alternate_form);
+			break;
 		case 's':
 		case 'c':;
 			//TODO : wchar

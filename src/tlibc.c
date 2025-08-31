@@ -31,8 +31,6 @@ void __init_tlibc(int argc,char **argv,int envc,char **envp){
 
 	atexit(__fini_tlibc);
 
-	setlocale(LC_ALL,"POSIX");
-
 	_init();
 	for (ptrdiff_t i = 0; i < (__init_array_end - __init_array_start); i++){
 		__init_array_start[i]();

@@ -16,7 +16,7 @@ endif
 
 TARGET = stanix
 
-BUILDDIR=build
+BUILDDIR = build
 
 #first get all the src
 C_SRC_DIR = ctype libgen time stdlib string wchar stdio unistd locale pwd $(TARGET) $(ARCH)
@@ -24,8 +24,8 @@ C_SRC = $(shell find src -maxdepth 1 -name "*.c") $(foreach DIR, $(C_SRC_DIR), $
 C_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(basename $(C_SRC))))
 
 #object used in libk
-K_SRC = ctype/ctype.o string/memcpy.o string/strlen.o string/strcpy.o string/strncpy.o stdio/vsnprintf.o stdio/snprintf.o stdio/vsprintf.o stdio/sprintf.o stdlib/realpath.o
-K_OBJ = $(foreach FILE, $(K_SRC), $(BUILDDIR)/src/$(FILE))
+K_SRC = string/memset.o string/memcpy.o string/memchr.o string/memcmp.o string/strcat.o string/strlen.o  string/strnlen.o string/strcpy.o string/strncpy.o string/strcmp.o string/strncmp.o ctype/ctype.o stdio/vsnprintf.o stdio/snprintf.o stdio/vsprintf.o stdio/sprintf.o stdlib/realpath.o
+K_OBJ = $(foreach FILE, $(K_SRC), $(BUILDDIR)/libk/src/$(FILE))
 
 #if a file exist in math/$(ARCH) don't take the generic version in math/generic
 M_ARCH_SRC = $(shell find math/$(ARCH) -name "*.c" -or -name "*.s")
@@ -49,6 +49,8 @@ CFLAGS += -Wall \
 	-I include \
 	-I include/$(TARGET)
 
+KFLAGS = $(CFLAGS) -mcmodel=large -DLIBK
+
 all : tlibc.a tlibk.a libm.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 
 tlibc.a : $(C_OBJ)
@@ -63,6 +65,10 @@ libm.a : $(M_OBJ)
 $(BUILDDIR)/%.o : %.c
 	@mkdir -p $(shell dirname $@)
 	$(CC) $(CFLAGS) -D$(ARCH) -o $@ -c $^
+
+$(BUILDDIR)/libk/%.o : %.c
+	@mkdir -p $(shell dirname $@)
+	$(CC) $(KFLAGS) -D$(ARCH) -o $@ -c $^
 
 $(BUILDDIR)/%.o : %.s
 	@mkdir -p $(shell dirname $@)

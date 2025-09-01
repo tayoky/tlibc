@@ -14,10 +14,10 @@ extern char **environ;
 /// @param arg0 first arg
 /// @param args va_list of arg
 /// @return an vector
-static const char **ltov(const char *arg0,va_list args){
+static char **ltov(const char *arg0,va_list args){
 	int argc = 1;
-	const char **argv = malloc(sizeof(char *));
-	argv[0] = arg0;
+	char **argv = malloc(sizeof(char *));
+	argv[0] = (char*)arg0;
 
 	for(;;){
 		char *arg = va_arg(args,char *);
@@ -38,10 +38,10 @@ static const char **ltov(const char *arg0,va_list args){
 int execl(const char *pathname, const char *arg, ... /*, (char *) NULL */){
 	va_list args;
 	va_start(args,arg);
-	const char **argv = ltov(arg,args);
+	char **argv = ltov(arg,args);
 	va_end(args);
 
-	int ret = execv(pathname,(const char**)argv);
+	int ret = execv(pathname,argv);
 	free(argv);
 	return ret;
 }
@@ -49,10 +49,10 @@ int execl(const char *pathname, const char *arg, ... /*, (char *) NULL */){
 int execlp(const char *file, const char *arg, ... /*, (char *) NULL */){
 	va_list args;
 	va_start(args,arg);
-	const char **argv = ltov(arg,args);
+	char **argv = ltov(arg,args);
 	va_end(args);
 
-	int ret = execvp(file,(const char**)argv);
+	int ret = execvp(file,argv);
 	free(argv);
 	return ret;
 }
@@ -66,15 +66,15 @@ int execle(const char *pathname, const char *arg, ... /*, (char *) NULL, char *c
 	return -ENOTSUP;
 }
 
-int execv(const char *pathname,const char *const argv[]){
-	return execve(pathname,argv,(const char **)environ);
+int execv(const char *pathname,char *const argv[]){
+	return execve(pathname,argv,environ);
 }
 
-int execvp(const char *file,const char *const argv[]){
-	return execvpe(file,argv,(const char **)environ);
+int execvp(const char *file,char *const argv[]){
+	return execvpe(file,argv,environ);
 }
 
-int execvpe(const char *file,const char *const argv[],const char *const envp[]){
+int execvpe(const char *file,char *const argv[],char *const envp[]){
 	//check if it is a normal path (contiain at least one '/')
 	if(strchr(file,'/')){
 		return execve(file,argv,envp);

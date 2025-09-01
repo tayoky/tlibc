@@ -35,15 +35,25 @@ wint_t putwchar(wchar_t wc);
 int fputws(const wchar_t *ws,FILE *stream);
 
 wchar_t *wcscat(wchar_t *dest,const wchar_t *src);
+int wcscmp(const wchar_t *ws1,const wchar_t *ws2);
 wchar_t *wcschr(const wchar_t *ws,wchar_t wc);
 wchar_t *wcsstr(const wchar_t *ws1,const wchar_t *ws2);
 wchar_t *wcscpy(wchar_t *dest,const wchar_t *src);
 size_t wcslen(const wchar_t *ws);
+wchar_t *wcspbrk(const wchar_t *wcs,const wchar_t *search);
 
 wchar_t *wmemchr(const wchar_t *,wchar_t,size_t);
 int wmemcmp(const wchar_t *,const wchar_t *,size_t);
 wchar_t *wmemcpy(wchar_t *, const wchar_t *, size_t);
 wchar_t *wmemmove(wchar_t *,const wchar_t *,size_t);
 wchar_t *wmemset(wchar_t *,wchar_t,size_t);
+
+
+//ctype
+wint_t towupper(wint_t wc);
+wint_t towlower(wint_t wc);
+int iswupper(wint_t wc);
+int iswlower(wint_t wc);
+int iswcntrl(wint_t wc);
 
 #endif

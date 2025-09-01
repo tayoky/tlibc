@@ -14,7 +14,8 @@ struct timespec {
 };
 
 struct timezone {
-	long stub;
+	int tz_minuteswest;
+	int tz_dsttime;
 };
 
 int gettimeofday(struct timeval *tv, struct timezone *tz);

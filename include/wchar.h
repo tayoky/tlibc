@@ -20,6 +20,8 @@ wint_t btowc(int c);
 int mbrtowc(wchar_t *dest,const char *s,size_t n,mbstate_t *ps);
 int mbtowc(wchar_t *dest,const char *s,size_t n);
 size_t mbstowcs(wchar_t *dest,const char *src,size_t n);
+int wcrtomb(char *s,wchar_t wc,mbstate_t *ps);
+int wctomb(char *s,wchar_t wc);
 int mbsinit(const mbstate_t *ps);
 
 

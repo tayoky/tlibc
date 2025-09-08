@@ -44,8 +44,10 @@ struct dirent *readdir(DIR *dir){
 
 	//stupid POSIX api ...
 	//there are no function for the raw readdir syscall
-
+	int old_errno = errno;
 	if(__set_errno(__syscall3(SYS_readdir,dir->fd,(long)&ret,(long)dir->offset)) < 0){
+		//hitting end (no more entry) should not trigger an errno
+		if(errno == ENOENT) errno = old_errno;
 		return NULL;
 	}
 	

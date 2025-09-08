@@ -6,7 +6,7 @@
 
 void _init(void);
 void _fini(void);
-int main(int argc,char **argv);
+int main(int argc,char **argv,char **envp);
 
 typedef void (*func)(void);
 
@@ -35,5 +35,5 @@ void __init_tlibc(int argc,char **argv,int envc,char **envp){
 	for (ptrdiff_t i = 0; i < (__init_array_end - __init_array_start); i++){
 		__init_array_start[i]();
 	}
-	exit(main(argc,argv));
+	exit(main(argc,argv,envp));
 }

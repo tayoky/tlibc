@@ -175,5 +175,8 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_ftruncate    63
 #define SYS_link         64
 #define SYS_rename       65
+#define SYS_lstat        66
+#define SYS_lchmod       67
+#define SYS_lchown       68
 
 #endif

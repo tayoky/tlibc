@@ -1,7 +1,7 @@
 #include <sys/stat.h>
+#include <syscall.h>
+#include <errno.h>
 
-//when writing this link don't exist in stanix
-//so lstat in not implemented
 int lstat(const char *pathname,struct stat *st){
-	return stat(pathname,st);
+	return __set_errno(__syscall2(SYS_lstat,(long)pathname,(long)st));
 }

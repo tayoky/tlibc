@@ -71,5 +71,6 @@
 #define PAGE_SIZE PAGESIZE
 
 #define MB_CUR_MAX 4
+#define SYMLOOP_MAX 8 //os specific
 
 #endif

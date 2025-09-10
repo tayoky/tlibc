@@ -53,6 +53,8 @@ int close(int fd);
 
 int unlink(const char *pathname);
 int link(const char *oldpath, const char *newpath);
+int symlink(const char *target, const char *linkpath);
+ssize_t readlink(const char *path,char *buf, size_t bufsize);
 int rmdir(const char *pathname);
 
 unsigned int sleep(unsigned int seconds);

@@ -178,5 +178,7 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_lstat        66
 #define SYS_lchmod       67
 #define SYS_lchown       68
+#define SYS_symlink      69
+#define SYS_readlink     70
 
 #endif

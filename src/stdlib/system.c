@@ -20,7 +20,7 @@ int system(const char *command){
 				(char *)command,
 				NULL
 			};
-			execvp(shell,(const char * const*)argv);
+			execvp(shell,argv);
 			//pass errno trought the parent
 			exit(127 + errno);
 		}

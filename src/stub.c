@@ -2,3 +2,5 @@
 
 STUB(utime)
 STUB(alarm)
+STUB(freopen)
+STUB(ttyname)

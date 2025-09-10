@@ -41,3 +41,28 @@ int tcflush(int fd, int queue_selector){
 	//TODO : do we even need this ?
 	return 0;
 }
+
+speed_t cfgetispeed(const struct termios *termios_p){
+	return (termios_p->c_cflag >> IBSHIFT) & CBAUD;
+}
+
+speed_t cfgetospeed(const struct termios *termios_p){
+	return termios_p->c_cflag & CBAUD;
+}
+
+int cfsetispeed(struct termios *termios_p, speed_t speed){
+	termios_p->c_cflag &= ~CIBAUD;
+	termios_p->c_iflag |= speed << IBSHIFT;
+	return 0;
+}
+
+int cfsetospeed(struct termios *termios_p, speed_t speed){
+	termios_p->c_cflag &= ~CBAUD;
+	termios_p->c_iflag |= speed;
+	return 0;
+}
+
+int cfsetspeed(struct termios *termios_p, speed_t speed){
+	cfsetispeed(termios_p,speed);
+	return cfsetospeed(termios_p,speed);
+}

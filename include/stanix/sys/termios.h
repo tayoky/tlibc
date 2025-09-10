@@ -29,48 +29,58 @@ struct termios {
 	cc_t     c_cc[NCCS]; //control chars
 };
 
-#define CSIZE  3
-#define CS5    0
-#define CS6    1
-#define CS7    2
-#define CS8    3
+//most of this stuff is actully unimplemented in the kernel
+#define CBAUD  15
+#define CSIZE  (3UL << 4)
+#define CS5    (0UL << 4)
+#define CS6    (1UL << 4)
+#define CS7    (2UL << 4)
+#define CS8    (3UL << 4)
+#define CSTOPB (1UL << 6)
+#define CREAD  (1UL << 7)
+#define PARENB (1UL << 8)
+#define PARODD (1UL << 9)
+#define HUPCL  (1UL << 10)
+#define CLOCAL (1UL << 11)
+#define IBSHIFT 12
+#define CIBAUD (CBAUD << IBSHIFT)
 
-#define IGNBRK  1UL << 0
-#define BRKINT  1UL << 1
-#define IGNPAR  1UL << 2
-#define PARMRK  1UL << 3
-#define INPCK   1UL << 4
-#define ISTRIP  1UL << 5
-#define INLCR   1UL << 6
-#define IGNCR   1UL << 7
-#define ICRNL   1UL << 8
-#define IUCLC   1UL << 9
-#define IXON    1UL << 10
-#define IXANY   1UL << 11
-#define IXOFF   1UL << 12
-#define IMAXBEL 1UL << 13
+#define IGNBRK  (1UL << 0)
+#define BRKINT  (1UL << 1)
+#define IGNPAR  (1UL << 2)
+#define PARMRK  (1UL << 3)
+#define INPCK   (1UL << 4)
+#define ISTRIP  (1UL << 5)
+#define INLCR   (1UL << 6)
+#define IGNCR   (1UL << 7)
+#define ICRNL   (1UL << 8)
+#define IUCLC   (1UL << 9)
+#define IXON    (1UL << 10)
+#define IXANY   (1UL << 11)
+#define IXOFF   (1UL << 12)
+#define IMAXBEL (1UL << 13)
 
 
-#define OPOST   1UL << 0
-#define OLCUC   1UL << 1
-#define ONLCR   1UL << 2
-#define OCRNL   1UL << 3
-#define ONOCR   1UL << 4
-#define ONLRET  1UL << 5
-#define OFILL   1UL << 6
-#define OFDEL   1UL << 7
+#define OPOST   (1UL << 0)
+#define OLCUC   (1UL << 1)
+#define ONLCR   (1UL << 2)
+#define OCRNL   (1UL << 3)
+#define ONOCR   (1UL << 4)
+#define ONLRET  (1UL << 5)
+#define OFILL   (1UL << 6)
+#define OFDEL   (1UL << 7)
 
-#define ISIG    1UL << 0
-#define ICANON  1UL << 1
-#define ECHO    1UL << 2
-#define ECHOE   1UL << 3
-#define ECHOK   1UL << 4
-#define ECHONL  1UL << 5
-#define ECHOCTL 1UL << 6
-#define ECHOKE  1UL << 7
-#define NOFLSH  1UL << 8
-#define TOSTOP  1UL << 9
-#define IEXTEN  1UL << 10
+#define ISIG    (1UL << 0)
+#define ICANON  (1UL << 1)
+#define ECHO    (1UL << 2)
+#define ECHOE   (1UL << 3)
+#define ECHOK   (1UL << 4)
+#define ECHONL  (1UL << 5)
+#define ECHOCTL (1UL << 6)
+#define ECHOKE  (1UL << 7)
+#define NOFLSH  (1UL << 8)
+#define TOSTOP  (1UL << 9)
+#define IEXTEN  (1UL << 10)
 
 #define TCSANOW   0
 #define TCSADRAIN 1
@@ -116,5 +126,10 @@ pid_t tcgetprgp(int fd);
 int tcsetpgrp(int fd,pid_t pgrp);
 void cfmakeraw(struct termios *termios_p);
 int tcflush(int fd, int queue_selector);
+speed_t cfgetispeed(const struct termios *termios_p);
+speed_t cfgetospeed(const struct termios *termios_p);
+int cfsetispeed(struct termios *termios_p, speed_t speed);
+int cfsetospeed(struct termios *termios_p, speed_t speed);
+int cfsetspeed(struct termios *termios_p, speed_t speed);
 
 #endif

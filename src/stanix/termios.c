@@ -34,3 +34,10 @@ void cfmakeraw(struct termios *termios_p){
 	termios_p->c_oflag &= ~OPOST;
 	termios_p->c_lflag &= ~(ECHO | ICANON | ISIG | IEXTEN);
 }
+
+int tcflush(int fd, int queue_selector){
+	(void)fd;
+	(void)queue_selector;
+	//TODO : do we even need this ?
+	return 0;
+}

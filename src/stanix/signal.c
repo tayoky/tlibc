@@ -6,11 +6,13 @@
 #include <string.h>
 
 int sigaddset(sigset_t *sigset, int signum){
+	if(signum <= 0 || signum >= NSIG)return __set_errno(-EINVAL);
 	*sigset |= sigmask(signum);
 	return 0;
 }
 
 int sigdelset(sigset_t *sigset, int signum){
+	if(signum <= 0 || signum >= NSIG)return __set_errno(-EINVAL);
 	*sigset &= ~sigmask(signum);
 	return 0;
 }
@@ -23,6 +25,11 @@ int sigemptyset(sigset_t *sigset){
 int sigfillset(sigset_t *sigset){
 	*sigset = (sigset_t)(-1);
 	return 0;
+}
+
+int sigismember(const sigset_t *set, int signum){
+	if(signum <= 0 || signum >= NSIG)return __set_errno(-EINVAL);
+	return !!(*set & sigmask(signum));
 }
 
 int sigprocmask(int how, const sigset_t *set, sigset_t *oldset){

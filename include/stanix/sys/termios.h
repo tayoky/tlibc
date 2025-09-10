@@ -29,6 +29,11 @@ struct termios {
 	cc_t     c_cc[NCCS]; //control chars
 };
 
+#define CSIZE  3
+#define CS5    0
+#define CS6    1
+#define CS7    2
+#define CS8    3
 
 #define IGNBRK  1UL << 0
 #define BRKINT  1UL << 1
@@ -71,10 +76,45 @@ struct termios {
 #define TCSADRAIN 1
 #define TCSAFLUSH 2
 
+
+//baudrate in 2025 :(
+#define B0        0
+#define B50       1
+#define B75       2
+#define B110      3
+#define B134      4
+#define B150      5
+#define B200      6
+#define B300      7
+#define B600      8
+#define B1200     9
+#define B1800     10
+#define B2400     11
+#define B4800     12
+#define B9600     13
+#define B19200    14
+#define B38400    15
+#define B57600    16
+#define B115200   17
+#define B230400   18
+#define B460800   19
+#define B500000   20
+#define B576000   21
+#define B921600   22
+#define B1000000  23
+#define B1152000  24
+#define B1500000  25
+#define B2000000  26
+
+#define TCIOFLUSH 0
+#define TCIFLUSH  1
+#define TCOFLUSH  2
+
 int tcgetattr(int fd,struct termios *termios_p);
 int tcsetattr(int fd,int optional_actions,const struct termios *termios_p);
 pid_t tcgetprgp(int fd);
 int tcsetpgrp(int fd,pid_t pgrp);
 void cfmakeraw(struct termios *termios_p);
+int tcflush(int fd, int queue_selector);
 
 #endif

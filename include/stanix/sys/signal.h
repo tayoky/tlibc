@@ -82,6 +82,7 @@ int sigaddset(sigset_t *sigset, int signum);
 int sigdelset(sigset_t *sigset, int signum);
 int sigemptyset(sigset_t *sigset);
 int sigfillset(sigset_t *sigset);
+int sigismember(const sigset_t *set, int signum);
 int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
 int sigpending(sigset_t *set);
 int sigsuspend(const sigset_t *mask);

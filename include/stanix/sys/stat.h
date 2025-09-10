@@ -20,40 +20,43 @@ struct stat {
 	blkcnt_t  st_blocks;   //number of blocks allocated for this object
 };
 
-#define S_IRUSR 0x400
-#define S_IWUSR 0x200
-#define S_IXUSR 0x100
+#define S_IRUSR 0400
+#define S_IWUSR 0200
+#define S_IXUSR 0100
 #define S_IRWXU S_IRUSR | S_IWUSR | S_IXUSR
-#define S_ISUID 0x800 //set uid bit
 
-#define S_IRGRP 0x40
-#define S_IWGRP 0x20
-#define S_IXGRP 0x10
+#define S_IRGRP 040
+#define S_IWGRP 020
+#define S_IXGRP 010
 #define S_IRWXG S_IRGRP | S_IWGRP | S_IXGRP
-#define S_ISGID 0x80 //set gid bit
 
-#define S_IROTH 0x4
-#define S_IWOTH 0x2
-#define S_IXOTH 0x1
+#define S_IROTH 04
+#define S_IWOTH 02
+#define S_IXOTH 01
 #define S_IRWXO S_IROTH | S_IWOTH | S_IXOTH
-#define S_ISVTX 0x8 //restriction deletion bit
+
+#define S_ISVTX 01000 //restriction deletion bit
+#define S_ISUID 02000 //set uid bit
+#define S_ISGID 04000 //set gid bit
 
 //files types
-#define S_IFBLK 0x01000 //block device
-#define S_IFCHR 0x02000 //character device
-#define S_IFIFO 0x04000 //FIFO (Firt In First Out) 
-#define S_IFREG 0x08000 //regular file
-#define S_IFDIR 0x10000 //directory
-#define S_IFLNK 0x20000 //symbolic link
+#define S_IFBLK 0010000 //block device
+#define S_IFCHR 0020000 //character device
+#define S_IFIFO 0040000 //FIFO (Firt In First Out) 
+#define S_IFREG 0100000 //regular file
+#define S_IFDIR 0200000 //directory
+#define S_IFLNK 0400000 //symbolic link
+
+#define S_IFMT  0770000
 
 //types test
 
-#define S_ISBLK(m)  (m & S_IFBLK) //Test for a block special file. 
-#define S_ISCHR(m)  (m & S_IFCHR) //Test for a character special file. 
-#define S_ISDIR(m)  (m & S_IFDIR) //Test for a directory. 
-#define S_ISFIFO(m) (m & S_IFIFO) //Test for a pipe or FIFO special file. 
-#define S_ISREG(m)  (m & S_IFREG) //Test for a regular file. 
-#define S_ISLNK(m)  (m & S_IFLNK) //Test for a symbolic link. 
+#define S_ISBLK(m)  ((m & S_IFMT) == S_IFBLK) //Test for a block special file. 
+#define S_ISCHR(m)  ((m & S_IFMT) == S_IFCHR) //Test for a character special file. 
+#define S_ISDIR(m)  ((m & S_IFMT) == S_IFDIR) //Test for a directory. 
+#define S_ISFIFO(m) ((m & S_IFMT) == S_IFIFO) //Test for a pipe or FIFO special file. 
+#define S_ISREG(m)  ((m & S_IFMT) == S_IFREG) //Test for a regular file. 
+#define S_ISLNK(m)  ((m & S_IFMT) == S_IFLNK) //Test for a symbolic link. 
 
 //functions
 int stat(const char *pathname,struct stat *st);

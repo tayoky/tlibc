@@ -17,10 +17,10 @@ count++;\
 }
 
 static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int padding,char padding_char,int min,int high,char sign,int prefix){
+	static const char h[] = "0123456789ABCDEF";
+	static const char l[] = "0123456789abcdef";
+	const char *figures = high ? h : l;
 	char str[64];
-	static char h[] = "0123456789ABCDEF";
-	static char l[] = "0123456789abcdef";
-	char *figures = high ? h : l;
 	int count = 0;
 	int i = 63;
 	str[63] = '\0';
@@ -86,14 +86,9 @@ static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int paddi
 
 #define print_uint(...) tmp = _print_uint(__VA_ARGS__);{\
 	count += tmp;\
-	if(buf)buf += (size_t)tmp > maxlen - 1 ? maxlen - 1 : (size_t)tmp;\
-	if(maxlen){\
-		if((size_t)tmp > maxlen - 1){\
-			maxlen = 1;\
-		} else {\
-			maxlen -= tmp;\
-		}\
-	}\
+	if(maxlen && (size_t)tmp > maxlen - 1)tmp = maxlen - 1;\
+	if(buf)   buf    += tmp;\
+	if(maxlen)maxlen -= tmp;\
 }
 
 #define T(var,type) if(lenght == sizeof(type) && !parsed){\

@@ -4,7 +4,7 @@
 #include <sys/signal.h>
 #include <stdint.h>
 
-typedef uintptr_t mcontext_t[32];
+typedef uintptr_t mcontext_t[64];
 typedef struct __ucontext {
     struct __ucontext *uc_link;
     sigset_t    uc_sigmask;

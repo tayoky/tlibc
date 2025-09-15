@@ -50,6 +50,9 @@ CFLAGS += -Wall \
 	-I include/$(TARGET)
 
 KFLAGS = $(CFLAGS) -mcmodel=large -DLIBK -Dmalloc=kmalloc -Dfree=kfree
+ifeq ($(ARCH),x86_64)
+	KFLAGS += -mno-sse -mno-sse2 -mno-80387 -mno-80387
+endif
 
 all : tlibc.a tlibk.a libm.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 

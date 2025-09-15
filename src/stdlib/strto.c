@@ -218,6 +218,8 @@ strto(long,strtol,LONG_MAX,LONG_MIN)
 strto(long long,strtoll,LLONG_MAX,LLONG_MIN)
 strtou(unsigned long,strtoul,ULONG_MAX)
 strtou(unsigned long long,strtoull,ULLONG_MAX)
+#ifndef LIBK
 strtd(float,strtof)
 strtd(double,strtod)
 strtd(long double,strtold)
+#endif

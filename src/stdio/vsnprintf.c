@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <ctype.h>
+#include <limits.h>
 #include <string.h>
 #include <sys/types.h>
 
@@ -283,7 +284,7 @@ finish_flags:;
 		case 'p':
 			if(precision != -1)padding_char = ' ';
 			uint = (uintptr_t)va_arg(args,void *);
-			print_uint(buf,maxlen,uint,16,width*padding_sign,padding_char,precision == -1 ? 1 : precision,*fmt == 'X',positive_sign,alternate_form);
+			print_uint(buf,maxlen,uint,16,width*padding_sign,padding_char,precision == -1 ? (int)sizeof(uintptr_t) * CHAR_BIT : precision,*fmt == 'X',positive_sign,alternate_form);
 			break;
 		case 's':
 		case 'c':;

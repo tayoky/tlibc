@@ -19,13 +19,6 @@ struct tm {
 	const char *tm_zone; //STimezone abbreviation.SS
 };
 
-
-typedef long clock_t;
-typedef int clockid_t;
-
-#define CLOCK_REALTIME  0
-#define CLOCK_MONOTONIC 1
-
 time_t time(time_t * tloc);
 struct tm *gmtime(const time_t *clock);
 struct tm *gmtime_r(const time_t *clock, struct tm *tm);
@@ -37,6 +30,8 @@ char *ctime(const time_t *clock);
 char *ctime_r(const time_t *clock, char *buf);
 time_t mktime(struct tm *);
 int clock_gettime(clockid_t clock_id, struct timespec *tp);
+int clock_settime(clockid_t clock_id, struct timespec *tp);
+int nanosleep(const struct timespec *, struct timespec *);
 void tzset(void);
 size_t strftime(char *, size_t, const char *, const struct tm *);
 size_t strftime_l(char *buf, size_t size, const char *fmt, const struct tm *tm,locale_t locale);

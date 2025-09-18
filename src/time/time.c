@@ -61,10 +61,6 @@ static long nbofdayin(long year,int month){
 }
 
 clock_t    clock(void);
-int        clock_getres(clockid_t, struct timespec *);
-int        clock_settime(clockid_t, const struct timespec *);
-
-
 
 struct tm *getdate(const char *);
 
@@ -135,25 +131,8 @@ time_t mktime(struct tm *tm){
 	}
 	return sec;
 }
-int        nanosleep(const struct timespec *, struct timespec *);
-
-
 
 char      *strptime(const char *, const char *, struct tm *);
-
-int clock_gettime(clockid_t clock_id, struct timespec *tp){
-	struct timeval tv;
-	switch(clock_id){
-	case CLOCK_REALTIME:
-	case CLOCK_MONOTONIC:
-		gettimeofday(&tv,NULL);
-		tp->tv_sec = tv.tv_sec; 
-		tp->tv_nsec = tv.tv_usec * 1000; 
-		return 0;
-	default:
-		return -EINVAL;
-	}
-}
 
 time_t time(time_t * tloc){
 	struct timeval tv;

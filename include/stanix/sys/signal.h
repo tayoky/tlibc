@@ -77,6 +77,7 @@ typedef struct {
 #define SA_RESTART 0
 
 typedef void (*sighandler_t)(int);
+typedef int sig_atomic_t;
 
 int sigaddset(sigset_t *sigset, int signum);
 int sigdelset(sigset_t *sigset, int signum);

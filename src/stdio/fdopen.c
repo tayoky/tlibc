@@ -11,6 +11,7 @@ FILE *fdopen(int handle,const char *type){
 	}
 
 	FILE *stream = __create_stream();
+	if(!stream)return NULL;
 	stream->fd = handle;
 
 	return stream;

@@ -21,18 +21,13 @@ int system(const char *command){
 				NULL
 			};
 			execvp(shell,argv);
-			//pass errno trought the parent
-			exit(127 + errno);
+			exit(127);
 		}
 		if(child < 0){
 			return -1;
 		}
 		int status = 0;
 		waitpid(child,&status,0);
-		if(WEXITSTATUS(status) > 127){
-			errno = WEXITSTATUS(status) - 127;
-			return -1;
-		}
 		return status;
 	}
 }

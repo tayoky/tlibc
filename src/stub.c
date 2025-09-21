@@ -2,7 +2,6 @@
 
 STUB(utime)
 STUB(alarm)
-STUB(freopen)
 STUB(ttyname)
 STUB(popen)
 STUB(pclose)

@@ -22,18 +22,16 @@ int wcrtomb(char *s,wchar_t wc,mbstate_t *ps){
 	if(!s)return len;
 
 	if(len == 1){
-		s[0] = 0x7f & (char)wc;
-		return 0;
+		s[0] = (char)wc;
+		return 1;
 	}
 
-	//higger bits of wc
-	s[0] = (wc >> (8 * (len - 1))) & ~(1 << (8 - len - 1));
-	//len indicator
-	s[0] |= (char)(0xf00 >> len);
+	//first byte is special
+	s[0] = (uint8_t)(0xF00 >> len) | (wc >> 6 * (len - 1));
 
 	for(int i=1; i<len; i++){
-		int shift_amount = (len - i - 1);
-		s[i] = 0x80 | (0xc0 & (uint8_t)(wc >> shift_amount));
+		int shift_amount = (len - i - 1) * 6;
+		s[i] = 0x80 | (0x3F & (uint8_t)(wc >> shift_amount));
 	}
 
 	return len;

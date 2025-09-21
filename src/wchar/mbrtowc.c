@@ -2,7 +2,7 @@
 #include <errno.h>
 
 //simple mbrtowc for utf8
-#define S_CHECK(c) ((c & (3<<6)) == 1<<7)
+#define S_CHECK(c) ((c & 0xC0) == 0x80)
 int mbrtowc(wchar_t *dest,const char *s,size_t n,mbstate_t *ps){
 	(void)ps; //no shift in utf8
 	const unsigned char *src = (const unsigned char *)s;
@@ -23,14 +23,18 @@ int mbrtowc(wchar_t *dest,const char *s,size_t n,mbstate_t *ps){
 
 	if(!dest)return len;
 
+	if(len == 1){
+		*dest = src[0];
+		return src[0] ? 1 : 0;
+	}
+
 	int shift = 0;
 	*dest = 0;
 	for(int i=len-1; i>0; i--){
 		*dest |= (src[i] & 0x3F) << shift;
 		shift += 6;
 	}
-
-	*dest |= (src[0] & (0x7F >> (len-1))) << shift;
+	*dest |= (src[0] & (0x7F >> (len))) << shift;
 	return len;
 
 }

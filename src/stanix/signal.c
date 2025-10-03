@@ -44,6 +44,10 @@ int sigsuspend(const sigset_t *mask){
 	return __set_errno(__syscall1(SYS_sigsuspend,(long)mask));
 }
 
+int sigwait(const sigset_t *set, int *sig){
+	return __set_errno(__syscall2(SYS_sigwait,(long)set,(long)sig));
+}
+
 int kill(pid_t pid, int sig){
 	return __set_errno(__syscall2(SYS_kill,pid,sig));
 }

@@ -3,14 +3,12 @@
 
 #include <sys/types.h>
 
-typedef struct __pthread {
-	pid_t tid;
-} pthread_t;
+typedef pid_t pthread_t;
 
 //idk
 typedef int pthread_attr_t;
 
-int pthread_create(pthread_t *thread,const pthread_attr_t *attr,typeof(void *(void *)) *start_routine,void *arg);
+int pthread_create(pthread_t *thread,const pthread_attr_t *attr,void *(*start_routine)(void *),void *arg);
 void pthread_exit(void *retval);
 
 #endif

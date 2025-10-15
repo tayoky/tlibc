@@ -54,12 +54,15 @@ ifeq ($(ARCH),x86_64)
 	KFLAGS += -mno-sse -mno-sse2 -mno-80387 -mno-80387
 endif
 
-all : tlibc.a tlibk.a libm.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
+all : tlibc.a tlibk.a libm.a libpthread.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 
 tlibc.a : $(C_OBJ)
 	$(AR) rcs $@ $^
 
 tlibk.a : $(K_OBJ)
+	$(AR) rcs $@ $^
+
+libpthread.a : $(BUILDDIR)/stub/pthread.o
 	$(AR) rcs $@ $^
 
 libm.a : $(M_OBJ)
@@ -100,6 +103,8 @@ install : header all
 	@cp tlibc.a $(PREFIX)/lib/libc.a
 	@echo "[install libm.a]"
 	@cp libm.a $(PREFIX)/lib/libm.a
+	@echo "[install libpthread.a]"
+	@cp libpthread.a $(PREFIX)/lib/libpthread.a
 config.mk :
 	$(error run ./configure before running make)
 .mk :

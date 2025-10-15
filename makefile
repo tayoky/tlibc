@@ -19,7 +19,7 @@ TARGET = stanix
 BUILDDIR = build
 
 #first get all the src
-C_SRC_DIR = ctype libgen time stdlib string wchar stdio unistd locale pwd pthread $(TARGET) $(ARCH)
+C_SRC_DIR = ctype libgen time stdlib string wchar stdio unistd locale pwd pthread dl $(TARGET) $(ARCH)
 C_SRC = $(shell find src -maxdepth 1 -name "*.c") $(foreach DIR, $(C_SRC_DIR), $(shell find src/$(DIR) -name "*.c" -or -name "*.s"))
 C_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(basename $(C_SRC))))
 
@@ -54,7 +54,7 @@ ifeq ($(ARCH),x86_64)
 	KFLAGS += -mno-sse -mno-sse2 -mno-80387 -mno-80387
 endif
 
-all : tlibc.a tlibk.a libm.a libpthread.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
+all : tlibc.a tlibk.a libm.a libpthread.a libdl.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 
 tlibc.a : $(C_OBJ)
 	$(AR) rcs $@ $^
@@ -63,6 +63,9 @@ tlibk.a : $(K_OBJ)
 	$(AR) rcs $@ $^
 
 libpthread.a : $(BUILDDIR)/stub/pthread.o
+	$(AR) rcs $@ $^
+
+libdl.a : $(BUILDDIR)/stub/dl.o
 	$(AR) rcs $@ $^
 
 libm.a : $(M_OBJ)
@@ -105,6 +108,8 @@ install : header all
 	@cp libm.a $(PREFIX)/lib/libm.a
 	@echo "[install libpthread.a]"
 	@cp libpthread.a $(PREFIX)/lib/libpthread.a
+	@echo "[install libdl.a]"
+	@cp libdl.a $(PREFIX)/lib/libdl.a
 config.mk :
 	$(error run ./configure before running make)
 .mk :

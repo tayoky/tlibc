@@ -19,7 +19,7 @@ TARGET = stanix
 BUILDDIR = build
 
 #first get all the src
-C_SRC_DIR = ctype libgen time stdlib string wchar stdio unistd locale pwd $(TARGET) $(ARCH)
+C_SRC_DIR = ctype libgen time stdlib string wchar stdio unistd locale pwd pthread $(TARGET) $(ARCH)
 C_SRC = $(shell find src -maxdepth 1 -name "*.c") $(foreach DIR, $(C_SRC_DIR), $(shell find src/$(DIR) -name "*.c" -or -name "*.s"))
 C_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(basename $(C_SRC))))
 

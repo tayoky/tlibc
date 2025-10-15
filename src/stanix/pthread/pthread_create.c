@@ -25,5 +25,5 @@ int pthread_create(pthread_t *thread,const pthread_attr_t *attr,void *(*start_ro
 	args->start_routine = start_routine;
 	void *stack = mmap(NULL,STACK_SIZE,PROT_READ | PROT_WRITE,MAP_PRIVATE | MAP_ANONYMOUS,0,0);
 	if(stack == MAP_FAILED)return -1;
-	return clone((void *)__pthread_creator,stack,CLONE_THREAD,args,NULL,NULL,thread);
+	return stanix_new_thread((void *)__pthread_creator,stack,0,args,NULL,thread);
 }

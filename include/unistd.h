@@ -86,7 +86,8 @@ int chdir(const char *path);
 int isatty(int fd);
 
 //process management
-pid_t getpid();
+pid_t gettid(void);
+pid_t getpid(void);
 pid_t tcgetpgrp(int fd);
 int tcsetpgrp(int fd,pid_t pgrp);
 int setpgid(pid_t pid, pid_t pgid);

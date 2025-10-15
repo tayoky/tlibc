@@ -3,9 +3,7 @@
 
 #include <sys/types.h>
 
-int clone(int (*fn)(void*),void *stack,int flags,void *arg,pid_t *parent_tid,void *tls,pid_t *child_tid);
-
-#define CLONE_THREAD 0x01
+int stanix_new_thread(void (*fn)(void*),void *stack,int flags,void *arg,void *tls,pid_t *child_tid);
 
 
 #endif

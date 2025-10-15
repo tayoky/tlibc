@@ -180,7 +180,8 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_lchown        68
 #define SYS_symlink       69
 #define SYS_readlink      70
-#define SYS_clone         71
+#define SYS_new_thread    71
 #define SYS_thread_exit   72
+#define SYS_gettid        73
 
 #endif

@@ -1,6 +1,7 @@
 #include <pthread.h>
 #include <syscall.h>
+#include <stdnoreturn.h>
 
-void pthread_exit(void *retval){
+void noreturn pthread_exit(void *retval){
 	__syscall1(SYS_thread_exit,(long)retval);
 }

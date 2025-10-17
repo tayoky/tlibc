@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 
-#define STACK_SIZE 64 * 1024
-
 struct pthread_args {
 	void *arg;
 	void *(*start_routine)(void *);
@@ -23,7 +21,13 @@ int pthread_create(pthread_t *thread,const pthread_attr_t *attr,void *(*start_ro
 	struct pthread_args *args = malloc(sizeof(struct pthread_args));
 	args->arg = arg;
 	args->start_routine = start_routine;
-	void *stack = mmap(NULL,STACK_SIZE,PROT_READ | PROT_WRITE,MAP_PRIVATE | MAP_ANONYMOUS,0,0);
+
+	pthread_attr_t default_attr;
+	if(!attr){
+		pthread_attr_init(&default_attr);
+		attr = &default_attr;
+	}
+	void *stack = attr->stack ? attr->stack : mmap(NULL,attr->stack_size,PROT_READ | PROT_WRITE,MAP_PRIVATE | MAP_ANONYMOUS,0,0);
 	if(stack == MAP_FAILED)return -1;
 	return stanix_new_thread((void *)__pthread_creator,stack,0,args,NULL,thread);
 }

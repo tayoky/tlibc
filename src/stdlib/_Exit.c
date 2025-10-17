@@ -1,6 +1,7 @@
+#include <stdnoreturn.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-void _Exit(int status){
+noreturn void _Exit(int status){
 	_exit(status);
 }

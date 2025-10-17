@@ -1,7 +1,8 @@
 #ifndef STDLIB_H
 #define STDLIB_H
 
-#include <stddef.h> 
+#include <stdnoreturn.h> 
+#include <stddef.h>
 #include <limits.h>
 
 int rand(void);
@@ -10,8 +11,8 @@ void srand(unsigned int seed);
 
 #define RAND_MAX INT_MAX
 
-void _Exit(int status);
-void exit(int status);
+noreturn void _Exit(int status);
+noreturn void exit(int status);
 int atexit(void (*func)(void));
 
 void *malloc(size_t amount);

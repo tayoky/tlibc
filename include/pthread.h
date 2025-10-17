@@ -14,6 +14,7 @@
 
 typedef pid_t pthread_t;
 typedef atomic_flag pthread_once_t;
+typedef atomic_flag pthread_spinlock_t;
 typedef struct __pthread_attr {
     void *stack;
     size_t stack_size;
@@ -23,10 +24,11 @@ typedef struct __pthread_attr {
 } pthread_attr_t;
 
 #define PTHREAD_ONCE_INIT ATOMIC_FLAG_INIT
-
+#define PTHREAD_PROCESS_PRIVATE 0
+#define PTHREAD_PROCESS_SHARED  1
 
 int pthread_create(pthread_t *thread,const pthread_attr_t *attr,void *(*start_routine)(void *),void *arg);
-void noreturn pthread_exit(void *retval);
+noreturn void pthread_exit(void *retval);
 int pthread_equal(pthread_t t1, pthread_t t2);
 pthread_t pthread_self(void);
 int pthread_once(pthread_once_t *once_control, void (*init_routine)(void));
@@ -38,5 +40,10 @@ int pthread_attr_setstack(pthread_attr_t *attr,void *stackaddr,size_t stacksize)
 int pthread_attr_getstack(const pthread_attr_t *restrict attr,void **restrict stackaddr,size_t *restrict stacksize);
 int pthread_attr_setguardsize(pthread_attr_t *attr, size_t guardsize);
 int pthread_attr_getguardsize(const pthread_attr_t *restrict attr,size_t *restrict guardsize);
+int pthread_spin_init(pthread_spinlock_t *lock, int pshared);
+int pthread_spin_destroy(pthread_spinlock_t *lock);
+int pthread_spin_lock(pthread_spinlock_t *lock);
+int pthread_spin_trylock(pthread_spinlock_t *lock);
+int pthread_spin_unlock(pthread_spinlock_t *lock);
 
 #endif

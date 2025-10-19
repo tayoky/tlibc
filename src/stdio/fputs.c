@@ -2,6 +2,6 @@
 #include <string.h>
 
 int fputs(const char *str,FILE *stream){
-	stream->errno = 0;
-	return !fwrite(str,sizeof(char),strlen(str),stream) && stream->errno ? -1 : 0;
+	stream->error = 0;
+	return !fwrite(str,sizeof(char),strlen(str),stream) && stream->error ? -1 : 0;
 }

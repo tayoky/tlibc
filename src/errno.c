@@ -1,3 +1,6 @@
 #include <errno.h>
 
-int errno;
+int *__errno_location(void){
+    static int err;
+    return &err;
+}

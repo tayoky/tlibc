@@ -17,6 +17,6 @@ wint_t fgetwc(FILE *stream){
 		}
 	}
 	//invalid wchar
-	stream->errno = errno;
+	stream->error = errno;
 	return WEOF;
 }

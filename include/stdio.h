@@ -13,7 +13,7 @@ struct _FILE{
 	char *buf;
 	size_t bufsize;
 	size_t usedsize;
-	unsigned long errno;
+	unsigned long error;
 	int fd;
 	int eof;
 	int unget;

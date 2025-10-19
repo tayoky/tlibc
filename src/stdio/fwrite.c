@@ -14,7 +14,7 @@ size_t fwrite(const void *ptr, size_t size, size_t n, FILE *stream){
 
 		if(wsize < 0){
 			//it's an error
-			stream->errno = errno;
+			stream->error = errno;
 			return 0;
 		}
 		if((size_t)wsize < size * n){

@@ -20,7 +20,7 @@ size_t fread(void * ptr, size_t size, size_t n, FILE *stream){
 
 	if(rsize < 0){
 		//it's an error
-		stream->errno = errno;
+		stream->error = errno;
 		return 0;
 	}
 

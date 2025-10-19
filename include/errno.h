@@ -1,5 +1,5 @@
-#ifndef ERRNO_H
-#define ERRNO_H
+#ifndef _ERRNO_H
+#define _ERRNO_H
 
 #define EPERM 1               /* Not super-user */
 #define ENOENT 2              /* No such file or directory */
@@ -125,7 +125,10 @@
 #define ESTRPIPE 143          /* Streams pipe error */
 #define EWOULDBLOCK EAGAIN    /* Operation would block */
 
-extern int errno;
+int *__errno_location(void);
+
+#define errno (*__errno_location())
+
 static inline int __set_errno(int ret){ 
 	if(ret < 0){
 		errno = -ret;

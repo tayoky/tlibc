@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sched.h>
 #include <locale.h>
 
 void _init(void);
@@ -26,6 +27,10 @@ void __fini_tlibc(void){
 void __init_tlibc(int argc,char **argv,int envc,char **envp){
 	(void)argc;
 	(void)argv;
+
+	//setup a uthread for the main thread
+	__set_tls(__new_uthread());
+
 	__init_heap();
 	__init_environ(envc,envp);
 

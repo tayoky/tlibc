@@ -12,6 +12,7 @@ struct __uthread *__new_uthread(void){
     }
 
     uthread->self = uthread;
+    uthread->err = 0;
 
     return uthread;
 }

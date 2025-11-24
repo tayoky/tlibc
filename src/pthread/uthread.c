@@ -3,7 +3,7 @@
 #include <limits.h>
 #include <stddef.h>
 
-#define UTHREAD_SIZE ((sizeof(struct __uthread) + PAGE_SIZE - 1) / PAGE_SIZE)
+#define UTHREAD_SIZE ((sizeof(struct __uthread) + PAGE_SIZE - 1) / PAGE_SIZE * PAGE_SIZE)
 
 struct __uthread *__new_uthread(void){
     struct __uthread *uthread = mmap(NULL,UTHREAD_SIZE,PROT_READ | PROT_WRITE,MAP_PRIVATE | MAP_ANONYMOUS,0,0);

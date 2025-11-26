@@ -185,5 +185,6 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_gettid        73
 #define SYS_settls        74
 #define SYS_join_thread   75
+#define SYS_shutdown      76
 
 #endif

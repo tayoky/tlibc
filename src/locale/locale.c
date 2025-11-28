@@ -2,7 +2,7 @@
 
 //by default init to posix locale
 
-const struct __locale __posix = {
+const struct __locale_data __posix = {
 	.lconv = {
 		.decimal_point = ".",
 		.thousands_sep = "",
@@ -26,4 +26,14 @@ const struct __locale __posix = {
 	},
 };
 
-struct __locale _locale = __posix;
+struct __locale _locale = {
+	.locales = {
+		&__posix,
+		&__posix,
+		&__posix,
+		&__posix,
+		&__posix,
+		&__posix,
+	},
+	.allocated = 0,
+};

@@ -9,6 +9,14 @@
 #define LC_TIME     5
 #define LC_ALL      6
 
+#define LC_COLLATE_MASK  (1 << LC_COLLATE)
+#define LC_CTYPE_MASK    (1 << LC_CTYPE)
+#define LC_MONETARY_MASK (1 << LC_MONETARY)
+#define LC_MESSAGES_MASK (1 << LC_MESSAGES)
+#define LC_NUMERIC_MASK  (1 << LC_NUMERIC)
+#define LC_TIME_MASK     (1 << LC_TIME)
+#define LC_ALL_MASK      0x3f
+
 #ifndef NULL
 #define NULL (void*)0
 #endif
@@ -52,7 +60,9 @@ struct locale_messages {
 	char noexpr[8];
 };
 
-struct __locale {
+
+struct __locale_data {
+	char *name;
 	struct lconv lconv;
 	int mb_type;
 	int ctype[256];
@@ -60,7 +70,13 @@ struct __locale {
 	int toupper[256];
 	struct locale_time time;
 	struct locale_messages messages;
-}; 
+};
+
+struct __locale {
+	const struct __locale_data *locales[LC_ALL];
+	int allocated;
+};
+
 typedef struct __locale *locale_t;
 
 #define LOCAL_MB_UTF8   0
@@ -71,9 +87,13 @@ typedef struct __locale *locale_t;
 #define LOCAL_DIGIT     0x04
 #define LOCAL_ALPHA     0x08
 #define LOCAL_PUNCT     0x10
-#define LOCAL_
+
+extern const struct __locale_data __posix;
 
 char *setlocale(int category,const char *locale);
 struct lconv *localeconv(void);
+locale_t newlocale(int mask, const char *locale, locale_t base);
+void freelocale(locale_t locale);
 locale_t uselocale(locale_t locale);
+struct __locale_data *__findlocale(const char *name);
 #endif

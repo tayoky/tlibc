@@ -3,5 +3,5 @@
 extern struct __locale _locale;
 
 struct lconv *localeconv(void){
-	return &_locale.lconv;
+	return (struct lconv*)&_locale.locales[LC_NUMERIC]->lconv;
 }

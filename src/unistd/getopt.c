@@ -71,7 +71,7 @@ int getopt_long(int argc,char *const*argv,const char *optstring,const struct opt
 					*optarg = '\0';
 					optarg++;
 				}
-				if(!strcmp(argv[optind],longopts[i].name)){
+				if(!strcmp(argv[optind] + 2,longopts[i].name)){
 					if(longindex)*longindex = i;
 					optind++;
 					if(longopts[i].has_arg > 1 && !optarg){

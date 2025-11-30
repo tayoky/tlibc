@@ -8,9 +8,8 @@
 struct _DIR {
 	int fd;
 	long int offset;
+	struct dirent ret;
 };
-
-static struct dirent ret;
 
 DIR *opendir(const char *pathname){
 	int fd = open(pathname,O_DIRECTORY);
@@ -45,7 +44,7 @@ struct dirent *readdir(DIR *dir){
 	//stupid POSIX api ...
 	//there are no function for the raw readdir syscall
 	int old_errno = errno;
-	if(__set_errno(__syscall3(SYS_readdir,dir->fd,(long)&ret,(long)dir->offset)) < 0){
+	if(__set_errno(__syscall3(SYS_readdir,dir->fd,(long)&dir->ret,(long)dir->offset)) < 0){
 		//hitting end (no more entry) should not trigger an errno
 		if(errno == ENOENT) errno = old_errno;
 		return NULL;
@@ -54,7 +53,7 @@ struct dirent *readdir(DIR *dir){
 	dir->offset++;
 
 	//NOTE : the next time readdir is used the previous result is lost
-	return &ret;
+	return &dir->ret;
 }
 
 void seekdir(DIR *dir,long int offset){
@@ -73,10 +72,5 @@ long int telldir(DIR *dir){
 }
 
 void rewinddir(DIR *dir){
-	if(dir == NULL){
-		__set_errno(-EBADF);
-		return;
-	}
-
 	return seekdir(dir,0);
 }

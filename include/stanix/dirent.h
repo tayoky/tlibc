@@ -1,9 +1,11 @@
 #ifndef DIRENT_H
 #define DIRENT_H
 
+#include <sys/types.h>
+
 struct dirent {
 	char d_name[256]; // pretty sure it should use limtit.h::PATH_MAX
-	int d_ino; //stub inode don't exist in stanix
+	ino_t d_ino; //stub inode don't exist in stanix
 };
 
 struct _DIR;

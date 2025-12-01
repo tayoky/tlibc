@@ -7,13 +7,13 @@ char *nl_langinfo_l(nl_item item, locale_t locale){
 		return (char*)l[LC_TIME]->time.day[item-DAY_1];
 	}
 	if(item >= ABDAY_1 && item <= ABDAY_7){
-		return (char*)l[LC_TIME]->time.day[item-ABDAY_1];
+		return (char*)l[LC_TIME]->time.abday[item-ABDAY_1];
 	}
 	if(item >= MON_1 && item <= MON_12){
-		return (char*)l[LC_TIME]->time.day[item-MON_1];
+		return (char*)l[LC_TIME]->time.mon[item-MON_1];
 	}
 	if(item >= ABMON_1 && item <= ABMON_12){
-		return (char*)l[LC_TIME]->time.day[item-ABMON_1];
+		return (char*)l[LC_TIME]->time.abmon[item-ABMON_1];
 	}
 
 	switch(item){

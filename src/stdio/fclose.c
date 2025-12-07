@@ -12,6 +12,7 @@ int fclose(FILE *stream){
 	
 	fflush(stream);
 	if(close(stream->fd) < 0)return -1;
+	if(stream->internalbuf) free(stream->buf);
 
 	//remove from list of stream
 	if(__streams == stream) __streams = stream->next;

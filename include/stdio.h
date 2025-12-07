@@ -18,6 +18,7 @@ struct _FILE{
 	int eof;
 	int unget;
 	int buftype;
+	int internalbuf;
 };
 typedef struct _FILE FILE;
 

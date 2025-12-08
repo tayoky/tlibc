@@ -29,4 +29,16 @@ struct msghdr {
 
 #define AF_UNIX 3
 
+int socket(int domain, int type, int protocol);
+int accept(int socket, struct sockaddr *address, socklen_t *address_len);
+int bind(int socket, const struct sockaddr *address, socklen_t address_len);
+int connect(int socket, const struct sockaddr *address, socklen_t address_len);
+int getpeername(int socket, struct sockaddr *address, socklen_t *address_len);
+int getsockname(int socket, struct sockaddr *address, socklen_t *address_len);
+int getsockopt(int socket, int level, int option_name, void *option_value, socklen_t *option_len);
+int setsockopt(int socket, int level, int option_name, const void *option_value, socklen_t option_len);
+int shutdown(int socket, int how);
+ssize_t sendmsg(int socket, const struct msghdr *message, int flags);
+ssize_t recvmsg(int socket, struct msghdr *message, int flags);
+
 #endif

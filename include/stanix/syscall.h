@@ -109,6 +109,8 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #error unsupported architecture
 #endif
 
+#define SYS_nosys         4848
+
 #define SYS_exit          0
 #define SYS_open          1
 #define SYS_close         2
@@ -185,6 +187,18 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_gettid        73
 #define SYS_settls        74
 #define SYS_join_thread   75
-#define SYS_shutdown      76
+#define SYS_sys_shutdown  76
+#define SYS_socket        SYS_nosys
+#define SYS_accept        SYS_nosys
+#define SYS_bind          SYS_nosys
+#define SYS_connect       SYS_nosys
+#define SYS_listen        SYS_nosys
+#define SYS_sendmsg       SYS_nosys
+#define SYS_recvmsg       SYS_nosys
+#define SYS_shutdown      SYS_nosys
+#define SYS_getpeername   SYS_nosys
+#define SYS_getsockname   SYS_nosys
+#define SYS_getsockopt    SYS_nosys
+#define SYS_setsockopt    SYS_nosys
 
 #endif

@@ -188,17 +188,17 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_settls        74
 #define SYS_join_thread   75
 #define SYS_sys_shutdown  76
-#define SYS_socket        SYS_nosys
-#define SYS_accept        SYS_nosys
-#define SYS_bind          SYS_nosys
-#define SYS_connect       SYS_nosys
-#define SYS_listen        SYS_nosys
-#define SYS_sendmsg       SYS_nosys
-#define SYS_recvmsg       SYS_nosys
+#define SYS_socket        77
+#define SYS_sendmsg       78
+#define SYS_recvmsg       79
+#define SYS_accept        80
+#define SYS_bind          81
+#define SYS_connect       82
+#define SYS_listen        83
+#define SYS_getpeername   84
+#define SYS_getsockname   85
+#define SYS_getsockopt    86
+#define SYS_setsockopt    87
 #define SYS_shutdown      SYS_nosys
-#define SYS_getpeername   SYS_nosys
-#define SYS_getsockname   SYS_nosys
-#define SYS_getsockopt    SYS_nosys
-#define SYS_setsockopt    SYS_nosys
 
 #endif

@@ -40,12 +40,13 @@ struct stat {
 #define S_ISGID 04000 //set gid bit
 
 //files types
-#define S_IFBLK 0010000 //block device
-#define S_IFCHR 0020000 //character device
-#define S_IFIFO 0040000 //FIFO (Firt In First Out) 
-#define S_IFREG 0100000 //regular file
-#define S_IFDIR 0200000 //directory
-#define S_IFLNK 0400000 //symbolic link
+#define S_IFBLK  00010000 //block device
+#define S_IFCHR  00020000 //character device
+#define S_IFIFO  00040000 //FIFO (Firt In First Out) 
+#define S_IFREG  00100000 //regular file
+#define S_IFDIR  00200000 //directory
+#define S_IFLNK  00400000 //symbolic link
+#define S_IFSOCK 01000000 //socket
 
 #define S_IFMT  0770000
 
@@ -57,6 +58,7 @@ struct stat {
 #define S_ISFIFO(m) ((m & S_IFMT) == S_IFIFO) //Test for a pipe or FIFO special file. 
 #define S_ISREG(m)  ((m & S_IFMT) == S_IFREG) //Test for a regular file. 
 #define S_ISLNK(m)  ((m & S_IFMT) == S_IFLNK) //Test for a symbolic link. 
+#define S_ISSOCK(m) ((m & S_IFMT) == S_IFSOCK) //Test for a socket. 
 
 //functions
 int stat(const char *pathname,struct stat *st);

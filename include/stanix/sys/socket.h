@@ -33,6 +33,7 @@ int socket(int domain, int type, int protocol);
 int accept(int socket, struct sockaddr *address, socklen_t *address_len);
 int bind(int socket, const struct sockaddr *address, socklen_t address_len);
 int connect(int socket, const struct sockaddr *address, socklen_t address_len);
+int listen(int socket, int backlog);
 int getpeername(int socket, struct sockaddr *address, socklen_t *address_len);
 int getsockname(int socket, struct sockaddr *address, socklen_t *address_len);
 int getsockopt(int socket, int level, int option_name, void *option_value, socklen_t *option_len);

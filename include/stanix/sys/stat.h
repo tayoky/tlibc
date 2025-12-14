@@ -48,7 +48,7 @@ struct stat {
 #define S_IFLNK  00400000 //symbolic link
 #define S_IFSOCK 01000000 //socket
 
-#define S_IFMT  0770000
+#define S_IFMT   01770000
 
 //types test
 

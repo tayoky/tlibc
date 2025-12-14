@@ -337,4 +337,50 @@ typedef struct {
 #define PF_R        0x4        //Read
 #define PF_MASKPROC 0xf0000000 //Unspecified
 
+//32-bit ELF dynamic
+typedef struct {
+	Elf32_Word d_tag;
+	union {
+		Elf32_Word d_val;
+		Elf32_Addr d_ptr;
+	} d_un;
+} Elf32_Dyn;
+
+//64-bit ELF dynamic
+typedef struct {
+	Elf64_Sxword d_tag;
+	union {
+		Elf64_Xword d_val;
+		Elf64_Addr d_ptr;
+	} d_un;
+} Elf64_Dyn;
+
+#define DT_NULL     0
+#define DT_NEEDED   1
+#define DT_PLTRELSZ 2
+#define DT_PLTGOT   3
+#define DT_HASH     4
+#define DT_STRTAB   5
+#define DT_SYMTAB   6
+#define DT_RELA     7
+#define DT_RELASZ   8
+#define DT_RELAENT  9
+#define DT_STRSZ    10
+#define DT_SYMENT   11
+#define DT_INIT     12
+#define DT_FINI     13
+#define DT_SONAME   14
+#define DT_RPATH    15
+#define DT_SYMBOLIC 16
+#define DT_REL      17
+#define DT_RELSZ    18
+#define DT_RELENT   19
+#define DT_PLTREL   20
+#define DT_DEBUG    21
+#define DT_TEXTREL  22
+#define DT_JMPREL   24
+#define DT_BIND_NOW 25
+#define DT_LOPROC   0x70000000
+#define DT_HIPROC   0x7fffffff
+
 #endif

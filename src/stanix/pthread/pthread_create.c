@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <tlibc.h>
 #include <sys/mman.h>
+#include <stdint.h>
 
 struct pthread_args {
 	void *arg;
@@ -46,6 +47,10 @@ int pthread_create(pthread_t *thread,const pthread_attr_t *attr,void *(*start_ro
 		free(args);
 		return -1;
 	}
+	uintptr_t stack_top = (uintptr_t)stack + attr->stack_size;
+	// align the stack
+	stack_top &= ~0xf;
+	stack_top -= 8;
 
-	return stanix_new_thread((void *)__pthread_creator,stack,0,args,thread);
+	return stanix_new_thread((void *)__pthread_creator,(void*)stack_top,0,args,thread);
 }

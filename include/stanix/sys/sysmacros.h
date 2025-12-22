@@ -4,7 +4,7 @@
 #include <sys/types.h>
 
 static inline dev_t makedev(unsigned int maj, unsigned int min) {
-	return maj << 32 | min;
+	return (dev_t)maj << 32 | min;
 }
 
 static inline unsigned int major(dev_t dev) {

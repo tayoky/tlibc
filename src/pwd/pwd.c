@@ -30,7 +30,7 @@ static FILE *passwd_file = NULL;
 
 //NOT SAFE FOR NUMBER
 int fgetpwent_r(FILE *stream, struct passwd *pwbuf,char *buf, size_t size,struct passwd **pwbufp){
-    *pwbufp = NULL;
+    if (pwbufp) *pwbufp = NULL;
     int c = 0;
     PARSE_STR(pwbuf->pw_name,':');
     PARSE_STR(pwbuf->pw_passwd,':');
@@ -39,7 +39,7 @@ int fgetpwent_r(FILE *stream, struct passwd *pwbuf,char *buf, size_t size,struct
     PARSE_STR(pwbuf->pw_gecos,':');
     PARSE_STR(pwbuf->pw_dir  ,':');
     PARSE_STR(pwbuf->pw_shell,'\n');
-    *pwbufp = pwbuf;
+    if (pwbufp) *pwbufp = pwbuf;
     return 0;
 }
 
@@ -59,27 +59,21 @@ void setpwent(void){
     }
 }
 
-int getpwent_r(struct passwd *pwbuf,char *buf, size_t size,struct passwd **pwbufp){
-    if(!passwd_file){
-        passwd_file = fopen("/etc/passwd","r");
-        if(!passwd_file)return __set_errno(-EIO);
-    }
-    return fgetpwent_r(passwd_file,pwbuf,buf,size,pwbufp);
-}
-
-struct passwd *getpwent(void){
-    if(!passwd_file){
-        passwd_file = fopen("/etc/passwd","r");
-        if(!passwd_file)return NULL;
-    }
-    return fgetpwent(passwd_file);
-}
-
 void endpwent(void){
     if(passwd_file){
         fclose(passwd_file);
         passwd_file = NULL;
     }
+}
+
+int getpwent_r(struct passwd *pwbuf, char *buf, size_t size, struct passwd **pwbufp){
+    if (!passwd_file) setpwent();
+    return fgetpwent_r(passwd_file, pwbuf, buf, size, pwbufp);
+}
+
+struct passwd *getpwent(void){
+    if(!passwd_file) setpwent();
+    return fgetpwent(passwd_file);
 }
 
 int getpwuid_r(uid_t uid, struct passwd *pwd, char *buffer,size_t bufsize, struct passwd **result){
@@ -93,7 +87,6 @@ int getpwuid_r(uid_t uid, struct passwd *pwd, char *buffer,size_t bufsize, struc
             return 0;
         }
     }
-    *result = NULL;
     return 0;
 }
 
@@ -114,7 +107,6 @@ int getpwnam_r(const char *name, struct passwd *pwd, char *buffer,size_t bufsize
             return 0;
         }
     }
-    *result = NULL;
     return 0;
 }
 

@@ -24,6 +24,11 @@ struct input_event {
     };
 };
 
+struct input_info {
+    unsigned long if_class;
+    unsigned long if_subclass;
+};
+
 struct input_request {
     unsigned long ir_type;
     unsigned long ir_arg;
@@ -75,5 +80,6 @@ struct input_request {
 //ioctl
 #define I_INPUT_GET_CONTROL  1001
 #define I_INPUT_DROP_CONTROL 1002
+#define I_INPUT_GET_INFO     1003
 
 #endif

@@ -82,4 +82,8 @@ struct input_request {
 #define I_INPUT_DROP_CONTROL 1002
 #define I_INPUT_GET_INFO     1003
 
+#define INPUT_KEY_MOUSE_LEFT   1024
+#define INPUT_KEY_MOUSE_MIDDLE 1025
+#define INPUT_KEY_MOUSE_RIGHT  1026
+
 #endif

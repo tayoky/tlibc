@@ -33,10 +33,23 @@ typedef struct __pthread_cond {
 
 typedef struct __pthread_mutexattr {
 	int pshared;
+	int type;
+	int protocol;
 } pthread_mutexattr_t;
+
+#define PTHREAD_PRIO_NONE    0
+#define PTHREAD_PRIO_INHERIT 1
+#define PTHREAD_PRIO_PROTECT 2
+
+#define PTHREAD_MUTEX_DEFAULT    0
+#define PTHREAD_MUTEX_NORMAL     1
+#define PTHREAD_MUTEX_ERRORCHECK 2
+#define PTHREAD_MUTEX_RECURSIVE  3
 
 typedef struct __pthread_mutex {
 	pthread_mutexattr_t attr;
+	size_t lock_count;
+	atomic_long lock;
 } pthread_mutex_t;
 
 typedef atomic_flag pthread_once_t;
@@ -44,7 +57,6 @@ typedef atomic_flag pthread_once_t;
 
 typedef atomic_flag pthread_spinlock_t;
 typedef pid_t pthread_t;
-
 
 #define PTHREAD_PROCESS_PRIVATE 0
 #define PTHREAD_PROCESS_SHARED  1
@@ -77,10 +89,30 @@ int pthread_attr_getguardsize(const pthread_attr_t *restrict attr,size_t *restri
 
 int pthread_condattr_init(pthread_condattr_t *condattr);
 int pthread_condattr_destroy(pthread_condattr_t *condattr);
-int pthread_condattr_getpshared(const pthread_condattr_t *condattr, int *pshared);
+int pthread_condattr_getpshared(const pthread_condattr_t *restrict condattr, int *restrict pshared);
 int pthread_condattr_setpshared(pthread_condattr_t *condattr, int pshared);
-int pthread_condattr_getclock(const pthread_condattr_t *condattr, clockid_t *clock_id);
+int pthread_condattr_getclock(const pthread_condattr_t *restrict condattr, clockid_t *restrict clock_id);
 int pthread_condattr_setclock(pthread_condattr_t *condattr, clockid_t clock_id);
+
+int pthread_mutex_init(pthread_mutex_t *restrict mutex, const pthread_mutexattr_t *restrict mutexattr);
+int pthread_mutex_destroy(pthread_mutex_t *mutex);
+// int pthread_mutex_getprioceiling(const pthread_mutex_t *restrict, int *restrict);
+// int pthread_mutex_setprioceiling(pthread_mutex_t *restrict mutex, int, int *restrict);
+int pthread_mutex_lock(pthread_mutex_t *mutex);
+int pthread_mutex_timedlock(pthread_mutex_t *restrict mutex, const struct timespec *restrict timeout);
+int pthread_mutex_trylock(pthread_mutex_t *mutex);
+int pthread_mutex_unlock(pthread_mutex_t *mutex);
+
+int pthread_mutexattr_init(pthread_mutexattr_t *mutexattr);
+int pthread_mutexattr_destroy(pthread_mutexattr_t *mutexattr);
+// int pthread_mutexattr_getprioceiling(const pthread_mutexattr_t *restrict mutexattr, int *);
+// int pthread_mutexattr_setprioceiling(pthread_mutexattr_t *mutexattr, int);
+int pthread_mutexattr_getprotocol(const pthread_mutexattr_t *restrict mutexattr, int *restrict protocol);
+int pthread_mutexattr_setprotocol(pthread_mutexattr_t *mutexattr, int protocol);
+int pthread_mutexattr_getpshared(const pthread_mutexattr_t *restrict mutexattr, int *restrict pshared);
+int pthread_mutexattr_setpshared(pthread_mutexattr_t *mutexattr, int pshared);
+int pthread_mutexattr_gettype(const pthread_mutexattr_t *restrict mutexattr, int *restrict type);
+int pthread_mutexattr_settype(pthread_mutexattr_t *mutexattr, int type);
 
 int pthread_spin_init(pthread_spinlock_t *lock, int pshared);
 int pthread_spin_destroy(pthread_spinlock_t *lock);

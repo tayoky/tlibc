@@ -34,7 +34,6 @@ struct elf_object {
 	struct elf_object *next;
 	struct elf_object *prev;
 	Elf_Ehdr header;
-	int fd;
 	size_t ref_count;
 	uintptr_t addr;
 	char *name;
@@ -54,11 +53,13 @@ int dl_error(char *str);
 struct elf_object *elf_load(const char *path);
 void elf_unload(struct elf_object *object);
 void *elf_lookup(struct elf_object *object, const char *name);
+void abi_enter(void *entry, int argc, char **argv, int env, char **envp);
 
 #ifndef PAGE_SIZE
 #define PAGE_SIZE 4096
 #endif
 
 #define PAGE_ALIGN_DOWN(addr) ((addr) / PAGE_SIZE * PAGE_SIZE)
+#define PAGE_ALIGN_UP(addr) (((addr) + PAGE_SIZE - 1)/ PAGE_SIZE * PAGE_SIZE)
 
 #endif

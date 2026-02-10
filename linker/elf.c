@@ -19,6 +19,77 @@ static int check_ehdr(Elf64_Ehdr *header){
 	return 1;
 }
 
+static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
+	int prot = 0;
+	if (pheader->p_flags & PF_R) {
+		prot |= PROT_READ;
+	}
+	if (pheader->p_flags & PF_W) {
+		prot |= PROT_WRITE;
+	}
+	if (pheader->p_flags & PF_X) {
+		prot |= PROT_EXEC;
+	}
+
+	// page align everything
+	uintptr_t vaddr = PAGE_ALIGN_DOWN(pheader->p_vaddr) + object->addr;
+	size_t vaddr_off = pheader->p_vaddr % PAGE_SIZE;
+
+	if (pheader->p_offset % PAGE_SIZE == pheader->p_vaddr % PAGE_SIZE) {
+		// we can use mmap
+
+		off_t offset = PAGE_ALIGN_DOWN(pheader->p_offset);
+		size_t filesz = PAGE_ALIGN_UP(pheader->p_filesz + vaddr_off);
+		size_t memsz  = PAGE_ALIGN_UP(pheader->p_memsz + vaddr_off);
+		size_t filesz_remainer = 0;
+
+		if (memsz > filesz && (pheader->p_filesz + vaddr_off) % PAGE_SIZE) {
+			filesz_remainer = (pheader->p_filesz + vaddr_off) % PAGE_SIZE;
+		}
+
+		if (filesz > 0) {
+			if (mmap((void*)vaddr, filesz, PROT_WRITE, MAP_PRIVATE | MAP_FIXED, file, offset) < 0) {
+				return -1;
+			}
+			// zero the last page
+			if (filesz_remainer) {
+				uintptr_t start_bss = vaddr + filesz - PAGE_SIZE + filesz_remainer;
+				memset((void*)start_bss, 0, PAGE_SIZE - filesz_remainer);
+			}
+			mprotect((void*)vaddr, filesz, prot);
+		}
+		if (memsz > filesz) {
+			// we need to fill with anonymous mapping
+			vaddr += filesz;
+			if (mmap((void*)vaddr, memsz - filesz, prot, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) < 0) {
+				// remove the already mapped part
+				munmap((void*)(vaddr-filesz), filesz);
+				return -1;
+			}
+		}
+	} else {
+		size_t memsz = PAGE_ALIGN_UP(pheader->p_memsz + vaddr_off);
+
+		if (mmap((void*)vaddr, memsz, PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) < 0) {
+			return -1;
+		}
+
+		// file size must be <= to virtual size
+		if (pheader->p_filesz > pheader->p_memsz) {
+			pheader->p_filesz = pheader->p_memsz;
+		}
+
+		lseek(file, pheader->p_offset, SEEK_SET);
+		if (read(file, (void *)(vaddr + vaddr_off), pheader->p_filesz) < pheader->p_filesz) {
+				munmap((void*)vaddr, memsz);
+				return -1;
+		}
+		// set the protection
+		mprotect((void*)vaddr, memsz, prot);
+	}
+	return 0;
+}
+
 struct elf_object *elf_load(const char *path) {
 	struct elf_object *object = dl_alloc(sizeof(struct elf_object));
 	memset(object, 0, sizeof(struct elf_object));
@@ -28,7 +99,6 @@ struct elf_object *elf_load(const char *path) {
 		dl_error("cannot open file");
 		goto free;
 	}
-	object->fd = file;
 
 	if (read(file, &object->header,sizeof(Elf_Ehdr)) < sizeof(Elf_Ehdr)) {
 		dl_error("read failed");
@@ -68,43 +138,19 @@ struct elf_object *elf_load(const char *path) {
 			}
 		}
 		if (pheader->p_type != PT_LOAD) continue;
-		if (pheader->p_offset % PAGE_SIZE != pheader->p_vaddr % PAGE_SIZE) {
-			dl_error("invalid mapping");
+		if (map_segment(object, file, pheader) < 0) {
+			dl_error("mmap failed");
 			goto close;
-		}
-
-		int prot = 0;
-		if (pheader->p_flags & PF_R) {
-			prot |= PROT_READ;
-		}
-		if (pheader->p_flags & PF_W) {
-			prot |= PROT_WRITE;
-		}
-		if (pheader->p_flags & PF_X) {
-			prot |= PROT_EXEC;
-		}
-
-		char *vaddr = (char*)object->addr + PAGE_ALIGN_DOWN(pheader->p_vaddr);
-		size_t vaddr_off = pheader->p_vaddr % PAGE_SIZE;
-		if (pheader->p_filesz > 0) {
-			if (mmap(vaddr, vaddr_off + pheader->p_filesz, prot, MAP_PRIVATE, file, PAGE_ALIGN_DOWN(pheader->p_offset)) == MAP_FAILED) {
-				dl_error("mmap failed");
-				goto close;
-			}
-		}
-		if (pheader->p_memsz > pheader->p_filesz) {
-			// we have to fill with anonymous mappings
-			if (mmap(vaddr + pheader->p_filesz, vaddr_off + pheader->p_memsz - pheader->p_filesz, prot, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0) == MAP_FAILED) {
-				dl_error("mmap failed");
-				goto close;
-			}
 		}
 	}
 
-free:
-	elf_unload(object);
+	close(file);
+	return object;
+
 close:
 	close(file);
+free:
+	elf_unload(object);
 	return NULL;
 }
 

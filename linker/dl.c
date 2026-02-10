@@ -11,8 +11,6 @@
 
 // the dynamic linker of tlibc
 
-typedef void (*start_func_t)(int argc,char **argv,int envc,char **envp);
-
 static char *error_string = NULL;
 static struct elf_object *cache_last = NULL;
 static struct elf_object *cache_first = NULL;
@@ -141,9 +139,12 @@ int main(int argc, char **argv, char **envp) {
 
 	dl_setup_libc_alloc();
 
-	// TODO : emulate entry from kernel
-	puts("entry");
-	start_func_t entry = (start_func_t)(program->header.e_entry);
-	entry(argc, argv, 0, envp);
+	int envc = 0;
+	while (envp[envc]) {
+		envc++;
+	}
+
+	// emulate entry from kernel
+	abi_enter((void*)program->header.e_entry, argc, argv, 0, envp);
 	return EXIT_FAILURE;
 }

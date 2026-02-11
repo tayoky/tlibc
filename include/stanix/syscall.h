@@ -199,7 +199,8 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_getsockname   85
 #define SYS_getsockopt    86
 #define SYS_setsockopt    87
-#define SYS_futex         SYS_nosys
-#define SYS_shutdown      SYS_nosys
+#define SYS_shutdown      88
+#define SYS_futex         89
+#define SYS_fdname        90
 
 #endif

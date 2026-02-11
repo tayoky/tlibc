@@ -33,4 +33,9 @@ int open(const char *pathname, int flags, ... /* mode_t mode */ );
 int creat(const char *pathname, mode_t mode);
 int fcntl(int fd, int op, ... /* arg */ );
 
+// some stanix specific stuff
+
+int fdname_r(int fd, char *buf, size_t size);
+char *fdname(int fd);
+
 #endif

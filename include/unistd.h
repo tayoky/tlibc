@@ -96,6 +96,10 @@ pid_t getpgid(pid_t pid);
 pid_t getpgrp(void);
 int setpgrp(void);
 
+// tty management
+char *ttyname(int fd);
+int ttyname_r(int fd, char *buf, size_t size);
+
 //user management
 int setuid(uid_t uid);
 int seteuid(uid_t uid);

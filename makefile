@@ -24,7 +24,7 @@ C_SRC = $(shell find src -maxdepth 1 -name "*.c") $(foreach DIR, $(C_SRC_DIR), $
 C_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(basename $(C_SRC))))
 
 #object used in libk
-K_SRC = errno.o string/memset.o string/memcpy.o string/memchr.o string/memcmp.o string/strcat.o string/strlen.o  string/strnlen.o string/strcpy.o string/strncpy.o string/strcmp.o string/strncmp.o string/strncasecmp.o ctype/ctype.o stdio/vsnprintf.o stdio/snprintf.o stdio/vsprintf.o stdio/sprintf.o stdlib/realpath.o stdlib/strto.o
+K_SRC = errno.o string/memset.o string/memcpy.o string/memchr.o string/memcmp.o string/strcat.o string/strlen.o  string/strnlen.o string/strcpy.o string/strncpy.o string/strcmp.o string/strncmp.o string/strncasecmp.o ctype/ctype.o stdio/vsnprintf.o stdio/snprintf.o stdio/vsprintf.o stdio/sprintf.o stdlib/strto.o
 K_OBJ = $(foreach FILE, $(K_SRC), $(BUILDDIR)/libk/src/$(FILE))
 
 #if a file exist in math/$(ARCH) don't take the generic version in math/generic

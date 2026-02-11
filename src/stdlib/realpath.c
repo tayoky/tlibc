@@ -3,10 +3,6 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#if defined(LIBK) && defined(__stanix__)
-#include <kernel/scheduler.h>
-#endif
-
 char *realpath(const char *path,char *resolved_path){
 
 	//first let make an absolute path
@@ -16,12 +12,8 @@ char *realpath(const char *path,char *resolved_path){
 		if(!abs)return NULL;
 	} else {
 		//relative path
-#if defined(LIBK) && defined(__stanix__)
-		char *cwd = get_current_proc()->cwd_path;
-#else
 		char cwd[256];
 		if(!getcwd(cwd,sizeof(cwd)))return NULL;
-#endif
 		abs = malloc(strlen(cwd) + strlen(path) + 2);
 		if(!abs)return NULL;
 

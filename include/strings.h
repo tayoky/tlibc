@@ -1,5 +1,5 @@
-#ifndef STRINGS_H
-#define STRINGS_H
+#ifndef _STRINGS_H
+#define _STRINGS_H
 
 #include <sys/types.h>
 
@@ -9,10 +9,16 @@ int memcmp(const void *,const void *,size_t n);
 void *memove(void *,const void *,size_t);
 void *memset(void *,int,size_t);
 
-#define bcmp memcmp
+static inline int bcmp(const void *b1, const void *b2, size_t n) {
+	return memcmp(b1, b2, n);
+}
 
-#define bcopy(src,dest,size) (void)memmove(dest,src,size)
+static inline void bcopy(const void *src, void *dest, size_t n) {
+	memmove(dest, src, n);
+}
 
-#define bzero(mem,size) (void)memset(mem,0,size)
+static inline void bzero(void *dest, size_t n) {
+	memset(dest, 0, n);
+}
 
 #endif

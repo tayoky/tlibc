@@ -15,6 +15,7 @@ static char *error_string = NULL;
 static struct elf_object *cache_last = NULL;
 static struct elf_object *cache_first = NULL;
 static struct elf_object *program = NULL;
+const char *lib_path = NULL;
 
 static struct elf_object *cache_find(const char *name) {
 	struct elf_object *cur = cache_first;
@@ -132,7 +133,10 @@ int main(int argc, char **argv, char **envp) {
 		puts("launch a dynamic linked program");
 		return 0;
 	}
-
+	if (getuid() == geteuid() && getgid() == getegid()) {
+		// don't allow LD_LIBRARY_PATH on set-uid/gid programs
+		lib_path = getenv("LD_LIBRARY_PATH");
+	}
 
 	program = elf_load(argv[1]);
 	if (!program) return EXIT_FAILURE;

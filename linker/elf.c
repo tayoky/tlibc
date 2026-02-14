@@ -1,7 +1,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <limits.h>
-#include <fcntl.h>
 #include <sys/mman.h>
 #include <elf.h>
 #include "linker.h"
@@ -112,7 +111,7 @@ struct elf_object *elf_load(const char *path) {
 	struct elf_object *object = dl_alloc(sizeof(struct elf_object));
 	memset(object, 0, sizeof(struct elf_object));
 
-	int file = open(path, O_RDONLY);
+	int file = open_lib(path);
 	if (file < 0) {
 		dl_error("cannot open file");
 		goto free;

@@ -54,6 +54,9 @@ struct elf_object *elf_load(const char *path);
 void elf_unload(struct elf_object *object);
 void *elf_lookup(struct elf_object *object, const char *name);
 void abi_enter(void *entry, int argc, char **argv, int env, char **envp);
+int open_lib(const char *path);
+
+extern const char *lib_path;
 
 #ifndef PAGE_SIZE
 #define PAGE_SIZE 4096

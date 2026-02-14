@@ -37,11 +37,11 @@ struct elf_object {
 	size_t ref_count;
 	uintptr_t addr;
 	char *name;
-	Elf_Phdr *phdr;
+	Elf_Phdr *phdrs;
 	Elf_Dyn  *dynamics;
 	char *strtab;
 	Elf_Sym *symtab;
-	size_t phdr_count;
+	size_t phdrs_count;
 	size_t dynamics_count;
 };
 

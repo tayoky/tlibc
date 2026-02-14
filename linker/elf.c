@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <string.h>
+#include <limits.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <elf.h>
@@ -90,6 +91,23 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 	return 0;
 }
 
+static size_t get_total_size(struct elf_object *object) {
+	uintptr_t start = UINTPTR_MAX;
+	uintptr_t end   = 0;
+	for (int i=0; i<object->phdrs_count; i++) {
+		Elf_Phdr *pheader = &object->phdrs[i];
+		if (pheader->p_type != PT_LOAD) continue;
+		if (PAGE_ALIGN_DOWN(pheader->p_vaddr) < start) {
+			start = PAGE_ALIGN_DOWN(pheader->p_vaddr);
+		}
+		if (PAGE_ALIGN_UP(pheader->p_vaddr + pheader->p_memsz) > end) {
+			end = PAGE_ALIGN_UP(pheader->p_vaddr + pheader->p_memsz);
+		}
+	}
+	if (start > end) return 0;
+	return end - start;
+}
+
 struct elf_object *elf_load(const char *path) {
 	struct elf_object *object = dl_alloc(sizeof(struct elf_object));
 	memset(object, 0, sizeof(struct elf_object));
@@ -109,20 +127,31 @@ struct elf_object *elf_load(const char *path) {
 		goto close;
 	}
 
-	if (object->header.e_type == ET_DYN) {
-		// TODO : alloc space for the lib
-	}
-
-	object->phdr_count = object->header.e_phnum;
-	object->phdr = dl_alloc(sizeof(Elf_Phdr) * object->phdr_count);
+	// load phdrs
+	object->phdrs_count = object->header.e_phnum;
+	object->phdrs = dl_alloc(sizeof(Elf_Phdr) * object->phdrs_count);
 	uintptr_t off = object->header.e_phoff;
 	for (int i=0; i<object->header.e_phnum; i++,off += object->header.e_phentsize) {
-		Elf_Phdr *pheader = &object->phdr[i];
+		Elf_Phdr *pheader = &object->phdrs[i];
 		lseek(file, off, SEEK_SET);
 		if (read(file, pheader, sizeof(*pheader)) < sizeof(*pheader)) {
 			dl_error("read failed");
 			goto close;
 		}
+	}
+
+	if (object->header.e_type == ET_DYN) {
+		// allocate space for the lib
+		void *addr = mmap(NULL, get_total_size(object), 0, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+		if (addr == MAP_FAILED) {
+			dl_error("mmap failed");
+			goto close;
+		}
+		object->addr = (uintptr_t)addr;
+	}
+
+	for (int i=0; i<object->phdrs_count; i++) {
+		Elf_Phdr *pheader = &object->phdrs[i];
 		if (pheader->p_type == PT_DYNAMIC) {
 			// two PT_DYNAMIC ???? ignore i guess
 			if (object->dynamics) continue;
@@ -156,8 +185,12 @@ free:
 
 void elf_unload(struct elf_object *object) {
 	// TODO : unload and free depencies
+	if (object->header.e_type == ET_DYN) {
+		// we can free the whole allocated block
+		munmap((void*)object->addr, get_total_size(object));
+	}
 	dl_free(object->name);
-	dl_free(object->phdr);
+	dl_free(object->phdrs);
 	dl_free(object->dynamics);
 	dl_free(object);
 }

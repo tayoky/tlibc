@@ -75,6 +75,10 @@ void *dlopen(const char *filename ,int flags) {
 	struct elf_object *object = cache_find(filename);
 	if (object) {
 		object->ref_count++;
+		if (flags & RTLD_NOLOAD) {
+			// we can use NOLOAD to update flags
+			object->flags = flags;
+		}
 		return object;
 	}
 	if (flags & RTLD_NOLOAD) return NULL;
@@ -84,6 +88,7 @@ void *dlopen(const char *filename ,int flags) {
 
 	object->name      = dl_strdup(name);
 	object->ref_count = 1;
+	object->flags = flags;
 	cache_add(object);
 	return object;
 }
@@ -109,9 +114,30 @@ char *dlerror(void) {
 	return ret;
 }
 
+static void *recur_lookup(struct elf_object *object, const char *sym) {
+	void *ret = elf_lookup(object, sym);
+	if (ret) return ret;
+	for (size_t i=0; i<object->depencies_count; i++) {
+		ret = recur_lookup(object, sym);
+		if (ret) return ret;
+	}
+	return ret;
+}
+
 void *dlsym(void *handle, const char *sym) {
 	if (handle == RTLD_DEFAULT) {
-		// TODO
+		// first try the executable
+		void *ret = elf_lookup(program, sym);
+		if (ret) return ret;
+		// all library marked as global
+		struct elf_object *lib = cache_first;
+		while (lib) {
+			if (lib->flags & RTLD_GLOBAL) {
+				ret = elf_lookup(lib, sym);
+				if (ret) return ret;
+			}
+			lib = lib->next;
+		}
 		return NULL;
 	}
 	if (handle == RTLD_NEXT) {
@@ -119,7 +145,7 @@ void *dlsym(void *handle, const char *sym) {
 		return NULL;
 	}
 	struct elf_object *object = handle;
-	return elf_lookup(object, sym);
+	return recur_lookup(object, sym);
 }
 
 int main(int argc, char **argv, char **envp) {

@@ -1,7 +1,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <limits.h>
+#include <dlfcn.h>
 #include <sys/mman.h>
+#include <stdio.h>
 #include <elf.h>
 #include "linker.h"
 
@@ -98,54 +100,18 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 	return 0;
 }
 
-static int load_dynamics(int file, Elf_Phdr *pheader, Elf_Dyn dynamics[DT_BIND_NOW+1]) {
-	// dynamics section must be aligned
-#if defined(__x86_64__) || defined(__aarch64__)
-	size_t align = 8;
-#elif defined(__i386__)
-	size_t align = 4;
-#else
-	size_t align = 1;
-#endif
-	if (pheader->p_offset % align) {
-		return dl_error("unaligned PT_DYNAMIC section");
-	}
+static const char *get_str(struct elf_object *object, size_t offset) {
+	const char *str = object->strtab + offset;
+	const char *cur = str;
+	const char *strtab_end = object->strtab + object->strtab_size;
 
-	off_t offset = PAGE_ALIGN_DOWN(pheader->p_offset);
-	size_t remainer = pheader->p_offset % PAGE_SIZE;
-	size_t size = PAGE_ALIGN_UP(pheader->p_filesz);
-	void *addr = mmap(NULL, size, PROT_READ, MAP_PRIVATE, file, offset);
-	if (addr == MAP_FAILED) {;
-		return dl_error("mmap failed");
+	// check if the string is in bounds
+	while (cur < strtab_end) {
+		if (!*cur) return str;
+		cur++;
 	}
-
-	Elf_Dyn *dyns = (Elf_Dyn*)((uintptr_t)addr + remainer);
-	size_t dyns_count = pheader->p_filesz / sizeof(Elf_Dyn);
-	for (size_t i=0; i<dyns_count; i++) {
-		if (dyns[i].d_tag == DT_NULL) break;
-		if (dyns[i].d_tag <= DT_BIND_NOW) {
-			dynamics[dyns[i].d_tag] = dyns[i];
-		}
-	}
-	munmap(addr, size);
-	return 0;
-}
-
-static size_t get_total_size(struct elf_object *object) {
-	uintptr_t start = UINTPTR_MAX;
-	uintptr_t end   = 0;
-	for (size_t i=0; i<object->phdrs_count; i++) {
-		Elf_Phdr *pheader = &object->phdrs[i];
-		if (pheader->p_type != PT_LOAD) continue;
-		if (PAGE_ALIGN_DOWN(pheader->p_vaddr) < start) {
-			start = PAGE_ALIGN_DOWN(pheader->p_vaddr);
-		}
-		if (PAGE_ALIGN_UP(pheader->p_vaddr + pheader->p_memsz) > end) {
-			end = PAGE_ALIGN_UP(pheader->p_vaddr + pheader->p_memsz);
-		}
-	}
-	if (start > end) return 0;
-	return end - start;
+	dl_error("invalid string offset");
+	return NULL;
 }
 
 static void *load_table(int file, off_t offset, size_t size) {
@@ -166,53 +132,122 @@ static void unload_table(void *ptr, size_t size) {
 	munmap(ptr, size);
 }
 
-static const char *get_str(struct elf_object *object, size_t offset) {
-	const char *str = object->strtab + offset;
-	const char *cur = str;
-	const char *strtab_end = object->strtab + object->strtab_size;
-
-	// check if the string is in bounds
-	while (cur < strtab_end) {
-		if (!*cur) return str;
-		cur++;
+static int load_dynamics(int file, Elf_Phdr *pheader, Elf_Dyn **_dynamics, size_t *_dynamics_count) {
+	// dynamics section must be aligned
+#if defined(__x86_64__) || defined(__aarch64__)
+	size_t align = 8;
+#elif defined(__i386__)
+	size_t align = 4;
+#else
+	size_t align = 1;
+#endif
+	if (pheader->p_offset % align) {
+		return dl_error("unaligned PT_DYNAMIC section");
 	}
-	dl_error("invalid string offset");
+
+	Elf_Dyn *dyns = load_table(file, pheader->p_offset, pheader->p_filesz);
+	if (!dyns) return -1;
+	size_t dyns_count = pheader->p_filesz / sizeof(Elf_Dyn);
+	for (size_t i=0; i<dyns_count; i++) {
+		if (dyns[i].d_tag == DT_NULL) {
+			dyns_count = i;
+			break;
+		}
+	}
+	*_dynamics = dyns;
+	*_dynamics_count = dyns_count;
+	return 0;
+}
+
+static size_t get_total_size(struct elf_object *object) {
+	uintptr_t start = UINTPTR_MAX;
+	uintptr_t end   = 0;
+	for (size_t i=0; i<object->phdrs_count; i++) {
+		Elf_Phdr *pheader = &object->phdrs[i];
+		if (pheader->p_type != PT_LOAD) continue;
+		if (PAGE_ALIGN_DOWN(pheader->p_vaddr) < start) {
+			start = PAGE_ALIGN_DOWN(pheader->p_vaddr);
+		}
+		if (PAGE_ALIGN_UP(pheader->p_vaddr + pheader->p_memsz) > end) {
+			end = PAGE_ALIGN_UP(pheader->p_vaddr + pheader->p_memsz);
+		}
+	}
+	if (start > end) return 0;
+	return end - start;
+}
+
+static Elf_Dyn *find_dynamic(Elf_Dyn *dynamics, size_t dynamics_count, long tag) {
+	for (size_t i=0; i<dynamics_count; i++) {
+		if (dynamics[i].d_tag == tag) {
+			return &dynamics[i];
+		}
+	}
 	return NULL;
 }
 
-static int handle_dynamics(struct elf_object *object, int file, Elf_Dyn dynamics[DT_BIND_NOW+1]) {
-	if (!dynamics[DT_STRTAB].d_un.d_ptr || !dynamics[DT_STRSZ].d_un.d_val) {
+static int handle_dynamics(struct elf_object *object, int file, Elf_Dyn *dynamics, size_t dynamics_count) {
+	Elf_Dyn *dyn_strtab = find_dynamic(dynamics, dynamics_count, DT_STRTAB);
+	Elf_Dyn *dyn_strsz  = find_dynamic(dynamics, dynamics_count, DT_STRSZ);
+	Elf_Dyn *dyn_symtab = find_dynamic(dynamics, dynamics_count, DT_SYMTAB);
+	Elf_Dyn *dyn_hash   = find_dynamic(dynamics, dynamics_count, DT_HASH);
+	Elf_Dyn *dyn_rpath  = find_dynamic(dynamics, dynamics_count, DT_RPATH);
+
+	if (!dyn_strtab || !dyn_strsz) {
 		return dl_error("no string table");
 	}
-	object->strtab_size = dynamics[DT_STRSZ].d_un.d_val;
-	object->strtab = load_table(file, dynamics[DT_STRTAB].d_un.d_ptr, object->strtab_size);
+	object->strtab_size = dyn_strsz->d_un.d_val;
+	object->strtab = load_table(file, dyn_strtab->d_un.d_ptr, object->strtab_size);
 	if (!object->strtab) return -1;
 
-	if (!dynamics[DT_SYMTAB].d_un.d_ptr || !dynamics[DT_HASH].d_un.d_val) {
+	if (!dyn_symtab || !dyn_hash) {
 		return dl_error("no symtab table");
 	}
 
 	// start by firguring out the size of the hash and symbol table
 	uint32_t hash_start[2];
-	lseek(file, dynamics[DT_HASH].d_un.d_ptr, SEEK_SET);
+	lseek(file, dyn_hash->d_un.d_ptr, SEEK_SET);
 	if (read(file, hash_start, sizeof(hash_start)) < (ssize_t)sizeof(hash_start)) {
 		return dl_error("read failed");
 	}
 
 	// nchain (second entry) contain symtab entries count
 	object->symbols_count = hash_start[1];
-	object->symtab = load_table(file, dynamics[DT_SYMTAB].d_un.d_ptr, object->symbols_count * sizeof(Elf_Sym));
+	object->symtab = load_table(file, dyn_symtab->d_un.d_ptr, object->symbols_count * sizeof(Elf_Sym));
 	if (!object->symtab) return -1;
 
 	// 2 + nbucket + nchain give total entries count
 	// we can use that to load hash table
 	object->hash_size = (2 + hash_start[0] + hash_start[1]) * sizeof(uint32_t);
-	object->hash = load_table(file, dynamics[DT_HASH].d_un.d_ptr, object->hash_size);
+	object->hash = load_table(file, dyn_hash->d_un.d_ptr, object->hash_size);
 
 	// optional DT_RPATH for executables
-	if (object->header.e_type == ET_EXEC && dynamics[DT_RPATH].d_un.d_val) {
-		rpath = get_str(object, dynamics[DT_RPATH].d_un.d_val);
+	if (object->header.e_type == ET_EXEC && dyn_rpath) {
+		rpath = get_str(object, dyn_rpath->d_un.d_val);
 		if (!rpath) return -1;
+	}
+
+	// determinate depencies count
+	object->depencies_count = 0;
+	for (size_t i=0; i<dynamics_count; i++) {
+		if (dynamics[i].d_tag != DT_NEEDED) continue;
+		object->depencies_count++;
+	}
+	object->depencies = dl_alloc(object->depencies_count * sizeof(struct elf_object*));
+	memset(object->depencies, 0, object->depencies_count * sizeof(struct elf_object*));
+
+	// and load them
+	size_t index = 0;
+	for (size_t i=0; i<dynamics_count; i++) {
+		if (dynamics[i].d_tag != DT_NEEDED) continue;
+		const char *name = get_str(object, dynamics[i].d_un.d_val);
+		if (!name) return -1;
+
+		void *lib = dlopen(name, RTLD_NOW | RTLD_LOCAL);
+		if (!lib) {
+			dl_error("cannot access a needed shared library");
+			return -1;
+		}
+		object->depencies[index++] = lib;
 	}
 	return 0;
 }
@@ -259,24 +294,40 @@ struct elf_object *elf_load(const char *path, int is_lib) {
 		object->addr = (uintptr_t)addr;
 	}
 
-	Elf_Dyn dynamics[DT_BIND_NOW+1] = {0};
-
+	// map segments first
 	for (size_t i=0; i<object->phdrs_count; i++) {
 		Elf_Phdr *pheader = &object->phdrs[i];
-		switch (pheader->p_type) {
-		case PT_DYNAMIC:
-			if (load_dynamics(file, pheader, dynamics) < 0) goto close;
-			break;
-		case PT_LOAD:
-			if (map_segment(object, file, pheader) < 0) goto close;
-			break;
+		if (pheader->p_type != PT_LOAD) continue;
+		if (map_segment(object, file, pheader) < 0) {
+			goto close;
 		}
 	}
 
-	if (handle_dynamics(object, file, dynamics) < 0) {
+	// load dynamics
+	Elf_Dyn *dynamics = NULL;
+	size_t dynamics_count;
+	size_t dynamics_size;
+	for (size_t i=0; i<object->phdrs_count; i++) {
+		Elf_Phdr *pheader = &object->phdrs[i];
+		if (pheader->p_type != PT_DYNAMIC) continue;
+		dynamics_size = pheader->p_filesz;
+		if (load_dynamics(file, pheader, &dynamics, &dynamics_count) < 0) {
+			goto close;
+		}
+		break;
+	}
+	if (!dynamics) {
+		dl_error("no PT_DYNAMIC");
 		goto close;
 	}
 
+	// and now handle the loaded dynamics
+	if (handle_dynamics(object, file, dynamics,dynamics_count) < 0) {
+		unload_table(dynamics, dynamics_size);
+		goto close;
+	}
+
+	unload_table(dynamics, dynamics_size);
 	close(file);
 	return object;
 
@@ -289,13 +340,18 @@ free:
 
 void elf_unload(struct elf_object *object) {
 	// TODO : unload and free depencies
-	if (object->header.e_type == ET_DYN) {
+	if (object->header.e_type == ET_DYN && object->addr) {
 		// we can free the whole allocated block
 		munmap((void*)object->addr, get_total_size(object));
 	}
 	unload_table(object->strtab, object->strtab_size);
 	unload_table(object->symtab, object->symbols_count * sizeof(Elf_Sym));
 	unload_table(object->hash, object->hash_size);
+	for (size_t i=0; i<object->depencies_count; i++) {
+		if (!object->depencies[i]) continue;
+		dlclose(object->depencies[i]);
+	}
+	dl_free(object->depencies);
 	dl_free(object->name);
 	dl_free(object->phdrs);
 	dl_free(object);

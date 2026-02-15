@@ -46,10 +46,13 @@ struct elf_object {
 	char *strtab;
 	Elf_Sym *symtab;
 	uint32_t *hash;
+	struct elf_object **depencies;
 	size_t phdrs_count;
 	size_t strtab_size;
 	size_t symbols_count;
 	size_t hash_size;
+	size_t depencies_count;
+	int flags;
 };
 
 void dl_setup_libc_alloc(void);

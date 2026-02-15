@@ -2,6 +2,7 @@
 #define LINKER_H
 
 #include <limits.h>
+#include <stdint.h>
 #include <elf.h>
 
 #ifdef BITS32
@@ -65,6 +66,8 @@ void elf_unload(struct elf_object *object);
 void *elf_lookup(struct elf_object *object, const char *name);
 void abi_enter(void *entry, int argc, char **argv, int env, char **envp);
 int open_lib(const char *path);
+const char *get_str(struct elf_object *object, size_t offset);
+int reloc(struct elf_object *object, Elf_Rela *rel);
 
 extern const char *lib_path;
 extern const char *rpath;

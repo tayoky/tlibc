@@ -100,7 +100,7 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 	return 0;
 }
 
-static const char *get_str(struct elf_object *object, size_t offset) {
+const char *get_str(struct elf_object *object, size_t offset) {
 	const char *str = object->strtab + offset;
 	const char *cur = str;
 	const char *strtab_end = object->strtab + object->strtab_size;
@@ -326,6 +326,8 @@ struct elf_object *elf_load(const char *path, int is_lib) {
 		unload_table(dynamics, dynamics_size);
 		goto close;
 	}
+
+	// TODO : apply relocations
 
 	unload_table(dynamics, dynamics_size);
 	close(file);

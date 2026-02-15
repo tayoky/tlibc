@@ -48,8 +48,8 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 		}
 
 		if (filesz > 0) {
-			if (mmap((void*)vaddr, filesz, PROT_WRITE, MAP_PRIVATE | MAP_FIXED, file, offset) < 0) {
-				return -1;
+			if (mmap((void*)vaddr, filesz, PROT_WRITE, MAP_PRIVATE | MAP_FIXED, file, offset) == MAP_FAILED) {
+				return dl_error("mmap failed");
 			}
 			// zero the last page
 			if (filesz_remainer) {
@@ -61,17 +61,17 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 		if (memsz > filesz) {
 			// we need to fill with anonymous mapping
 			vaddr += filesz;
-			if (mmap((void*)vaddr, memsz - filesz, prot, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) < 0) {
-				// remove the already mapped part
+			if (mmap((void*)vaddr, memsz - filesz, prot, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) == MAP_FAILED) {
+				// remove the aready mapped part
 				munmap((void*)(vaddr-filesz), filesz);
-				return -1;
+				return dl_error("mmap failed");
 			}
 		}
 	} else {
 		size_t memsz = PAGE_ALIGN_UP(pheader->p_memsz + vaddr_off);
 
-		if (mmap((void*)vaddr, memsz, PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) < 0) {
-			return -1;
+		if (mmap((void*)vaddr, memsz, PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) == MAP_FAILED) {
+			return dl_error("mmap failed");
 		}
 
 		// file size must be <= to virtual size
@@ -81,12 +81,45 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 
 		lseek(file, pheader->p_offset, SEEK_SET);
 		if (read(file, (void *)(vaddr + vaddr_off), pheader->p_filesz) < pheader->p_filesz) {
-				munmap((void*)vaddr, memsz);
-				return -1;
+			munmap((void*)vaddr, memsz);
+			return dl_error("read failed");
 		}
 		// set the protection
 		mprotect((void*)vaddr, memsz, prot);
 	}
+	return 0;
+}
+
+static int load_dynamics(struct elf_object *object, int file, Elf_Phdr *pheader, Elf_Dyn dynamics[DT_BIND_NOW+1]) {
+	// dynamics section must be aligned
+#if defined(__x86_64__) || defined(__aarch64__)
+	size_t align = 8;
+#elif defined(__i386__)
+	size_t align = 4;
+#else
+	size_t align = 1;
+#endif
+	if (pheader->p_offset % align) {
+		return dl_error("unaligned PT_DYNAMIC section");
+	}
+
+	off_t offset = PAGE_ALIGN_DOWN(pheader->p_offset);
+	size_t remainer = pheader->p_offset;
+	size_t size = PAGE_ALIGN_UP(pheader->p_filesz);
+	void *addr = mmap(NULL, size, PROT_READ, MAP_PRIVATE, file, offset);
+	if (addr == MAP_FAILED) {;
+		return dl_error("mmap failed");
+	}
+
+	Elf_Dyn *dyns = (Elf_Dyn*)((uintptr_t)addr + remainer);
+	size_t dyns_count = pheader->p_filesz / sizeof(Elf_Dyn);
+	for (size_t i=0; i<dyns_count; i++) {
+		if (dyns[i].d_tag == DT_NULL) break;
+		if (dyns[i].d_tag <= DT_BIND_NOW) {
+			dynamics[dyns[i].d_tag] = dyns[i];
+		}
+	}
+	munmap(addr, size);
 	return 0;
 }
 
@@ -105,6 +138,14 @@ static size_t get_total_size(struct elf_object *object) {
 	}
 	if (start > end) return 0;
 	return end - start;
+}
+
+static int handle_dynamics(struct elf_object *object, int file, Elf_Dyn dynamics[DT_BIND_NOW+1]) {
+	if (!dynamics[DT_STRTAB].d_un.d_ptr || !dynamics[DT_STRTAB].d_un.d_val) {
+		return dl_error("no string table");
+	}
+	// TODO : load string table and more
+	return 0;
 }
 
 struct elf_object *elf_load(const char *path) {
@@ -149,27 +190,22 @@ struct elf_object *elf_load(const char *path) {
 		object->addr = (uintptr_t)addr;
 	}
 
+	Elf_Dyn dynamics[DT_BIND_NOW+1] = {0};
+
 	for (int i=0; i<object->phdrs_count; i++) {
 		Elf_Phdr *pheader = &object->phdrs[i];
-		if (pheader->p_type == PT_DYNAMIC) {
-			// two PT_DYNAMIC ???? ignore i guess
-			if (object->dynamics) continue;
-			object->dynamics = dl_alloc(pheader->p_filesz);
-			lseek(file, pheader->p_offset, SEEK_SET);
-			read(file, object->dynamics, pheader->p_filesz);
+		switch (pheader->p_type) {
+		case PT_DYNAMIC:
+			if (load_dynamics(object, file, pheader, dynamics) < 0) goto close;
+			break;
+		case PT_LOAD:
+			if (map_segment(object, file, pheader) < 0) goto close;
+			break;
+		}
+	}
 
-			for (size_t j=0; j<pheader->p_filesz; j+=sizeof(Elf_Dyn)) {
-				if (object->dynamics[i].d_tag == DT_NULL) break;
-				object->dynamics_count++;
-				switch (object->dynamics[i].d_tag) {
-				}
-			}
-		}
-		if (pheader->p_type != PT_LOAD) continue;
-		if (map_segment(object, file, pheader) < 0) {
-			dl_error("mmap failed");
-			goto close;
-		}
+	if (handle_dynamics(object, file, dynamics) < 0) {
+		goto close;
 	}
 
 	close(file);
@@ -190,7 +226,6 @@ void elf_unload(struct elf_object *object) {
 	}
 	dl_free(object->name);
 	dl_free(object->phdrs);
-	dl_free(object->dynamics);
 	dl_free(object);
 }
 

@@ -38,7 +38,6 @@ struct elf_object {
 	uintptr_t addr;
 	char *name;
 	Elf_Phdr *phdrs;
-	Elf_Dyn  *dynamics;
 	char *strtab;
 	Elf_Sym *symtab;
 	size_t phdrs_count;
@@ -57,6 +56,7 @@ void abi_enter(void *entry, int argc, char **argv, int env, char **envp);
 int open_lib(const char *path);
 
 extern const char *lib_path;
+extern const char *rpath;
 
 #ifndef PAGE_SIZE
 #define PAGE_SIZE 4096

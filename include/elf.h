@@ -378,8 +378,8 @@ typedef struct {
 #define DT_PLTREL   20
 #define DT_DEBUG    21
 #define DT_TEXTREL  22
-#define DT_JMPREL   24
-#define DT_BIND_NOW 25
+#define DT_JMPREL   23
+#define DT_BIND_NOW 24
 #define DT_LOPROC   0x70000000
 #define DT_HIPROC   0x7fffffff
 

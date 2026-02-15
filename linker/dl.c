@@ -16,6 +16,7 @@ static struct elf_object *cache_last = NULL;
 static struct elf_object *cache_first = NULL;
 static struct elf_object *program = NULL;
 const char *lib_path = NULL;
+const char *rpath = NULL;
 
 static struct elf_object *cache_find(const char *name) {
 	struct elf_object *cur = cache_first;
@@ -138,7 +139,7 @@ int main(int argc, char **argv, char **envp) {
 		lib_path = getenv("LD_LIBRARY_PATH");
 	}
 
-	program = elf_load(argv[1]);
+	program = elf_load(argv[0]);
 	if (!program) return EXIT_FAILURE;
 
 	dl_setup_libc_alloc();

@@ -79,7 +79,7 @@ void *dlopen(const char *filename ,int flags) {
 	}
 	if (flags & RTLD_NOLOAD) return NULL;
 
-	object = elf_load(filename);
+	object = elf_load(filename, 1);
 	if (!object) return NULL;
 
 	object->name      = dl_strdup(name);
@@ -139,7 +139,7 @@ int main(int argc, char **argv, char **envp) {
 		lib_path = getenv("LD_LIBRARY_PATH");
 	}
 
-	program = elf_load(argv[0]);
+	program = elf_load(argv[0], 0);
 	if (!program) return EXIT_FAILURE;
 
 	dl_setup_libc_alloc();

@@ -5,8 +5,7 @@
 #include <elf.h>
 #include "linker.h"
 
-
-static int check_ehdr(Elf64_Ehdr *header){
+static int check_ehdr(Elf_Ehdr *header, int is_lib){
 	if (memcmp(header->e_ident, ELFMAG, 4)) {
 		return 0;
 	}
@@ -15,6 +14,15 @@ static int check_ehdr(Elf64_Ehdr *header){
 	}
 	if (header->e_version != EV_CURRENT) {
 		return 0;
+	}
+	if (is_lib) {
+		if (header->e_type != ET_DYN) {
+			return 0;
+		}
+	} else {
+		if (header->e_type != ET_EXEC) {
+			return 0;
+		}
 	}
 	return 1;
 }
@@ -80,7 +88,7 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 		}
 
 		lseek(file, pheader->p_offset, SEEK_SET);
-		if (read(file, (void *)(vaddr + vaddr_off), pheader->p_filesz) < pheader->p_filesz) {
+		if (read(file, (void *)(vaddr + vaddr_off), pheader->p_filesz) < (ssize_t)pheader->p_filesz) {
 			munmap((void*)vaddr, memsz);
 			return dl_error("read failed");
 		}
@@ -90,7 +98,7 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 	return 0;
 }
 
-static int load_dynamics(struct elf_object *object, int file, Elf_Phdr *pheader, Elf_Dyn dynamics[DT_BIND_NOW+1]) {
+static int load_dynamics(int file, Elf_Phdr *pheader, Elf_Dyn dynamics[DT_BIND_NOW+1]) {
 	// dynamics section must be aligned
 #if defined(__x86_64__) || defined(__aarch64__)
 	size_t align = 8;
@@ -104,7 +112,7 @@ static int load_dynamics(struct elf_object *object, int file, Elf_Phdr *pheader,
 	}
 
 	off_t offset = PAGE_ALIGN_DOWN(pheader->p_offset);
-	size_t remainer = pheader->p_offset;
+	size_t remainer = pheader->p_offset % PAGE_SIZE;
 	size_t size = PAGE_ALIGN_UP(pheader->p_filesz);
 	void *addr = mmap(NULL, size, PROT_READ, MAP_PRIVATE, file, offset);
 	if (addr == MAP_FAILED) {;
@@ -126,7 +134,7 @@ static int load_dynamics(struct elf_object *object, int file, Elf_Phdr *pheader,
 static size_t get_total_size(struct elf_object *object) {
 	uintptr_t start = UINTPTR_MAX;
 	uintptr_t end   = 0;
-	for (int i=0; i<object->phdrs_count; i++) {
+	for (size_t i=0; i<object->phdrs_count; i++) {
 		Elf_Phdr *pheader = &object->phdrs[i];
 		if (pheader->p_type != PT_LOAD) continue;
 		if (PAGE_ALIGN_DOWN(pheader->p_vaddr) < start) {
@@ -140,15 +148,76 @@ static size_t get_total_size(struct elf_object *object) {
 	return end - start;
 }
 
+static void *load_table(int file, off_t offset, size_t size) {
+	size_t remainer = offset % PAGE_SIZE;
+	offset = PAGE_ALIGN_DOWN(offset);
+	size = PAGE_ALIGN_UP(size + remainer);
+	void *addr = mmap(NULL, size, PROT_READ, MAP_PRIVATE, file, offset);
+	if (addr == MAP_FAILED) return NULL;
+	return (void*)((uintptr_t)addr +  remainer);
+}
+
+static void unload_table(void *ptr, size_t size) {
+	if (!ptr) return;
+	uintptr_t addr = (uintptr_t)ptr;
+	size_t remainer = addr % PAGE_SIZE;
+	ptr = (void*)PAGE_ALIGN_DOWN(addr);
+	size = PAGE_ALIGN_UP(size + remainer);
+	munmap(ptr, size);
+}
+
+static const char *get_str(struct elf_object *object, size_t offset) {
+	const char *str = object->strtab + offset;
+	const char *cur = str;
+	const char *strtab_end = object->strtab + object->strtab_size;
+
+	// check if the string is in bounds
+	while (cur < strtab_end) {
+		if (!*cur) return str;
+		cur++;
+	}
+	dl_error("invalid string offset");
+	return NULL;
+}
+
 static int handle_dynamics(struct elf_object *object, int file, Elf_Dyn dynamics[DT_BIND_NOW+1]) {
-	if (!dynamics[DT_STRTAB].d_un.d_ptr || !dynamics[DT_STRTAB].d_un.d_val) {
+	if (!dynamics[DT_STRTAB].d_un.d_ptr || !dynamics[DT_STRSZ].d_un.d_val) {
 		return dl_error("no string table");
 	}
-	// TODO : load string table and more
+	object->strtab_size = dynamics[DT_STRSZ].d_un.d_val;
+	object->strtab = load_table(file, dynamics[DT_STRTAB].d_un.d_ptr, object->strtab_size);
+	if (!object->strtab) return -1;
+
+	if (!dynamics[DT_SYMTAB].d_un.d_ptr || !dynamics[DT_HASH].d_un.d_val) {
+		return dl_error("no symtab table");
+	}
+
+	// start by firguring out the size of the hash and symbol table
+	uint32_t hash_start[2];
+	lseek(file, dynamics[DT_HASH].d_un.d_ptr, SEEK_SET);
+	if (read(file, hash_start, sizeof(hash_start)) < (ssize_t)sizeof(hash_start)) {
+		return dl_error("read failed");
+	}
+
+	// nchain (second entry) contain symtab entries count
+	object->symbols_count = hash_start[1];
+	object->symtab = load_table(file, dynamics[DT_SYMTAB].d_un.d_ptr, object->symbols_count * sizeof(Elf_Sym));
+	if (!object->symtab) return -1;
+
+	// 2 + nbucket + nchain give total entries count
+	// we can use that to load hash table
+	object->hash_size = (2 + hash_start[0] + hash_start[1]) * sizeof(uint32_t);
+	object->hash = load_table(file, dynamics[DT_HASH].d_un.d_ptr, object->hash_size);
+
+	// optional DT_RPATH for executables
+	if (object->header.e_type == ET_EXEC && dynamics[DT_RPATH].d_un.d_val) {
+		rpath = get_str(object, dynamics[DT_RPATH].d_un.d_val);
+		if (!rpath) return -1;
+	}
 	return 0;
 }
 
-struct elf_object *elf_load(const char *path) {
+struct elf_object *elf_load(const char *path, int is_lib) {
 	struct elf_object *object = dl_alloc(sizeof(struct elf_object));
 	memset(object, 0, sizeof(struct elf_object));
 
@@ -158,11 +227,11 @@ struct elf_object *elf_load(const char *path) {
 		goto free;
 	}
 
-	if (read(file, &object->header,sizeof(Elf_Ehdr)) < sizeof(Elf_Ehdr)) {
+	if (read(file, &object->header,sizeof(Elf_Ehdr)) < (ssize_t)sizeof(Elf_Ehdr)) {
 		dl_error("read failed");
 		goto close;
 	}
-	if (!check_ehdr(&object->header)) {
+	if (!check_ehdr(&object->header, is_lib)) {
 		dl_error("invalid elf header");
 		goto close;
 	}
@@ -171,10 +240,10 @@ struct elf_object *elf_load(const char *path) {
 	object->phdrs_count = object->header.e_phnum;
 	object->phdrs = dl_alloc(sizeof(Elf_Phdr) * object->phdrs_count);
 	uintptr_t off = object->header.e_phoff;
-	for (int i=0; i<object->header.e_phnum; i++,off += object->header.e_phentsize) {
+	for (size_t i=0; i<object->header.e_phnum; i++,off += object->header.e_phentsize) {
 		Elf_Phdr *pheader = &object->phdrs[i];
 		lseek(file, off, SEEK_SET);
-		if (read(file, pheader, sizeof(*pheader)) < sizeof(*pheader)) {
+		if (read(file, pheader, sizeof(*pheader)) < (ssize_t)sizeof(*pheader)) {
 			dl_error("read failed");
 			goto close;
 		}
@@ -192,11 +261,11 @@ struct elf_object *elf_load(const char *path) {
 
 	Elf_Dyn dynamics[DT_BIND_NOW+1] = {0};
 
-	for (int i=0; i<object->phdrs_count; i++) {
+	for (size_t i=0; i<object->phdrs_count; i++) {
 		Elf_Phdr *pheader = &object->phdrs[i];
 		switch (pheader->p_type) {
 		case PT_DYNAMIC:
-			if (load_dynamics(object, file, pheader, dynamics) < 0) goto close;
+			if (load_dynamics(file, pheader, dynamics) < 0) goto close;
 			break;
 		case PT_LOAD:
 			if (map_segment(object, file, pheader) < 0) goto close;
@@ -224,11 +293,55 @@ void elf_unload(struct elf_object *object) {
 		// we can free the whole allocated block
 		munmap((void*)object->addr, get_total_size(object));
 	}
+	unload_table(object->strtab, object->strtab_size);
+	unload_table(object->symtab, object->symbols_count * sizeof(Elf_Sym));
+	unload_table(object->hash, object->hash_size);
 	dl_free(object->name);
 	dl_free(object->phdrs);
 	dl_free(object);
 }
 
+// taken from the ELF spec
+static unsigned long elf_hash(const unsigned char *name) {
+	unsigned long h = 0, g;
+
+	while (*name) {
+		h = (h << 4) + *name++;
+		if ((g = h) & 0xf0000000)
+			h ^= g >> 24;
+		h &= ~g;
+	}
+	return h;
+}
+
 void *elf_lookup(struct elf_object *object, const char *name) {
+	uint32_t hash = elf_hash((const unsigned char*)name);
+	uint32_t nbucket = object->hash[0];
+	uint32_t nchain  = object->hash[1];
+	uint32_t *bucket = object->hash + 2;
+	uint32_t *chain = object->hash + 2;
+	size_t index = bucket[hash % nbucket];
+	while (index != SHN_UNDEF) {
+		if (index >= nchain) {
+			// uh
+			dl_error("invalid index in hash table");
+			return NULL;
+		}
+
+		Elf_Sym *sym = &object->symtab[index];
+		const char *sym_name = get_str(object, sym->st_name);
+		if (!sym_name) {
+			dl_error("invalid symbol");
+			return NULL;
+		}
+		if (!strcmp(name, sym_name)) {
+			// we found it
+			return (void*)(sym->st_value + object->addr);
+		}
+
+		// go to next entry
+		index = chain[index];
+	}
+	dl_error("symbol not found");
 	return NULL;
 }

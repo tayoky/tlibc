@@ -30,6 +30,11 @@
 #define ELFCLASS ELFCLASS64
 #endif
 
+struct elf_table {
+	void *ptr;
+	size_t size;
+};
+
 struct elf_object {
 	struct elf_object *next;
 	struct elf_object *prev;
@@ -40,8 +45,11 @@ struct elf_object {
 	Elf_Phdr *phdrs;
 	char *strtab;
 	Elf_Sym *symtab;
+	uint32_t *hash;
 	size_t phdrs_count;
-	size_t dynamics_count;
+	size_t strtab_size;
+	size_t symbols_count;
+	size_t hash_size;
 };
 
 void dl_setup_libc_alloc(void);
@@ -49,7 +57,7 @@ void *dl_alloc(size_t size);
 void dl_free(void *ptr);
 char *dl_strdup(const char *str);
 int dl_error(char *str);
-struct elf_object *elf_load(const char *path);
+struct elf_object *elf_load(const char *path, int lib);
 void elf_unload(struct elf_object *object);
 void *elf_lookup(struct elf_object *object, const char *name);
 void abi_enter(void *entry, int argc, char **argv, int env, char **envp);

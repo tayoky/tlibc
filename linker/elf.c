@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <limits.h>
+#include <stdlib.h>
 #include <dlfcn.h>
 #include <sys/mman.h>
 #include <stdio.h>
@@ -252,6 +253,71 @@ static int handle_dynamics(struct elf_object *object, int file, Elf_Dyn *dynamic
 	return 0;
 }
 
+static int apply_relocs(struct elf_object *object, int file, Elf_Dyn *dynamics, size_t dynamics_count) {
+	Elf_Dyn *dyn_rela    = find_dynamic(dynamics, dynamics_count, DT_RELA);
+	Elf_Dyn *dyn_relasz  = find_dynamic(dynamics, dynamics_count, DT_RELASZ);
+	Elf_Dyn *dyn_relaent = find_dynamic(dynamics, dynamics_count, DT_RELAENT);
+	Elf_Dyn *dyn_rel    = find_dynamic(dynamics, dynamics_count, DT_REL);
+	Elf_Dyn *dyn_relsz  = find_dynamic(dynamics, dynamics_count, DT_RELSZ);
+	Elf_Dyn *dyn_relent = find_dynamic(dynamics, dynamics_count, DT_RELENT);
+	(void)dyn_rela;
+	(void)dyn_relasz;
+	(void)dyn_relaent;
+	(void)dyn_rel;
+	(void)dyn_relsz;
+	(void)dyn_relent;
+
+	int type = 0;
+#if defined(__x86_64__) || defined(__i386__)
+	type = DT_RELA;
+#endif
+	if (!type) {
+		// TODO : use PLTREL or something
+		type = DT_RELA;
+	}
+	if (find_dynamic(dynamics, dynamics_count, DT_TEXTREL)) {
+		if (getenv("LD_DEBUG")) {
+			puts("TODO : text relocation");
+		}
+		dl_error("text relocation are unsupported");
+		return -1;
+	}
+
+	size_t size;
+	size_t ent;
+	void *table;
+	switch (type) {
+	case DT_RELA:
+		if (!dyn_rela || !dyn_relasz || !dyn_relaent) {
+			return dl_error("no relocation table");
+		}
+		size = dyn_relasz->d_un.d_val;
+		ent = dyn_relaent->d_un.d_val;
+		table = load_table(file, dyn_rela->d_un.d_ptr, size);
+		break;
+	case DT_REL:
+		if (!dyn_rel || !dyn_relsz || !dyn_relent) {
+			return dl_error("no relocation table");
+		}
+		size = dyn_relsz->d_un.d_val;
+		ent = dyn_relent->d_un.d_val;
+		table = load_table(file, dyn_rel->d_un.d_ptr, size);
+		break;
+	}
+	if (!table) {
+		return -1;
+	}
+
+	int ret = 0;
+	for (size_t i=0; i<size; i+=ent) {
+		uintptr_t addr = (uintptr_t)table + i;
+		ret = reloc(object, (Elf_Rela*)addr);
+	}
+
+	unload_table(table, size);
+	return ret;
+}
+
 struct elf_object *elf_load(const char *path, int is_lib) {
 	struct elf_object *object = dl_alloc(sizeof(struct elf_object));
 	memset(object, 0, sizeof(struct elf_object));
@@ -322,17 +388,20 @@ struct elf_object *elf_load(const char *path, int is_lib) {
 	}
 
 	// and now handle the loaded dynamics
-	if (handle_dynamics(object, file, dynamics,dynamics_count) < 0) {
-		unload_table(dynamics, dynamics_size);
-		goto close;
+	if (handle_dynamics(object, file, dynamics, dynamics_count) < 0) {
+		goto unload_dyns;
 	}
 
-	// TODO : apply relocations
+	if (apply_relocs(object, file, dynamics, dynamics_count) < 0) {
+		goto unload_dyns;
+	}
 
 	unload_table(dynamics, dynamics_size);
 	close(file);
 	return object;
-
+	
+unload_dyns:
+	unload_table(dynamics, dynamics_size);
 close:
 	close(file);
 free:

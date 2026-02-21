@@ -28,12 +28,14 @@ ssize_t __fileio_write(FILE *stream, const void *buf, size_t count) {
 		size_t total = 0;
 		while (count > 0) {
 			ssize_t w;
-			if((w = __fileio_write(stream, buf, stream->bufsize < count ? stream->bufsize : count)) < 0) return w;
+			w = __fileio_write(stream, buf, stream->bufsize < count ? stream->bufsize : count);
+			if (w < 0) return w;
+			if (w == 0) break;
 			count -= w;
 			buf = (char *)buf + w;
 			total += w;
 		}
-		return count;
+		return total;
 	}
 
 	// not enough place ? fflush

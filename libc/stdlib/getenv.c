@@ -4,34 +4,24 @@
 
 extern char **environ;
 
-char *getenv(const char *name){
-	//this is what we are searching
-	char *search = malloc(strlen(name) + 2);
-	if(!search){
-		errno = ENOMEM;
-		return NULL;
-	}
-	strcpy(search,name);
-	strcat(search,"=");
+char *getenv(const char *name) {
+	size_t name_len = strlen(name);
 
-	size_t name_len = strlen(search);
-
-	//try to find the key
+	// try to find the key
 	int key = 0;
-	while(environ[key]){
-		//is it the good key ?
-		if(strlen(environ[key]) >= name_len && !memcmp(environ[key],search,name_len)){
+	while (environ[key]) {
+		// is it the good key ?
+		if (strlen(environ[key]) >= name_len && !memcmp(environ[key], name, name_len) && environ[key][name_len] == '=') {
 			break;
 		}
 		key++;
 	}
-	free(search);
 
-	if(!environ[key]){
+	if (!environ[key]) {
 		//key not found
 		errno = ESRCH;
 		return NULL;
 	}
 
-	return environ[key] + name_len;
+	return environ[key] + name_len + 1;
 }

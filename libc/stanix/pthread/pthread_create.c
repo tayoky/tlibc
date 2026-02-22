@@ -6,6 +6,9 @@
 #include <sys/mman.h>
 #include <stdint.h>
 
+// do not compile this for dynamic linker
+#ifndef __DL_TLIBC__
+
 struct pthread_args {
 	void *arg;
 	void *(*start_routine)(void *);
@@ -54,3 +57,4 @@ int pthread_create(pthread_t *thread,const pthread_attr_t *attr,void *(*start_ro
 
 	return stanix_new_thread((void *)__pthread_creator,(void*)stack_top,0,args,thread);
 }
+#endif

@@ -85,7 +85,7 @@ libdl.a : $(BUILDDIR)/stub/dl.o
 libm.a : $(M_OBJ)
 	$(AR) rcs $@ $^
 
-ld-tlibc.so : $(DL_OBJ)
+ld-tlibc.so : $(DL_OBJ) $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 	$(CC) -o $@ $^ -nostdlib -pie -static-libgcc -Wl,--no-dynamic-linker
 
 

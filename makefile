@@ -60,7 +60,7 @@ DL_DEPS = tlibc pthread/uthread $(ARCH)/__get_uthread errno ctype/ctype \
 	string/memset string/memcmp string/memchr string/memcpy \
 	stdio/vsnprintf stdio/vsprintf stdio/sprintf stdio/fwrite stdio/__fileio_write stdio/fflush\
 	stdio/puts stdio/putchar stdio/fputs stdio/fputc stdio/stdio\
-	stdlib/exit \
+	stdlib/exit stdlib/environ stdlib/getenv \
 	$(basename $(shell cd libc && find $(TARGET) -name "*.c"))
 
 DL_SRC = $(wildcard linker/*.c) linker/abi/$(ARCH)-$(TARGET)

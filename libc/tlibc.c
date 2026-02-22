@@ -7,7 +7,7 @@
 
 void _init(void);
 void _fini(void);
-int main(int argc,char **argv,char **envp);
+int main(int argc, char **argv, char **envp);
 
 typedef void (*func)(void);
 
@@ -17,16 +17,16 @@ extern func __init_array_end[] __attribute__((weak));
 extern func __fini_array_end[] __attribute__((weak));
 
 #ifndef __DL_TLIBC__
-static void __fini_tlibc(void){
+static void __fini_tlibc(void) {
 	_fini();
-	for (ptrdiff_t i = 0; i < (__fini_array_end - __fini_array_start); i++){
+	for (ptrdiff_t i = 0; i < (__fini_array_end - __fini_array_start); i++) {
 		__fini_array_start[i]();
 	}
 	fflush(NULL);
 }
 #endif
 
-void __init_tlibc(int argc,char **argv,int envc,char **envp){
+void __init_tlibc(int argc, char **argv, int envc, char **envp) {
 	(void)argc;
 	(void)argv;
 	(void)envc;
@@ -37,14 +37,18 @@ void __init_tlibc(int argc,char **argv,int envc,char **envp){
 #endif
 #ifndef __DL_TLIBC__
 	__init_heap();
-	__init_environ(envc,envp);
+#endif
 
+	// the dynamic linker need environ access
+	__init_environ(envc, envp);
+
+#ifndef __DL_TLIBC__
 	atexit(__fini_tlibc);
 
 	_init();
-	for (ptrdiff_t i = 0; i < (__init_array_end - __init_array_start); i++){
+	for (ptrdiff_t i = 0; i < (__init_array_end - __init_array_start); i++) {
 		__init_array_start[i]();
 	}
 #endif
-	exit(main(argc,argv,envp));
+	exit(main(argc, argv, envp));
 }

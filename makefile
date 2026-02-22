@@ -21,7 +21,8 @@ BUILDDIR = build
 # first get all the sources
 C_SRC_DIR = ctype libgen time stdlib string wchar stdio unistd locale pwd pthread dl $(TARGET) $(ARCH)
 C_SRC = $(shell find libc -maxdepth 1 -name "*.c") $(foreach DIR, $(C_SRC_DIR), $(shell find libc/$(DIR) -name "*.c" -or -name "*.s"))
-C_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(basename $(C_SRC))))
+C_OBJ = $(addprefix $(BUILDDIR)/, $(addsuffix .o, $(basename $(C_SRC))))
+C_SHARED_OBJ = $(addprefix $(BUILDDIR)/shared-, $(addsuffix .o, $(basename $(C_SRC))))
 
 # objects used in libk
 K_SRC = errno.o string/memset.o string/memcpy.o string/memchr.o string/memcmp.o string/strcat.o string/strlen.o  string/strnlen.o string/strcpy.o string/strncpy.o string/strcmp.o string/strncmp.o string/strncasecmp.o ctype/ctype.o stdio/vsnprintf.o stdio/snprintf.o stdio/vsprintf.o stdio/sprintf.o stdlib/strto.o
@@ -31,6 +32,7 @@ K_OBJ = $(foreach FILE, $(K_SRC), $(BUILDDIR)/libk/$(FILE))
 M_ARCH_SRC = $(shell find libm/$(ARCH) -name "*.c" -or -name "*.s")
 M_SRC = $(M_ARCH_SRC) $(filter-out $(foreach FILE,$(M_ARCH_SRC),libm/generic/$(shell basename $(basename $(FILE))).%),$(shell find libm/generic -name "*.c" ))
 M_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(basename $(M_SRC))))
+M_SHARED_OBJ = $(addprefix $(BUILDDIR)/shared-, $(addsuffix .o, $(basename $(M_SRC))))
 
 #ld flags
 LDFLAGS += \
@@ -88,10 +90,20 @@ libm.a : $(M_OBJ)
 ld-tlibc.so : $(DL_OBJ) $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 	$(CC) -o $@ $^ -nostdlib -pie -static -static-libgcc -Wl,--no-dynamic-linker
 
+tlibc.so : $(C_SHARED_OBJ)
+	$(CC) -shared -o $@ $^ -nostdlib
 
 $(BUILDDIR)/%.o : %.c
 	@mkdir -p $(shell dirname $@)
 	$(CC) $(CFLAGS) -D$(ARCH) -o $@ -c $^
+
+$(BUILDDIR)/shared-%.o : %.c
+	@mkdir -p $(shell dirname $@)
+	$(CC) $(CFLAGS) -shared -D__DYNAMIC__ -D$(ARCH) -o $@ -c $^
+
+$(BUILDDIR)/shared-%.o : %.s
+	@mkdir -p $(shell dirname $@)
+	$(AS) $(ASFLAGS) -o $@ $^
 
 $(BUILDDIR)/%.o : %.s
 	@mkdir -p $(shell dirname $@)

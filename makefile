@@ -20,16 +20,16 @@ BUILDDIR = build
 
 # first get all the sources
 C_SRC_DIR = ctype libgen time stdlib string wchar stdio unistd locale pwd pthread dl $(TARGET) $(ARCH)
-C_SRC = $(shell find src -maxdepth 1 -name "*.c") $(foreach DIR, $(C_SRC_DIR), $(shell find src/$(DIR) -name "*.c" -or -name "*.s"))
+C_SRC = $(shell find libc -maxdepth 1 -name "*.c") $(foreach DIR, $(C_SRC_DIR), $(shell find libc/$(DIR) -name "*.c" -or -name "*.s"))
 C_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(basename $(C_SRC))))
 
 # objects used in libk
 K_SRC = errno.o string/memset.o string/memcpy.o string/memchr.o string/memcmp.o string/strcat.o string/strlen.o  string/strnlen.o string/strcpy.o string/strncpy.o string/strcmp.o string/strncmp.o string/strncasecmp.o ctype/ctype.o stdio/vsnprintf.o stdio/snprintf.o stdio/vsprintf.o stdio/sprintf.o stdlib/strto.o
 K_OBJ = $(foreach FILE, $(K_SRC), $(BUILDDIR)/libk/$(FILE))
 
-#if a file exist in math/$(ARCH) don't take the generic version in math/generic
-M_ARCH_SRC = $(shell find math/$(ARCH) -name "*.c" -or -name "*.s")
-M_SRC = $(M_ARCH_SRC) $(filter-out $(foreach FILE,$(M_ARCH_SRC),math/generic/$(shell basename $(basename $(FILE))).%),$(shell find math/generic -name "*.c" ))
+#if a file exist in libm/$(ARCH) don't take the generic version in libm/generic
+M_ARCH_SRC = $(shell find libm/$(ARCH) -name "*.c" -or -name "*.s")
+M_SRC = $(M_ARCH_SRC) $(filter-out $(foreach FILE,$(M_ARCH_SRC),libm/generic/$(shell basename $(basename $(FILE))).%),$(shell find libm/generic -name "*.c" ))
 M_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(basename $(M_SRC))))
 
 #ld flags
@@ -88,7 +88,7 @@ $(BUILDDIR)/%.o : %.s
 	@mkdir -p $(shell dirname $@)
 	$(AS) $(ASFLAGS) -o $@ $^
 
-$(BUILDDIR)/libk/%.o : src/%.c
+$(BUILDDIR)/libk/%.o : libc/%.c
 	@mkdir -p $(shell dirname $@)
 	$(CC) $(KFLAGS) -D$(ARCH) -o $@ -c $^
 

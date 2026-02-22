@@ -69,7 +69,7 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 			}
 			mprotect((void*)vaddr, filesz, prot);
 		}
-		if (memsz > filesz) {
+		if (pheader->p_memsz > pheader->p_filesz) {
 			// we need to fill with anonymous mapping
 			vaddr += filesz;
 			if (mmap((void*)vaddr, memsz - filesz, prot, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) == MAP_FAILED) {

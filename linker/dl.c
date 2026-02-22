@@ -58,7 +58,7 @@ int dl_error(char *str) {
 	return -1;
 }
 
-void *dlopen(const char *filename ,int flags) {
+void *dlopen(const char *filename, int flags) {
 	if (!(flags & (RTLD_LAZY | RTLD_NOW))) {
 		dl_error("invalid flags");
 		return NULL;
@@ -117,7 +117,7 @@ char *dlerror(void) {
 static void *recur_lookup(struct elf_object *object, const char *sym) {
 	void *ret = elf_lookup(object, sym);
 	if (ret) return ret;
-	for (size_t i=0; i<object->depencies_count; i++) {
+	for (size_t i=0; i < object->depencies_count; i++) {
 		ret = recur_lookup(object, sym);
 		if (ret) return ret;
 	}
@@ -149,16 +149,21 @@ void *dlsym(void *handle, const char *sym) {
 }
 
 int main(int argc, char **argv, char **envp) {
-	if(argc < 2){
-		puts("usage : ld.so PROGRAM [ARGUMENT]...");
-		puts("or    : ld.so OPTION");
-		return EXIT_FAILURE;
-	}
-	if(!strcmp(argv[1],"--help")){
-		puts("usage : ld.so PROGRAM [ARGUMENT]...");
-		puts("or    : ld.so OPTION");
-		puts("launch a dynamic linked program");
-		return 0;
+	if (strcmp(argv[0], "ld-tlibc.so")) {
+		if (!strcmp(argv[1], "--help")) {
+			puts("usage : ld.so PROGRAM [ARGUMENT]...");
+			puts("or    : ld.so OPTION");
+			puts("launch a dynamic linked program");
+			return 0;
+		}
+		if (argc < 2) {
+			puts("usage : ld.so PROGRAM [ARGUMENT]...");
+			puts("or    : ld.so OPTION");
+			return EXIT_FAILURE;
+		}
+		// shift args
+		argc--;
+		argv++;
 	}
 	if (getuid() == geteuid() && getgid() == getegid()) {
 		// don't allow LD_LIBRARY_PATH on set-uid/gid programs
@@ -176,6 +181,6 @@ int main(int argc, char **argv, char **envp) {
 	}
 
 	// emulate entry from kernel
-	abi_enter((void*)program->header.e_entry, argc, argv, 0, envp);
+	abi_enter((void *)program->header.e_entry, argc, argv, 0, envp);
 	return EXIT_FAILURE;
 }

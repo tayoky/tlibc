@@ -37,3 +37,10 @@ char *dl_strdup(const char *str) {
 	if (!dup) return NULL;
 	return strcpy(dup, str);
 }
+
+char *dl_strndup(const char *str, size_t count) {
+	size_t len = strnlen(str,count);
+	char *dup = dl_alloc(len + 1);
+	dup[len] = '\0';
+	return memcpy(dup,str,len);
+}

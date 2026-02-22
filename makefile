@@ -55,9 +55,15 @@ ifeq ($(ARCH),x86_64)
 endif
 
 # libc object used by linker
-DL_DEPS = tlibc pthread/uthread errno string/strcmp string/strchr string/memset stdio/vsnprintf stdio/vsprintf stdio/sprintf $(basename $(shell cd libc && find $(TARGET) -name "*.c"))
+DL_DEPS = tlibc pthread/uthread $(ARCH)/__get_uthread errno ctype/ctype \
+	string/strcmp string/strchr string/strcpy string/strlen string/strnlen \
+	string/memset string/memcmp string/memchr string/memcpy \
+	stdio/vsnprintf stdio/vsprintf stdio/sprintf stdio/fwrite stdio/__fileio_write stdio/fflush\
+	stdio/puts stdio/putchar stdio/fputs stdio/fputc stdio/stdio\
+	stdlib/exit \
+	$(basename $(shell cd libc && find $(TARGET) -name "*.c"))
 
-DL_SRC = $(wildcard linker/*.c) linker/abi/$(ARCH)
+DL_SRC = $(wildcard linker/*.c) linker/abi/$(ARCH)-$(TARGET)
 DL_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(addprefix linker/, $(DL_DEPS)) $(basename $(DL_SRC))))
 
 DLFLAGS = -D__DL_TLIBC__=1 -fpie -mgeneral-regs-only
@@ -80,7 +86,7 @@ libm.a : $(M_OBJ)
 	$(AR) rcs $@ $^
 
 ld-tlibc.so : $(DL_OBJ)
-	$(CC) -o $@ -c $^ -pie -static-libgcc -Wl,--no-dynamic-linker
+	$(CC) -o $@ $^ -nostdlib -pie -static-libgcc -Wl,--no-dynamic-linker
 
 
 $(BUILDDIR)/%.o : %.c
@@ -98,6 +104,10 @@ $(BUILDDIR)/libk/%.o : libc/%.c
 $(BUILDDIR)/linker/%.o : libc/%.c
 	@mkdir -p $(shell dirname $@)
 	$(CC) $(CFLAGS) -D$(ARCH) -o $@ -c $^
+
+$(BUILDDIR)/linker/%.o : libc/%.s
+	@mkdir -p $(shell dirname $@)
+	$(AS) $(ASFLAGS) -o $@ $^
 
 $(BUILDDIR)/linker/% : CFLAGS += $(DLFLAGS)
 

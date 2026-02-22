@@ -60,6 +60,7 @@ void dl_setup_libc_alloc(void);
 void *dl_alloc(size_t size);
 void dl_free(void *ptr);
 char *dl_strdup(const char *str);
+char *dl_strndup(const char *str, size_t count);
 int dl_error(char *str);
 struct elf_object *elf_load(const char *path, int lib);
 void elf_unload(struct elf_object *object);

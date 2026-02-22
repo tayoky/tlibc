@@ -22,9 +22,9 @@ static int try_path_list(const char *list, const char *path) {
 			continue;
 		}
 
-		char *dir = strndup(list, end - list);
+		char *dir = dl_strndup(list, end - list);
 		int fd = try_dir(dir, path);
-		free(dir);
+		dl_free(dir);
 		if (fd >= 0) return fd;
 		list = end;
 	}

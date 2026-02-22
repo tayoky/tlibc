@@ -46,6 +46,7 @@ ssize_t __fileio_write(FILE *stream, const void *buf, size_t count) {
 		}
 	}
 	memcpy(&stream->buf[stream->usedsize], buf, count);
+	stream->usedsize += count;
 
 	if (stream->buftype == _IOLBF && memchr(buf, '\n', count)) {
 		fflush(stream);

@@ -54,8 +54,11 @@ ifeq ($(ARCH),x86_64)
 	KFLAGS += -mno-sse -mno-sse2 -mno-80387 -mno-80387
 endif
 
+# libc object used by linker
+DL_DEPS = string/strcmp string/strchr string/memset stdio/vsnprintf stdio/vsprintf stdio/sprintf $(basename $(shell cd libc && find $(TARGET) -name "*.c"))
+
 DL_SRC = $(wildcard linker/*.c) linker/abi/$(ARCH)
-DL_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(basename $(DL_SRC))))
+DL_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(addprefix linker/, $(DL_DEPS)) $(basename $(DL_SRC))))
 
 DLFLAGS = -fpie -mgeneral-regs-only
 
@@ -91,6 +94,10 @@ $(BUILDDIR)/%.o : %.s
 $(BUILDDIR)/libk/%.o : libc/%.c
 	@mkdir -p $(shell dirname $@)
 	$(CC) $(KFLAGS) -D$(ARCH) -o $@ -c $^
+
+$(BUILDDIR)/linker/%.o : libc/%.c
+	@mkdir -p $(shell dirname $@)
+	$(CC) $(CFLAGS) $(DLFLAGS) -D$(ARCH) -o $@ -c $^
 
 $(BUILDDIR)/linker/% : CFLAGS += $(DLFLAGS)
 

@@ -12,7 +12,7 @@
 int reloc(struct elf_object *object, Elf_Rela *rel) {
 	uintptr_t sym_val = 0;
 	size_t sym_index = ELF_R_SYM(rel->r_info);
-	if (sym_index != STN_UNDEF) {
+	if (sym_index != 0) {
 		if (sym_index >= object->symbols_count) {
 			dl_error("invalid symbol index");
 			return -1;

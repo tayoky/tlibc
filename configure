@@ -3,6 +3,7 @@
 rm -f $(dirname $0)/config.mk
 
 HOST=""
+DYNAMIC=no
 
 if [ "$PREFIX" = "" ] ; then
 	PREFIX="/usr/local"
@@ -46,6 +47,10 @@ for i in "$@"; do
 			;;
 		--prefix=*)
 			PREFIX="${i#*=}"
+			shift # past argument=value
+			;;
+		--dynamic|--dynamic-support)
+			DYNAMIC=yes
 			shift # past argument=value
 			;;
 		-*|--*)
@@ -133,4 +138,5 @@ echo "CC=$CC" >> config.mk
 echo "LD=$LD" >> config.mk
 echo "AR=$AR" >> config.mk
 echo "AS=$AS" >> config.mk
+echo "DYNAMIC=$DYNAMIC" >> config.mk
 echo "SYSROOT=$SYSROOT" >> config.mk

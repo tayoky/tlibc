@@ -18,14 +18,14 @@ TARGET = stanix
 
 BUILDDIR = build
 
-#first get all the src
+# first get all the sources
 C_SRC_DIR = ctype libgen time stdlib string wchar stdio unistd locale pwd pthread dl $(TARGET) $(ARCH)
 C_SRC = $(shell find src -maxdepth 1 -name "*.c") $(foreach DIR, $(C_SRC_DIR), $(shell find src/$(DIR) -name "*.c" -or -name "*.s"))
 C_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(basename $(C_SRC))))
 
-#object used in libk
+# objects used in libk
 K_SRC = errno.o string/memset.o string/memcpy.o string/memchr.o string/memcmp.o string/strcat.o string/strlen.o  string/strnlen.o string/strcpy.o string/strncpy.o string/strcmp.o string/strncmp.o string/strncasecmp.o ctype/ctype.o stdio/vsnprintf.o stdio/snprintf.o stdio/vsprintf.o stdio/sprintf.o stdlib/strto.o
-K_OBJ = $(foreach FILE, $(K_SRC), $(BUILDDIR)/libk/src/$(FILE))
+K_OBJ = $(foreach FILE, $(K_SRC), $(BUILDDIR)/libk/$(FILE))
 
 #if a file exist in math/$(ARCH) don't take the generic version in math/generic
 M_ARCH_SRC = $(shell find math/$(ARCH) -name "*.c" -or -name "*.s")
@@ -54,6 +54,11 @@ ifeq ($(ARCH),x86_64)
 	KFLAGS += -mno-sse -mno-sse2 -mno-80387 -mno-80387
 endif
 
+DL_SRC = $(wildcard linker/*.c) linker/abi/$(ARCH)
+DL_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(basename $(DL_SRC))))
+
+DLFLAGS = -fpie -mgeneral-regs-only
+
 all : tlibc.a tlibk.a libm.a libpthread.a libdl.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 
 tlibc.a : $(C_OBJ)
@@ -71,17 +76,23 @@ libdl.a : $(BUILDDIR)/stub/dl.o
 libm.a : $(M_OBJ)
 	$(AR) rcs $@ $^
 
+ld-tlibc.so : $(DL_OBJ)
+	$(CC) -o $@ -c $^ -pie -static-libgcc -Wl,--no-dynamic-linker
+
+
 $(BUILDDIR)/%.o : %.c
 	@mkdir -p $(shell dirname $@)
 	$(CC) $(CFLAGS) -D$(ARCH) -o $@ -c $^
 
-$(BUILDDIR)/libk/%.o : %.c
-	@mkdir -p $(shell dirname $@)
-	$(CC) $(KFLAGS) -D$(ARCH) -o $@ -c $^
-
 $(BUILDDIR)/%.o : %.s
 	@mkdir -p $(shell dirname $@)
 	$(AS) $(ASFLAGS) -o $@ $^
+
+$(BUILDDIR)/libk/%.o : src/%.c
+	@mkdir -p $(shell dirname $@)
+	$(CC) $(KFLAGS) -D$(ARCH) -o $@ -c $^
+
+$(BUILDDIR)/linker/% : CFLAGS += $(DLFLAGS)
 
 clean : 
 	rm -fr $(BUILDDIR)

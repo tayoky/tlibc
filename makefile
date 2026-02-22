@@ -86,7 +86,7 @@ libm.a : $(M_OBJ)
 	$(AR) rcs $@ $^
 
 ld-tlibc.so : $(DL_OBJ) $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
-	$(CC) -o $@ $^ -nostdlib -pie -static-libgcc -Wl,--no-dynamic-linker
+	$(CC) -o $@ $^ -nostdlib -pie -static -static-libgcc -Wl,--no-dynamic-linker
 
 
 $(BUILDDIR)/%.o : %.c

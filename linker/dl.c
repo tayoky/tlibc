@@ -150,16 +150,16 @@ void *dlsym(void *handle, const char *sym) {
 
 int main(int argc, char **argv, char **envp) {
 	if (strcmp(argv[0], "ld-tlibc.so")) {
+		if (argc < 2) {
+			puts("usage : ld.so PROGRAM [ARGUMENT]...");
+			puts("or    : ld.so OPTION");
+			return EXIT_FAILURE;
+		}
 		if (!strcmp(argv[1], "--help")) {
 			puts("usage : ld.so PROGRAM [ARGUMENT]...");
 			puts("or    : ld.so OPTION");
 			puts("launch a dynamic linked program");
 			return 0;
-		}
-		if (argc < 2) {
-			puts("usage : ld.so PROGRAM [ARGUMENT]...");
-			puts("or    : ld.so OPTION");
-			return EXIT_FAILURE;
 		}
 		// shift args
 		argc--;

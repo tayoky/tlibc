@@ -16,21 +16,26 @@ extern func __fini_array_start[] __attribute__((weak));
 extern func __init_array_end[] __attribute__((weak));
 extern func __fini_array_end[] __attribute__((weak));
 
-void __fini_tlibc(void){
+#ifndef __DL_TLIBC__
+static void __fini_tlibc(void){
 	_fini();
 	for (ptrdiff_t i = 0; i < (__fini_array_end - __fini_array_start); i++){
 		__fini_array_start[i]();
 	}
 	fflush(NULL);
 }
+#endif
 
 void __init_tlibc(int argc,char **argv,int envc,char **envp){
 	(void)argc;
 	(void)argv;
+	(void)envc;
 
+#ifndef __DYNAMIC__ // dynamic linker aready prepare uthread
 	//setup a uthread for the main thread
 	__set_tls(__new_uthread());
-
+#endif
+#ifndef __DL_TLIBC__
 	__init_heap();
 	__init_environ(envc,envp);
 
@@ -40,5 +45,6 @@ void __init_tlibc(int argc,char **argv,int envc,char **envp){
 	for (ptrdiff_t i = 0; i < (__init_array_end - __init_array_start); i++){
 		__init_array_start[i]();
 	}
+#endif
 	exit(main(argc,argv,envp));
 }

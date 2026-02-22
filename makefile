@@ -55,12 +55,12 @@ ifeq ($(ARCH),x86_64)
 endif
 
 # libc object used by linker
-DL_DEPS = string/strcmp string/strchr string/memset stdio/vsnprintf stdio/vsprintf stdio/sprintf $(basename $(shell cd libc && find $(TARGET) -name "*.c"))
+DL_DEPS = tlibc pthread/uthread errno string/strcmp string/strchr string/memset stdio/vsnprintf stdio/vsprintf stdio/sprintf $(basename $(shell cd libc && find $(TARGET) -name "*.c"))
 
 DL_SRC = $(wildcard linker/*.c) linker/abi/$(ARCH)
 DL_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(addprefix linker/, $(DL_DEPS)) $(basename $(DL_SRC))))
 
-DLFLAGS = -fpie -mgeneral-regs-only
+DLFLAGS = -D__DL_TLIBC__=1 -fpie -mgeneral-regs-only
 
 all : tlibc.a tlibk.a libm.a libpthread.a libdl.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 
@@ -97,7 +97,7 @@ $(BUILDDIR)/libk/%.o : libc/%.c
 
 $(BUILDDIR)/linker/%.o : libc/%.c
 	@mkdir -p $(shell dirname $@)
-	$(CC) $(CFLAGS) $(DLFLAGS) -D$(ARCH) -o $@ -c $^
+	$(CC) $(CFLAGS) -D$(ARCH) -o $@ -c $^
 
 $(BUILDDIR)/linker/% : CFLAGS += $(DLFLAGS)
 

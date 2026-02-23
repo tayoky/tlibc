@@ -55,11 +55,9 @@ LDFLAGS += \
 # cc flags
 CFLAGS += -Wall \
 	-Wextra \
-	-std=gnu99\
-	-ffreestanding \
+	-std=gnu99 \
 	-fno-stack-protector \
 	-fno-stack-check \
-	-fno-PIC \
 	-nostdlib \
 	-I include \
 	-I include/$(TARGET) \
@@ -68,25 +66,36 @@ CFLAGS += -Wall \
 STATICFLAGS = -fno-PIC
 DYNFLAGS = -fPIC -D__DYNAMIC__=1
 
-KFLAGS = -mcmodel=large -DLIBK -Dmalloc=kmalloc -Dfree=kfree
-ifeq ($(ARCH), x86_64)
+KFLAGS = -mcmodel=large -DLIBK -Dmalloc=kmalloc -Dfree=kfree -ffreestanding
+ifeq ($(ARCH),x86_64)
 	KFLAGS += -mno-sse -mno-sse2 -mno-80387 -mno-80387
 endif
 
 DLFLAGS = -D__DL_TLIBC__=1 -fpie -mgeneral-regs-only
 
-ALL = tlibc.a tlibk.a libm.a libpthread.a libdl.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
+ALL = libc.a libk.a libm.a libpthread.a libdl.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 
-ifeq ($(DYNAMIC), yes)
-	ALL += tlibc.so tlibm.so
+ifeq ($(DYNAMIC),yes)
+	ALL += libc.so libm.so ld-tlibc.so
 endif
 
-all :$(ALL)
+INSTALL_TARGET = all header
 
-tlibc.a : $(C_OBJ)
+ifeq ($(DYNAMIC),yes)
+	INSTALL_TARGET += install-dynamic
+endif
+
+define install_lib
+	@echo "[install $(1)]"
+	@cp $(1) "$(PREFIX)/lib/$(1)"
+endef
+
+all : $(ALL)
+
+libc.a : $(C_OBJ)
 	$(AR) rcs $@ $^
 
-tlibk.a : $(K_OBJ)
+libk.a : $(K_OBJ)
 	$(AR) rcs $@ $^
 
 libpthread.a : $(BUILDDIR)/stub/pthread.o
@@ -101,10 +110,10 @@ libm.a : $(M_OBJ)
 ld-tlibc.so : $(DL_OBJ) $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 	$(CC) -o $@ $^ -nostdlib -pie -static -static-libgcc -Wl,--no-dynamic-linker
 
-tlibc.so : $(C_SHARED_OBJ)
+libc.so : $(C_SHARED_OBJ)
 	$(CC) -shared -o $@ $^ -nostdlib
 
-tlibm.so : $(M_SHARED_OBJ)
+libm.so : $(M_SHARED_OBJ)
 	$(CC) -shared -o $@ $^ -nostdlib
 
 $(BUILDDIR)/%.o : %.c
@@ -153,6 +162,12 @@ header :
 	@$(foreach FILE , $(shell echo include/$(TARGET)/sys/*.h) , cat prologue.h $(FILE) epilogue.h > $(PREFIX)/include/sys/$(shell basename $(FILE)) && echo "[installing sys/$(shell basename $(FILE))]" &&) true
 	@cp include/_cdefs.h $(PREFIX)/include/sys/cdefs.h
 
+install-dynamic : header
+	@mkdir -p $(PREFIX)/lib
+	$(call install_lib,libc.so)
+	$(call install_lib,libm.so)
+	$(call install_lib,ld-tlibc.so)
+
 install : header all
 	@mkdir -p $(PREFIX)/lib
 	@echo "[install crti.o]"
@@ -161,14 +176,11 @@ install : header all
 	@cp $(BUILDDIR)/crt/$(ARCH)/crtn.o $(PREFIX)/lib
 	@echo "[install crt0.o]"
 	@cp $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o $(PREFIX)/lib/crt0.o
-	@echo "[install libc.a]"
-	@cp tlibc.a $(PREFIX)/lib/libc.a
-	@echo "[install libm.a]"
-	@cp libm.a $(PREFIX)/lib/libm.a
-	@echo "[install libpthread.a]"
-	@cp libpthread.a $(PREFIX)/lib/libpthread.a
-	@echo "[install libdl.a]"
-	@cp libdl.a $(PREFIX)/lib/libdl.a
+	$(call install_lib,libc.a)
+	$(call install_lib,libm.a)
+	$(call install_lib,libpthread.a)
+	$(call install_lib,libdl.a)
+
 config.mk :
 	$(error run ./configure before running make)
 .mk :

@@ -65,7 +65,7 @@ CFLAGS += -Wall \
 
 STATICFLAGS = -fno-PIC
 DYNFLAGS = -fPIC -D__DYNAMIC__=1
-MFLAGS = -lc
+MFLAGS = -L. -lc
 
 KFLAGS = -mcmodel=large -DLIBK -Dmalloc=kmalloc -Dfree=kfree -ffreestanding
 ifeq ($(ARCH),x86_64)
@@ -117,8 +117,8 @@ ld-tlibc.so : $(DL_OBJ) $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 libc.so : $(C_SHARED_OBJ)
 	$(CC) $(CFLAGS) -shared -o $@ $^
 
-libm.so : $(M_SHARED_OBJ)
-	$(CC) $(CFLAGS) -shared -o $@ $^ $(MFLAGS)
+libm.so : $(M_SHARED_OBJ) libc.so
+	$(CC) $(CFLAGS) -shared -o $@ $(M_SHARED_OBJ) $(MFLAGS)
 
 $(BUILDDIR)/%.o : %.c
 	$(MAKE_DIRS)

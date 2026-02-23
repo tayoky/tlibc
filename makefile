@@ -34,28 +34,6 @@ M_SRC = $(M_ARCH_SRC) $(filter-out $(foreach FILE,$(M_ARCH_SRC),libm/generic/$(s
 M_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(basename $(M_SRC))))
 M_SHARED_OBJ = $(addprefix $(BUILDDIR)/shared-, $(addsuffix .o, $(basename $(M_SRC))))
 
-#ld flags
-LDFLAGS += \
-	-nostdlib \
-	-static \
-
-#cc flags
-CFLAGS += -Wall \
-	-Wextra \
-	-std=gnu99\
-	-ffreestanding \
-	-fno-stack-protector \
-	-fno-stack-check \
-	-fno-PIC \
-	-nostdlib \
-	-I include \
-	-I include/$(TARGET)
-
-KFLAGS = $(CFLAGS) -mcmodel=large -DLIBK -Dmalloc=kmalloc -Dfree=kfree
-ifeq ($(ARCH),x86_64)
-	KFLAGS += -mno-sse -mno-sse2 -mno-80387 -mno-80387
-endif
-
 # libc object used by linker
 DL_DEPS = tlibc pthread/uthread $(ARCH)/__get_uthread errno ctype/ctype \
 	string/strcmp string/strchr string/strcpy string/strlen string/strnlen \
@@ -68,9 +46,42 @@ DL_DEPS = tlibc pthread/uthread $(ARCH)/__get_uthread errno ctype/ctype \
 DL_SRC = $(wildcard linker/*.c) linker/abi/$(ARCH)-$(TARGET)
 DL_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(addprefix linker/, $(DL_DEPS)) $(basename $(DL_SRC))))
 
+
+# ld flags
+LDFLAGS += \
+	-nostdlib \
+	-static \
+
+# cc flags
+CFLAGS += -Wall \
+	-Wextra \
+	-std=gnu99\
+	-ffreestanding \
+	-fno-stack-protector \
+	-fno-stack-check \
+	-fno-PIC \
+	-nostdlib \
+	-I include \
+	-I include/$(TARGET) \
+	-D$(ARCH)=1
+
+STATICFLAGS = -fno-PIC
+DYNFLAGS = -fPIC -D__DYNAMIC__=1
+
+KFLAGS = -mcmodel=large -DLIBK -Dmalloc=kmalloc -Dfree=kfree
+ifeq ($(ARCH), x86_64)
+	KFLAGS += -mno-sse -mno-sse2 -mno-80387 -mno-80387
+endif
+
 DLFLAGS = -D__DL_TLIBC__=1 -fpie -mgeneral-regs-only
 
-all : tlibc.a tlibk.a libm.a libpthread.a libdl.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
+ALL = tlibc.a tlibk.a libm.a libpthread.a libdl.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
+
+ifeq ($(DYNAMIC), yes)
+	ALL += tlibc.so tlibm.so
+endif
+
+all :$(ALL)
 
 tlibc.a : $(C_OBJ)
 	$(AR) rcs $@ $^
@@ -93,13 +104,16 @@ ld-tlibc.so : $(DL_OBJ) $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 tlibc.so : $(C_SHARED_OBJ)
 	$(CC) -shared -o $@ $^ -nostdlib
 
+tlibm.so : $(M_SHARED_OBJ)
+	$(CC) -shared -o $@ $^ -nostdlib
+
 $(BUILDDIR)/%.o : %.c
 	@mkdir -p $(shell dirname $@)
-	$(CC) $(CFLAGS) -D$(ARCH) -o $@ -c $^
+	$(CC) $(CFLAGS) -o $@ -c $^
 
 $(BUILDDIR)/shared-%.o : %.c
 	@mkdir -p $(shell dirname $@)
-	$(CC) $(CFLAGS) -shared -D__DYNAMIC__ -D$(ARCH) -o $@ -c $^
+	$(CC) $(CFLAGS) -o $@ -c $^
 
 $(BUILDDIR)/shared-%.o : %.s
 	@mkdir -p $(shell dirname $@)
@@ -108,19 +122,24 @@ $(BUILDDIR)/shared-%.o : %.s
 $(BUILDDIR)/%.o : %.s
 	@mkdir -p $(shell dirname $@)
 	$(AS) $(ASFLAGS) -o $@ $^
-
-$(BUILDDIR)/libk/%.o : libc/%.c
+ 
+$(BUILDDIR)/libk/%.o: libc/%.c
 	@mkdir -p $(shell dirname $@)
-	$(CC) $(KFLAGS) -D$(ARCH) -o $@ -c $^
+	$(CC) $(CFLAGS) -o $@ -c $^
 
 $(BUILDDIR)/linker/%.o : libc/%.c
 	@mkdir -p $(shell dirname $@)
-	$(CC) $(CFLAGS) -D$(ARCH) -o $@ -c $^
+	$(CC) $(CFLAGS) -o $@ -c $^
 
 $(BUILDDIR)/linker/%.o : libc/%.s
 	@mkdir -p $(shell dirname $@)
 	$(AS) $(ASFLAGS) -o $@ $^
 
+
+$(BUILDDIR)/lib%.o : CFLAGS += $(STATICFLAGS)
+$(BUILDDIR)/stub%.o : CFLAGS += $(STATICFLAGS)
+$(BUILDDIR)/libk/%.o : CFLAGS += $(KFLAGS)
+$(BUILDDIR)/shared-%.o : CFLAGS += $(DYNFLAGS)
 $(BUILDDIR)/linker/% : CFLAGS += $(DLFLAGS)
 
 clean : 

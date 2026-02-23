@@ -90,22 +90,25 @@ define install_lib
 	@cp $(1) "$(PREFIX)/lib/$(1)"
 endef
 
+MAKE_DIRS = @mkdir -p $(shell dirname $@)
+BUILD_ARCHIVE = $(AR) rcs $@ $^
+
 all : $(ALL)
 
 libc.a : $(C_OBJ)
-	$(AR) rcs $@ $^
+	$(BUILD_ARCHIVE)
 
 libk.a : $(K_OBJ)
-	$(AR) rcs $@ $^
+	$(BUILD_ARCHIVE)
 
 libpthread.a : $(BUILDDIR)/stub/pthread.o
-	$(AR) rcs $@ $^
+	$(BUILD_ARCHIVE)
 
 libdl.a : $(BUILDDIR)/stub/dl.o
-	$(AR) rcs $@ $^
+	$(BUILD_ARCHIVE)
 
 libm.a : $(M_OBJ)
-	$(AR) rcs $@ $^
+	$(BUILD_ARCHIVE)
 
 ld-tlibc.so : $(DL_OBJ) $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 	$(CC) -o $@ $^ -nostdlib -pie -static -static-libgcc -Wl,--no-dynamic-linker
@@ -117,31 +120,31 @@ libm.so : $(M_SHARED_OBJ)
 	$(CC) -shared -o $@ $^ -nostdlib
 
 $(BUILDDIR)/%.o : %.c
-	@mkdir -p $(shell dirname $@)
+	$(MAKE_DIRS)
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 $(BUILDDIR)/shared-%.o : %.c
-	@mkdir -p $(shell dirname $@)
+	$(MAKE_DIRS)
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 $(BUILDDIR)/shared-%.o : %.s
-	@mkdir -p $(shell dirname $@)
+	$(MAKE_DIRS)
 	$(AS) $(ASFLAGS) -o $@ $^
 
 $(BUILDDIR)/%.o : %.s
-	@mkdir -p $(shell dirname $@)
+	$(MAKE_DIRS)
 	$(AS) $(ASFLAGS) -o $@ $^
  
 $(BUILDDIR)/libk/%.o: libc/%.c
-	@mkdir -p $(shell dirname $@)
+	$(MAKE_DIRS)
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 $(BUILDDIR)/linker/%.o : libc/%.c
-	@mkdir -p $(shell dirname $@)
+	$(MAKE_DIRS)
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 $(BUILDDIR)/linker/%.o : libc/%.s
-	@mkdir -p $(shell dirname $@)
+	$(MAKE_DIRS)
 	$(AS) $(ASFLAGS) -o $@ $^
 
 
@@ -184,3 +187,5 @@ install : header all
 config.mk :
 	$(error run ./configure before running make)
 .mk :
+
+.PHONY : all install install-dynamic header clean

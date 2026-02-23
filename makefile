@@ -65,6 +65,7 @@ CFLAGS += -Wall \
 
 STATICFLAGS = -fno-PIC
 DYNFLAGS = -fPIC -D__DYNAMIC__=1
+MFLAGS = -lc
 
 KFLAGS = -mcmodel=large -DLIBK -Dmalloc=kmalloc -Dfree=kfree -ffreestanding
 ifeq ($(ARCH),x86_64)
@@ -79,7 +80,7 @@ ifeq ($(DYNAMIC),yes)
 	ALL += libc.so libm.so ld-tlibc.so
 endif
 
-INSTALL_TARGET = all header
+INSTALL_TARGET = header all
 
 ifeq ($(DYNAMIC),yes)
 	INSTALL_TARGET += install-dynamic
@@ -114,10 +115,10 @@ ld-tlibc.so : $(DL_OBJ) $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 	$(CC) -o $@ $^ -nostdlib -pie -static -static-libgcc -Wl,--no-dynamic-linker
 
 libc.so : $(C_SHARED_OBJ)
-	$(CC) -shared -o $@ $^ -nostdlib
+	$(CC) $(CFLAGS) -shared -o $@ $^
 
 libm.so : $(M_SHARED_OBJ)
-	$(CC) -shared -o $@ $^ -nostdlib
+	$(CC) $(CFLAGS) -shared -o $@ $^ $(MFLAGS)
 
 $(BUILDDIR)/%.o : %.c
 	$(MAKE_DIRS)
@@ -171,7 +172,7 @@ install-dynamic : header
 	$(call install_lib,libm.so)
 	$(call install_lib,ld-tlibc.so)
 
-install : header all
+install : $(INSTALL_TARGET)
 	@mkdir -p $(PREFIX)/lib
 	@echo "[install crti.o]"
 	@cp $(BUILDDIR)/crt/$(ARCH)/crti.o $(PREFIX)/lib

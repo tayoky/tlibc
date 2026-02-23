@@ -9,11 +9,13 @@ struct __uthread {
     int err;
 };
 
+typedef int (*main_t)(int argc, char **argv, char **envp);
+
 struct __uthread *__get_uthread(void);
 struct __uthread *__new_uthread(void);
 void __free_uthread(struct __uthread *uthread);
 void __init_heap(void);
-void __init_environ(int envc,char **envp);
-void __init_tlibc(int argc,char **argv,int envc,char **envp);
+void __init_environ(int envc, char **envp);
+void __init_tlibc(int argc, char **argv, int envc, char **envp, main_t main);
 
 #endif

@@ -14,5 +14,8 @@
 }
 template(float,f,uintflt_t,FLT_MANT_DIG-1,FLT_MANT_MASK,FLT_EXP_MASK)
 template(double,,uintdbl_t,DBL_MANT_DIG-1,DBL_MANT_MASK,DBL_EXP_MASK)
-template(long double,l,uintldbl_t,LDBL_MANT_DIG-1,LDBL_MANT_MASK,LDBL_EXP_MASK)
 
+// HACK to avoid using libgcc
+#ifndef __DYNAMIC__
+template(long double,l,uintldbl_t,LDBL_MANT_DIG-1,LDBL_MANT_MASK,LDBL_EXP_MASK)
+#endif

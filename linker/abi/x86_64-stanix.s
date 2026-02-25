@@ -1,4 +1,5 @@
 .section .text
+.hidden abi_enter
 .globl abi_enter
 .type abi_enter @function
 abi_enter:

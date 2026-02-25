@@ -72,7 +72,7 @@ ifeq ($(ARCH),x86_64)
 	KFLAGS += -mno-sse -mno-sse2 -mno-80387 -mno-80387
 endif
 
-DLFLAGS = -D__DL_TLIBC__=1 -fpie -mgeneral-regs-only
+DLFLAGS = -D__DL_TLIBC__=1 -fPIC -mgeneral-regs-only -fvisibility=hidden
 
 ALL = libc.a libk.a libm.a libpthread.a libdl.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 
@@ -112,7 +112,7 @@ libm.a : $(M_OBJ)
 	$(BUILD_ARCHIVE)
 
 ld-tlibc.so : $(DL_OBJ) $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
-	$(CC) $(DLFLAGS) -nostdlib -pie -o $@ $^ -static-libgcc -Wl,--no-dynamic-linker
+	$(CC) $(DLFLAGS) -nostdlib -o $@ $^ -shared -static-libgcc -Wl,--no-dynamic-linker,-z,now
 
 libc.so : $(C_SHARED_OBJ)
 	$(CC) $(DYNFLAGS) $(SOFLAGS) -Wl,-soname,libc.so -o $@ $^

@@ -1,7 +1,7 @@
 .section .text
 .globl _start
 .type _start @function
-.extern main
+.hidden main
 _start:
 	lea main(%rip), %r8
 	call __init_tlibc

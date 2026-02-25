@@ -39,7 +39,7 @@ DL_DEPS = tlibc pthread/uthread $(ARCH)/__get_uthread errno ctype/ctype \
 	string/strcmp string/strchr string/strcpy string/strlen string/strnlen \
 	string/memset string/memcmp string/memchr string/memcpy \
 	stdio/vsnprintf stdio/vsprintf stdio/sprintf stdio/fwrite stdio/__fileio_write stdio/fflush\
-	stdio/puts stdio/putchar stdio/fputs stdio/fputc stdio/stdio\
+	stdio/puts stdio/putchar stdio/fputs stdio/fputc stdio/stdio stdio/vfprintf stdio/fprintf\
 	stdlib/exit stdlib/environ stdlib/getenv \
 	$(basename $(shell cd libc && find $(TARGET) -name "*.c"))
 
@@ -112,7 +112,7 @@ libm.a : $(M_OBJ)
 	$(BUILD_ARCHIVE)
 
 ld-tlibc.so : $(DL_OBJ) $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
-	$(CC) -o $@ $^ -nostdlib -pie -static -static-libgcc -Wl,--no-dynamic-linker
+	$(CC) $(DLFLAGS) -nostdlib -pie -o $@ $^ -static-libgcc -Wl,--no-dynamic-linker
 
 libc.so : $(C_SHARED_OBJ)
 	$(CC) $(DYNFLAGS) $(SOFLAGS) -Wl,-soname,libc.so -o $@ $^

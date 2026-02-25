@@ -17,6 +17,7 @@ static struct elf_object *cache_first = NULL;
 static struct elf_object *program = NULL;
 const char *lib_path = NULL;
 const char *rpath = NULL;
+int dl_debug = 0;
 
 static struct elf_object *cache_find(const char *name) {
 	struct elf_object *cur = cache_first;
@@ -151,13 +152,13 @@ void *dlsym(void *handle, const char *sym) {
 int main(int argc, char **argv, char **envp) {
 	if (strcmp(argv[0], "ld-tlibc.so")) {
 		if (argc < 2) {
-			puts("usage : ld.so PROGRAM [ARGUMENT]...");
-			puts("or    : ld.so OPTION");
+			puts("usage : ld-tlibc.so PROGRAM [ARGUMENT]...");
+			puts("or    : ld-tlibc.so OPTION");
 			return EXIT_FAILURE;
 		}
 		if (!strcmp(argv[1], "--help")) {
-			puts("usage : ld.so PROGRAM [ARGUMENT]...");
-			puts("or    : ld.so OPTION");
+			puts("usage : ld-tlibc.so PROGRAM [ARGUMENT]...");
+			puts("or    : ld-tlibc.so OPTION");
 			puts("launch a dynamic linked program");
 			return 0;
 		}
@@ -166,12 +167,17 @@ int main(int argc, char **argv, char **envp) {
 		argv++;
 	}
 	if (getuid() == geteuid() && getgid() == getegid()) {
-		// don't allow LD_LIBRARY_PATH on set-uid/gid programs
+		// don't allow LD_LIBRARY_PATH or LD_DEBUG on set-uid/gid programs
 		lib_path = getenv("LD_LIBRARY_PATH");
+		const char *ld_debug = getenv("LD_DEBUG");
+		dl_debug = ld_debug && ld_debug[0];
 	}
 
 	program = elf_load(argv[0], 0);
-	if (!program) return EXIT_FAILURE;
+	if (!program) {
+		fprintf(stderr, "ld-tlibc.so : %s\n", dlerror());
+		return EXIT_FAILURE;
+	}
 
 	dl_setup_libc_alloc();
 

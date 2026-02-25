@@ -72,6 +72,7 @@ int reloc(struct elf_object *object, Elf_Rela *rel);
 
 extern const char *lib_path;
 extern const char *rpath;
+extern int dl_debug;
 
 #ifndef PAGE_SIZE
 #define PAGE_SIZE 4096

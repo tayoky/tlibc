@@ -243,6 +243,7 @@ static int handle_dynamics(struct elf_object *object, int file, Elf_Dyn *dynamic
 		const char *name = get_str(object, dynamics[i].d_un.d_val);
 		if (!name) return -1;
 
+		if (dl_debug) fprintf(stderr, "ld-tlibc.so : find depencie '%s'\n", name);
 		void *lib = dlopen(name, RTLD_NOW | RTLD_LOCAL);
 		if (!lib) {
 			dl_error("cannot access a needed shared library");
@@ -359,6 +360,7 @@ struct elf_object *elf_load(const char *path, int is_lib) {
 		}
 		object->addr = (uintptr_t)addr;
 	}
+	if (dl_debug) fprintf(stderr, "ld-tlibc.so : load elf '%s' at %p\n", path, (void*)object->addr);
 
 	// map segments first
 	for (size_t i=0; i<object->phdrs_count; i++) {

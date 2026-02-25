@@ -16,6 +16,9 @@ struct __uthread *__new_uthread(void);
 void __free_uthread(struct __uthread *uthread);
 void __init_heap(void);
 void __init_environ(int envc, char **envp);
+#ifdef __DL_TLIBC__
+void __init_stdio(void);
+#endif
 void __init_tlibc(int argc, char **argv, int envc, char **envp, main_t main);
 
 #endif

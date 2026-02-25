@@ -38,7 +38,11 @@ void __init_tlibc(int argc, char **argv, int envc, char **envp, main_t main) {
 	//setup a uthread for the main thread
 	__set_tls(__new_uthread());
 #endif
-#ifndef __DL_TLIBC__
+#ifdef __DL_TLIBC__
+	// the dynamic linker cannot use static stdio
+	// because it cannot have reloc
+	__init_stdio();
+#else
 	__init_heap();
 #endif
 

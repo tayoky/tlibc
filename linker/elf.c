@@ -18,12 +18,9 @@ static int check_ehdr(Elf_Ehdr *header, int is_lib){
 	if (header->e_version != EV_CURRENT) {
 		return 0;
 	}
-	if (is_lib) {
-		if (header->e_type != ET_DYN) {
-			return 0;
-		}
-	} else {
-		if (header->e_type != ET_EXEC) {
+	if (!is_lib) {
+		// executables must have an entry point
+		if (header->e_entry == 0) {
 			return 0;
 		}
 	}
@@ -69,7 +66,7 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 			}
 			mprotect((void*)vaddr, filesz, prot);
 		}
-		if (pheader->p_memsz > pheader->p_filesz) {
+		if (memsz > filesz) {
 			// we need to fill with anonymous mapping
 			vaddr += filesz;
 			if (mmap((void*)vaddr, memsz - filesz, prot, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) == MAP_FAILED) {
@@ -186,7 +183,8 @@ static Elf_Dyn *find_dynamic(Elf_Dyn *dynamics, size_t dynamics_count, long tag)
 	return NULL;
 }
 
-static int handle_dynamics(struct elf_object *object, int file, Elf_Dyn *dynamics, size_t dynamics_count) {
+// TODO : check pointers are in bound
+static int handle_dynamics(struct elf_object *object, Elf_Dyn *dynamics, size_t dynamics_count) {
 	Elf_Dyn *dyn_strtab = find_dynamic(dynamics, dynamics_count, DT_STRTAB);
 	Elf_Dyn *dyn_strsz  = find_dynamic(dynamics, dynamics_count, DT_STRSZ);
 	Elf_Dyn *dyn_symtab = find_dynamic(dynamics, dynamics_count, DT_SYMTAB);
@@ -197,7 +195,7 @@ static int handle_dynamics(struct elf_object *object, int file, Elf_Dyn *dynamic
 		return dl_error("no string table");
 	}
 	object->strtab_size = dyn_strsz->d_un.d_val;
-	object->strtab = load_table(file, dyn_strtab->d_un.d_ptr, object->strtab_size);
+	object->strtab = (void*)(dyn_strtab->d_un.d_ptr + object->addr);
 	if (!object->strtab) return -1;
 
 	if (!dyn_symtab || !dyn_hash) {
@@ -205,21 +203,16 @@ static int handle_dynamics(struct elf_object *object, int file, Elf_Dyn *dynamic
 	}
 
 	// start by firguring out the size of the hash and symbol table
-	uint32_t hash_start[2];
-	lseek(file, dyn_hash->d_un.d_ptr, SEEK_SET);
-	if (read(file, hash_start, sizeof(hash_start)) < (ssize_t)sizeof(hash_start)) {
-		return dl_error("read failed");
-	}
+	uint32_t *hash_start = (void*)(dyn_hash->d_un.d_ptr + object->addr);
 
 	// nchain (second entry) contain symtab entries count
 	object->symbols_count = hash_start[1];
-	object->symtab = load_table(file, dyn_symtab->d_un.d_ptr, object->symbols_count * sizeof(Elf_Sym));
-	if (!object->symtab) return -1;
+	object->symtab = (void*)(dyn_symtab->d_un.d_ptr + object->addr);
 
 	// 2 + nbucket + nchain give total entries count
 	// we can use that to load hash table
 	object->hash_size = (2 + hash_start[0] + hash_start[1]) * sizeof(uint32_t);
-	object->hash = load_table(file, dyn_hash->d_un.d_ptr, object->hash_size);
+	object->hash = (void*)(dyn_hash->d_un.d_ptr + object->addr);
 
 	// optional DT_RPATH for executables
 	if (object->header.e_type == ET_EXEC && dyn_rpath) {
@@ -234,7 +227,8 @@ static int handle_dynamics(struct elf_object *object, int file, Elf_Dyn *dynamic
 		object->depencies_count++;
 	}
 	object->depencies = dl_alloc(object->depencies_count * sizeof(struct elf_object*));
-	memset(object->depencies, 0, object->depencies_count * sizeof(struct elf_object*));
+	fprintf(stderr, "depencies count : %zu at %p\n", object->depencies_count, object->depencies);
+	//memset(object->depencies, 0, object->depencies_count * sizeof(struct elf_object*));
 
 	// and load them
 	size_t index = 0;
@@ -254,7 +248,7 @@ static int handle_dynamics(struct elf_object *object, int file, Elf_Dyn *dynamic
 	return 0;
 }
 
-static int apply_relocs(struct elf_object *object, int file, Elf_Dyn *dynamics, size_t dynamics_count) {
+static int apply_relocs(struct elf_object *object, Elf_Dyn *dynamics, size_t dynamics_count) {
 	Elf_Dyn *dyn_rela    = find_dynamic(dynamics, dynamics_count, DT_RELA);
 	Elf_Dyn *dyn_relasz  = find_dynamic(dynamics, dynamics_count, DT_RELASZ);
 	Elf_Dyn *dyn_relaent = find_dynamic(dynamics, dynamics_count, DT_RELAENT);
@@ -294,7 +288,7 @@ static int apply_relocs(struct elf_object *object, int file, Elf_Dyn *dynamics, 
 		}
 		size = dyn_relasz->d_un.d_val;
 		ent = dyn_relaent->d_un.d_val;
-		table = load_table(file, dyn_rela->d_un.d_ptr, size);
+		table = (void*)(dyn_rela->d_un.d_ptr + object->addr);
 		break;
 	case DT_REL:
 		if (!dyn_rel || !dyn_relsz || !dyn_relent) {
@@ -302,7 +296,7 @@ static int apply_relocs(struct elf_object *object, int file, Elf_Dyn *dynamics, 
 		}
 		size = dyn_relsz->d_un.d_val;
 		ent = dyn_relent->d_un.d_val;
-		table = load_table(file, dyn_rel->d_un.d_ptr, size);
+		table = (void*)(dyn_rel->d_un.d_ptr + object->addr);
 		break;
 	}
 	if (!table) {
@@ -315,7 +309,6 @@ static int apply_relocs(struct elf_object *object, int file, Elf_Dyn *dynamics, 
 		ret = reloc(object, (Elf_Rela*)addr);
 	}
 
-	unload_table(table, size);
 	return ret;
 }
 
@@ -390,11 +383,11 @@ struct elf_object *elf_load(const char *path, int is_lib) {
 	}
 
 	// and now handle the loaded dynamics
-	if (handle_dynamics(object, file, dynamics, dynamics_count) < 0) {
+	if (handle_dynamics(object, dynamics, dynamics_count) < 0) {
 		goto unload_dyns;
 	}
 
-	if (apply_relocs(object, file, dynamics, dynamics_count) < 0) {
+	if (apply_relocs(object, dynamics, dynamics_count) < 0) {
 		goto unload_dyns;
 	}
 
@@ -417,9 +410,6 @@ void elf_unload(struct elf_object *object) {
 		// we can free the whole allocated block
 		munmap((void*)object->addr, get_total_size(object));
 	}
-	unload_table(object->strtab, object->strtab_size);
-	unload_table(object->symtab, object->symbols_count * sizeof(Elf_Sym));
-	unload_table(object->hash, object->hash_size);
 	for (size_t i=0; i<object->depencies_count; i++) {
 		if (!object->depencies[i]) continue;
 		dlclose(object->depencies[i]);

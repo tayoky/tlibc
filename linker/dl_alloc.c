@@ -18,7 +18,11 @@ void dl_setup_libc_alloc(void) {
 
 void *dl_alloc(size_t size) {
 	if (_malloc) return _malloc(size);
-	if (early_ptr + size >= sizeof(early_buf)) {
+	// align on 16 bytes
+	if (size % 16) {
+		size += 16 - (size % 16);
+	}
+	if (early_ptr + size > sizeof(early_buf)) {
 		// the early buf is full
 		return NULL;
 	}

@@ -25,6 +25,7 @@ static struct elf_object *cache_find(const char *name) {
 		if (!strcmp(cur->name, name)) {
 			return cur;
 		}
+		cur = cur->next;
 	}
 	return NULL;
 }

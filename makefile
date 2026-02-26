@@ -36,7 +36,7 @@ M_SHARED_OBJ = $(addprefix $(BUILDDIR)/shared-, $(addsuffix .o, $(basename $(M_S
 
 # libc object used by linker
 DL_DEPS = tlibc pthread/uthread $(ARCH)/__get_uthread errno ctype/ctype \
-	string/strcmp string/strchr string/strcpy string/strlen string/strnlen \
+	string/strcmp string/strchr string/strrchr string/strcpy string/strlen string/strnlen \
 	string/memset string/memcmp string/memchr string/memcpy \
 	stdio/vsnprintf stdio/vsprintf stdio/sprintf stdio/fwrite stdio/__fileio_write stdio/fflush\
 	stdio/puts stdio/putchar stdio/fputs stdio/fputc stdio/stdio stdio/vfprintf stdio/fprintf\

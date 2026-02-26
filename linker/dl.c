@@ -150,7 +150,15 @@ void *dlsym(void *handle, const char *sym) {
 }
 
 int main(int argc, char **argv, char **envp) {
-	if (strcmp(argv[0], "ld-tlibc.so")) {
+	const char *progname = strrchr(argv[0], '/');
+	if (progname) {
+		// remove the slash
+		progname++;
+	} else {
+		progname = argv[0];
+	}
+	if (!strcmp(progname, "ld-tlibc.so")) {
+		// the dynamic linker can be called as an executable
 		if (argc < 2) {
 			puts("usage : ld-tlibc.so PROGRAM [ARGUMENT]...");
 			puts("or    : ld-tlibc.so OPTION");

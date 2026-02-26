@@ -77,6 +77,7 @@ sighandler_t signal(int signum, sighandler_t handler){
 	return old.sa_handler;
 }
 
+#ifndef __DL_TLIBC__
 static char *signames[] = {
 	[SIGHUP]  = "Hangup",
 	[SIGINT]  = "Interrupt",
@@ -120,3 +121,4 @@ char *strsignal(int signum){
 	}
 	return signames[signum];
 }
+#endif

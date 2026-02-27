@@ -120,7 +120,7 @@ static void *recur_lookup(struct elf_object *object, const char *sym) {
 	void *ret = elf_lookup(object, sym);
 	if (ret) return ret;
 	for (size_t i=0; i < object->depencies_count; i++) {
-		ret = recur_lookup(object, sym);
+		ret = recur_lookup(object->depencies[i], sym);
 		if (ret) return ret;
 	}
 	return ret;

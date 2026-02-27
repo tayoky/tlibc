@@ -227,8 +227,7 @@ static int handle_dynamics(struct elf_object *object, Elf_Dyn *dynamics, size_t 
 		object->depencies_count++;
 	}
 	object->depencies = dl_alloc(object->depencies_count * sizeof(struct elf_object*));
-	fprintf(stderr, "depencies count : %zu at %p\n", object->depencies_count, object->depencies);
-	//memset(object->depencies, 0, object->depencies_count * sizeof(struct elf_object*));
+	memset(object->depencies, 0, object->depencies_count * sizeof(struct elf_object*));
 
 	// and load them
 	size_t index = 0;

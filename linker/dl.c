@@ -146,6 +146,7 @@ void *dlsym(void *handle, const char *sym) {
 		// TODO
 		return NULL;
 	}
+	if (!handle) return NULL;
 	struct elf_object *object = handle;
 	return recur_lookup(object, sym);
 }

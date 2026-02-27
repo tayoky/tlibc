@@ -437,7 +437,7 @@ void *elf_lookup(struct elf_object *object, const char *name) {
 	uint32_t nbucket = object->hash[0];
 	uint32_t nchain  = object->hash[1];
 	uint32_t *bucket = object->hash + 2;
-	uint32_t *chain = object->hash + 2;
+	uint32_t *chain = object->hash + 2 + nbucket;
 	size_t index = bucket[hash % nbucket];
 	while (index != SHN_UNDEF) {
 		if (index >= nchain) {

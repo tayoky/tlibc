@@ -59,6 +59,7 @@ CFLAGS += -Wall \
 	-fno-stack-protector \
 	-fno-stack-check \
 	-nostdlib \
+	-ffreestanding \
 	-I include \
 	-I include/$(TARGET) \
 	-D$(ARCH)=1

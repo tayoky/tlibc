@@ -16,7 +16,7 @@ int fflush(FILE *stream){
 		return 0;
 	}
 	stream->unget = EOF;
-	if (stream->buftype == _IONBF) return 0;
+	if (stream->buftype == _IONBF || stream->usedsize == 0) return 0;
 	ssize_t w = write(stream->fd, stream->buf, stream->usedsize);
 	if (w < 0) return -1;
 	stream->usedsize = 0;

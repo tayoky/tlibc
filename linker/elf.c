@@ -447,8 +447,6 @@ static unsigned long elf_hash(const unsigned char *name) {
 }
 
 void *elf_lookup(struct elf_object *object, const char *name) {
-	fprintf(stderr, "object : %p\n", object);
-	fprintf(stderr, "lookup %s on %s hash : %p\n", name, object->name ? object->name : "NULL", object->hash);
 	uint32_t hash = elf_hash((const unsigned char*)name);
 	uint32_t nbucket = object->hash[0];
 	uint32_t nchain  = object->hash[1];

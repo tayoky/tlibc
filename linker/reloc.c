@@ -25,7 +25,6 @@ int reloc(struct elf_object *object, Elf_Rela *rel) {
 			if (!name) return -1;
 			void *s = dlsym(object, name);
 			if (!s && ELF_ST_BIND(sym->st_info) != STB_WEAK) {
-				fprintf(stderr, "%s\n", dlerror());
 				dl_error("cannot resolve symbol");
 				return -1;
 			}

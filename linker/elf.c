@@ -254,6 +254,8 @@ static int apply_relocs(struct elf_object *object, Elf_Dyn *dynamics, size_t dyn
 	Elf_Dyn *dyn_rel    = find_dynamic(dynamics, dynamics_count, DT_REL);
 	Elf_Dyn *dyn_relsz  = find_dynamic(dynamics, dynamics_count, DT_RELSZ);
 	Elf_Dyn *dyn_relent = find_dynamic(dynamics, dynamics_count, DT_RELENT);
+	Elf_Dyn *dyn_jmprel = find_dynamic(dynamics, dynamics_count, DT_JMPREL);
+	Elf_Dyn *dyn_plt_rel_sz  = find_dynamic(dynamics, dynamics_count, DT_PLTRELSZ);
 	(void)dyn_rela;
 	(void)dyn_relasz;
 	(void)dyn_relaent;
@@ -276,39 +278,51 @@ static int apply_relocs(struct elf_object *object, Elf_Dyn *dynamics, size_t dyn
 		dl_error("text relocation are unsupported");
 		return -1;
 	}
+	
+	if (!dyn_jmprel || !dyn_plt_rel_sz) {
+		return dl_error("no relocation table");
+	}
 
-	size_t size;
-	size_t ent;
+	size_t rel_ent;
+	void *plt_table = (void*)(dyn_jmprel->d_un.d_ptr + object->addr);
+	size_t plt_rel_size = dyn_plt_rel_sz->d_un.d_val;
 	void *table;
+	size_t rel_size;
 	switch (type) {
 	case DT_RELA:
 		if (!dyn_rela || !dyn_relasz || !dyn_relaent) {
 			return dl_error("no relocation table");
 		}
-		size = dyn_relasz->d_un.d_val;
-		ent = dyn_relaent->d_un.d_val;
+		rel_size = dyn_relasz->d_un.d_val;
+		rel_ent = dyn_relaent->d_un.d_val;
 		table = (void*)(dyn_rela->d_un.d_ptr + object->addr);
 		break;
 	case DT_REL:
 		if (!dyn_rel || !dyn_relsz || !dyn_relent) {
 			return dl_error("no relocation table");
 		}
-		size = dyn_relsz->d_un.d_val;
-		ent = dyn_relent->d_un.d_val;
+		rel_size = dyn_relsz->d_un.d_val;
+		rel_ent = dyn_relent->d_un.d_val;
 		table = (void*)(dyn_rel->d_un.d_ptr + object->addr);
 		break;
 	}
-	if (!table) {
+	if (!plt_table) {
 		return -1;
 	}
 
-	int ret = 0;
-	for (size_t i=0; i<size; i+=ent) {
+	// dynamic relocs
+	for (size_t i=0; i<rel_size; i+=rel_ent) {
 		uintptr_t addr = (uintptr_t)table + i;
-		ret = reloc(object, (Elf_Rela*)addr);
+		if (reloc(object, (Elf_Rela*)addr) < 0) return -1;
 	}
 
-	return ret;
+	// plt relocs
+	for (size_t i=0; i<plt_rel_size; i+=rel_ent) {
+		uintptr_t addr = (uintptr_t)plt_table + i;
+		if (reloc(object, (Elf_Rela*)addr) < 0) return -1;
+	}
+
+	return 0;
 }
 
 struct elf_object *elf_load(const char *path, int is_lib) {
@@ -433,6 +447,8 @@ static unsigned long elf_hash(const unsigned char *name) {
 }
 
 void *elf_lookup(struct elf_object *object, const char *name) {
+	fprintf(stderr, "object : %p\n", object);
+	fprintf(stderr, "lookup %s on %s hash : %p\n", name, object->name ? object->name : "NULL", object->hash);
 	uint32_t hash = elf_hash((const unsigned char*)name);
 	uint32_t nbucket = object->hash[0];
 	uint32_t nchain  = object->hash[1];

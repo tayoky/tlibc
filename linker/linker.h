@@ -16,6 +16,9 @@
 #define ELF_R_SYM(i)  ELF32_R_SYM(i)
 #define ELF_R_TYPE(i) ELF32_R_TYPE(i)
 #define ELF_R_INFO(i) ELF32_R_INFO(i)
+#define ELF_ST_BIND(i) ELF32_ST_BIND(i)
+#define ELF_ST_TYPE(i) ELF32_ST_TYPE(i)
+#define ELF_ST_INFO(i) ELF32_ST_INFO(i)
 #define ELFCLASS ELFCLASS32
 #else
 #define Elf_Ehdr Elf64_Ehdr
@@ -28,6 +31,9 @@
 #define ELF_R_SYM(i)  ELF64_R_SYM(i)
 #define ELF_R_TYPE(i) ELF64_R_TYPE(i)
 #define ELF_R_INFO(i) ELF64_R_INFO(i)
+#define ELF_ST_BIND(i) ELF64_ST_BIND(i)
+#define ELF_ST_TYPE(i) ELF64_ST_TYPE(i)
+#define ELF_ST_INFO(i) ELF64_ST_INFO(i)
 #define ELFCLASS ELFCLASS64
 #endif
 

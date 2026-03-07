@@ -41,6 +41,10 @@ int reloc(struct elf_object *object, Elf_Rela *rel) {
 #ifdef __x86_64__
 	case R_X86_64_NONE:
 		return 0;
+	case R_X86_64_COPY:
+		// HACK : because we cannot know symbol size
+		memcpy((void*)P, (void*)sym_val, sizeof(uintptr_t));
+		return 0;
 	case R_X86_64_64:
 		size = sizeof(uint64_t);
 		result = S + A;

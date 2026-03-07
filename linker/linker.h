@@ -37,6 +37,8 @@
 #define ELFCLASS ELFCLASS64
 #endif
 
+typedef void (*func_t)(void);
+
 struct elf_table {
 	void *ptr;
 	size_t size;
@@ -59,6 +61,9 @@ struct elf_object {
 	size_t symbols_count;
 	size_t hash_size;
 	size_t depencies_count;
+	func_t *fini_array;
+	size_t fini_count;
+	func_t fini;
 	int flags;
 };
 

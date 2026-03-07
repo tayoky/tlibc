@@ -325,6 +325,46 @@ static int apply_relocs(struct elf_object *object, Elf_Dyn *dynamics, size_t dyn
 	return 0;
 }
 
+static void setup_constructors(struct elf_object *object, Elf_Dyn *dynamics, size_t dynamics_count) {
+	Elf_Dyn *dyn_init            = find_dynamic(dynamics, dynamics_count, DT_INIT);
+	Elf_Dyn *dyn_init_array      = find_dynamic(dynamics, dynamics_count, DT_INIT_ARRAY);
+	Elf_Dyn *dyn_init_arraysz    = find_dynamic(dynamics, dynamics_count, DT_INIT_ARRAYSZ);
+	Elf_Dyn *dyn_fini            = find_dynamic(dynamics, dynamics_count, DT_FINI);
+	Elf_Dyn *dyn_fini_array      = find_dynamic(dynamics, dynamics_count, DT_FINI_ARRAY);
+	Elf_Dyn *dyn_fini_arraysz    = find_dynamic(dynamics, dynamics_count, DT_FINI_ARRAYSZ);
+	if (dyn_init) {
+		func_t init = (void*)(dyn_init->d_un.d_ptr + object->addr);
+		init();
+	}
+	if (dyn_init_array && dyn_init_arraysz) {
+		func_t *init_array = (void*)(dyn_init_array->d_un.d_ptr + object->addr);
+		size_t count = dyn_init_arraysz->d_un.d_val / sizeof(func_t);
+		for (size_t i=0; i<count; i++) {
+			init_array[i]();
+		}
+	}
+	if (dyn_fini) {
+		object->fini = (void*)(dyn_fini->d_un.d_ptr + object->addr);
+	} else {
+		object->fini = NULL;
+	}
+	if (dyn_fini_array && dyn_fini_arraysz) {
+		object->fini_array = (void*)(dyn_fini_array->d_un.d_ptr + object->addr);
+		object->fini_count = dyn_fini_arraysz->d_un.d_ptr / sizeof(func_t);
+	} else {
+		object->fini_count = 0;
+	}
+}
+
+static void call_destructors(struct elf_object *object) {
+	if (object->fini) {
+		object->fini();
+	}
+	for (size_t i=0; i<object->fini_count; i++) {
+		object->fini_array[i]();
+	}
+}
+
 struct elf_object *elf_load(const char *path, int is_lib) {
 	struct elf_object *object = dl_alloc(sizeof(struct elf_object));
 	memset(object, 0, sizeof(struct elf_object));
@@ -404,8 +444,11 @@ struct elf_object *elf_load(const char *path, int is_lib) {
 		goto unload_dyns;
 	}
 
+	setup_constructors(object, dynamics, dynamics_count);
+
 	unload_table(dynamics, dynamics_size);
 	close(file);
+
 	return object;
 	
 unload_dyns:
@@ -418,7 +461,7 @@ free:
 }
 
 void elf_unload(struct elf_object *object) {
-	// TODO : unload and free depencies
+	call_destructors(object);
 	if (object->header.e_type == ET_DYN && object->addr) {
 		// we can free the whole allocated block
 		munmap((void*)object->addr, get_total_size(object));

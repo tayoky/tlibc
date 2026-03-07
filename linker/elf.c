@@ -439,7 +439,7 @@ static unsigned long elf_hash(const unsigned char *name) {
 
 	while (*name) {
 		h = (h << 4) + *name++;
-		if ((g = h) & 0xf0000000)
+		if ((g = h & 0xf0000000))
 			h ^= g >> 24;
 		h &= ~g;
 	}
@@ -455,7 +455,7 @@ void *elf_lookup(struct elf_object *object, const char *name) {
 	uint32_t *bucket = object->hash + 2;
 	uint32_t *chain = object->hash + 2 + nbucket;
 	size_t index = bucket[hash % nbucket];
-	while (index != SHN_UNDEF) {
+	while (index != 0) {
 		if (index >= nchain) {
 			// uh
 			dl_error("invalid index in hash table");
@@ -468,7 +468,7 @@ void *elf_lookup(struct elf_object *object, const char *name) {
 			dl_error("invalid symbol");
 			return NULL;
 		}
-		if (!strcmp(name, sym_name)) {
+		if (sym->st_shndx != SHN_UNDEF && !strcmp(name, sym_name)) {
 			// we found it
 			return (void*)(sym->st_value + object->addr);
 		}

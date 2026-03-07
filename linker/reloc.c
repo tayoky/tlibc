@@ -31,7 +31,7 @@ int reloc(struct elf_object *object, Elf_Rela *rel) {
 			}
 			sym_val = (uintptr_t)s;
 		} else {
-			sym_val = sym->st_value;
+			sym_val = sym->st_value + object->addr;
 		}
 	}
 

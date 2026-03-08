@@ -18,8 +18,8 @@ int reloc(struct elf_object *object, Elf_Rela *rel) {
 			return -1;
 		}
 		Elf_Sym *obj_sym = &object->symtab[sym_index];
-		if (obj_sym->st_shndx == SHN_UNDEF) {
-			// the symbol is undefined
+		if (obj_sym->st_shndx == SHN_UNDEF || ELF_ST_BIND(obj_sym->st_info) == STB_WEAK) {
+			// the symbol is undefined or weak
 			// must link
 			const char *name = get_str(object, obj_sym->st_name);
 			if (!name) return -1;

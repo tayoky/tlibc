@@ -453,7 +453,7 @@ Elf_Sym *elf_lookup(struct elf_object *object, const char *name) {
 			dl_error("invalid symbol");
 			return NULL;
 		}
-		if (sym->st_shndx != SHN_UNDEF && !strcmp(name, sym_name)) {
+		if (sym->st_shndx != SHN_UNDEF && !strcmp(name, sym_name) && ELF_ST_BIND(sym->st_info) != STB_LOCAL) {
 			// we found it
 			return sym;
 		}

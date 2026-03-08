@@ -7,7 +7,7 @@
 #include <tlibc.h>
 
 //environement variable manipulation
-char **environ;
+__attribute__((weak)) char **environ;
 
 #ifdef __DL_TLIBC__
 

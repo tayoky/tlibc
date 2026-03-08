@@ -214,6 +214,14 @@ static int handle_dynamics(struct elf_object *object, Elf_Dyn *dynamics, size_t 
 	object->hash_size = (2 + hash_start[0] + hash_start[1]) * sizeof(uint32_t);
 	object->hash = (void*)(dyn_hash->d_un.d_ptr + object->addr);
 
+	// relocate symbols
+	for (size_t i=0; i<object->symbols_count; i++){
+		Elf_Sym *sym = &object->symtab[i];
+		if (sym->st_shndx == SHN_UNDEF) continue;
+		if (sym->st_shndx == SHN_ABS) continue;
+		sym->st_value += object->addr;
+	}
+
 	// optional DT_RPATH for executables
 	if (object->header.e_type == ET_EXEC && dyn_rpath) {
 		rpath = get_str(object, dyn_rpath->d_un.d_val);
@@ -489,7 +497,7 @@ static unsigned long elf_hash(const unsigned char *name) {
 	return h;
 }
 
-void *elf_lookup(struct elf_object *object, const char *name) {
+Elf_Sym *elf_lookup(struct elf_object *object, const char *name) {
 	uint32_t hash = elf_hash((const unsigned char*)name);
 	uint32_t nbucket = object->hash[0];
 	uint32_t nchain  = object->hash[1];
@@ -511,7 +519,7 @@ void *elf_lookup(struct elf_object *object, const char *name) {
 		}
 		if (sym->st_shndx != SHN_UNDEF && !strcmp(name, sym_name)) {
 			// we found it
-			return (void*)(sym->st_value + object->addr);
+			return sym;
 		}
 
 		// go to next entry

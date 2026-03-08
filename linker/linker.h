@@ -18,7 +18,7 @@
 #define ELF_R_INFO(i) ELF32_R_INFO(i)
 #define ELF_ST_BIND(i) ELF32_ST_BIND(i)
 #define ELF_ST_TYPE(i) ELF32_ST_TYPE(i)
-#define ELF_ST_INFO(i) ELF32_ST_INFO(i)
+#define ELF_ST_INFO(b,t) ELF32_ST_INFO(b,t)
 #define ELFCLASS ELFCLASS32
 #else
 #define Elf_Ehdr Elf64_Ehdr
@@ -33,7 +33,7 @@
 #define ELF_R_INFO(i) ELF64_R_INFO(i)
 #define ELF_ST_BIND(i) ELF64_ST_BIND(i)
 #define ELF_ST_TYPE(i) ELF64_ST_TYPE(i)
-#define ELF_ST_INFO(i) ELF64_ST_INFO(i)
+#define ELF_ST_INFO(b,t) ELF64_ST_INFO(b,t)
 #define ELFCLASS ELFCLASS64
 #endif
 
@@ -74,8 +74,9 @@ char *dl_strdup(const char *str);
 char *dl_strndup(const char *str, size_t count);
 int dl_error(char *str);
 struct elf_object *elf_load(const char *path, int lib);
+Elf_Sym *dl_lookup(struct elf_object *object, const char *sym);
 void elf_unload(struct elf_object *object);
-void *elf_lookup(struct elf_object *object, const char *name);
+Elf_Sym *elf_lookup(struct elf_object *object, const char *name);
 void abi_enter(void *entry, int argc, char **argv, int env, char **envp);
 int open_lib(const char *path);
 const char *get_str(struct elf_object *object, size_t offset);

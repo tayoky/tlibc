@@ -1,9 +1,7 @@
 #include <dlfcn.h>
 
-#ifndef __DYNAMIC__
 
-int dlclose(void *handle){
+__attribute__((weak)) int dlclose(void *handle){
     (void)handle;
     return -1;
 }
-#endif

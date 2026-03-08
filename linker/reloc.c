@@ -7,30 +7,32 @@
 #define A rel->r_addend
 #define B object->addr
 #define P (object->addr + rel->r_offset)
-#define S sym_val
+#define S sym->st_value
 
 int reloc(struct elf_object *object, Elf_Rela *rel) {
-	uintptr_t sym_val = 0;
 	size_t sym_index = ELF_R_SYM(rel->r_info);
+	Elf_Sym *sym = NULL;
 	if (sym_index != 0) {
 		if (sym_index >= object->symbols_count) {
 			dl_error("invalid symbol index");
 			return -1;
 		}
-		Elf_Sym *sym = &object->symtab[sym_index];
-		if (sym->st_shndx == SHN_UNDEF) {
+		Elf_Sym *obj_sym = &object->symtab[sym_index];
+		if (obj_sym->st_shndx == SHN_UNDEF) {
 			// the symbol is undefined
 			// must link
-			const char *name = get_str(object, sym->st_name);
+			const char *name = get_str(object, obj_sym->st_name);
 			if (!name) return -1;
-			void *s = dlsym(object, name);
-			if (!s && ELF_ST_BIND(sym->st_info) != STB_WEAK) {
+			sym = dl_lookup(object, name);
+			if (!sym && ELF_ST_BIND(obj_sym->st_info) != STB_WEAK) {
 				dl_error("cannot resolve symbol");
 				return -1;
 			}
-			sym_val = (uintptr_t)s;
+			if (!sym) {
+				sym = obj_sym;
+			}
 		} else {
-			sym_val = sym->st_value + object->addr;
+			sym = obj_sym;
 		}
 	}
 
@@ -42,8 +44,7 @@ int reloc(struct elf_object *object, Elf_Rela *rel) {
 	case R_X86_64_NONE:
 		return 0;
 	case R_X86_64_COPY:
-		// HACK : because we cannot know symbol size
-		memcpy((void*)P, (void*)sym_val, sizeof(uintptr_t));
+		memcpy((void*)P, (void*)S, sym->st_size);
 		return 0;
 	case R_X86_64_64:
 		size = sizeof(uint64_t);

@@ -120,25 +120,44 @@ char *dlerror(void) {
 	return ret;
 }
 
-static void *self_lookup(const char *sym) {
-	if (!strcmp(sym, "dlopen")) return dlopen;
-	if (!strcmp(sym, "dlclose")) return dlclose;
-	if (!strcmp(sym, "dlsym")) return dlsym;
-	if (!strcmp(sym, "dlerror")) return dlerror;
+static Elf_Sym *self_lookup(const char *name) {
+	static Elf_Sym sym = {
+		.st_info = ELF_ST_INFO(STB_GLOBAL, STT_FUNC),
+	};
+	if (!strcmp(name, "dlopen")) {
+		sym.st_value = (uintptr_t)(void*)dlopen;
+		return &sym;
+	}
+	if (!strcmp(name, "dlclose")) {
+		sym.st_value = (uintptr_t)(void*)dlclose;
+		return &sym;
+	}
+	if (!strcmp(name, "dlsym")) {
+		sym.st_value = (uintptr_t)(void*)dlsym;
+		return &sym;
+	}
+	if (!strcmp(name, "dlerror")) {
+		sym.st_value = (uintptr_t)(void*)dlerror;
+		return &sym;
+	}
 	return NULL;
 }
 
-static void *recur_lookup(struct elf_object *object, const char *sym) {
-	void *ret;
+Elf_Sym *dl_lookup(struct elf_object *object, const char *sym) {
+	Elf_Sym *ret;
 	if (object == &ld_tlibc) {
 		ret = self_lookup(sym);
 	} else {
 		ret = elf_lookup(object, sym);
 	}
-	if (ret) return ret;
 	for (size_t i=0; i < object->depencies_count; i++) {
-		ret = recur_lookup(object->depencies[i], sym);
-		if (ret) return ret;
+		Elf_Sym *new_sym = dl_lookup(object->depencies[i], sym);
+		if (!new_sym) continue;
+		// better than what we found ?
+		// global overwrite weak
+		if (!ret || ELF_ST_BIND(new_sym->st_info) == STB_GLOBAL) {
+			ret = new_sym;
+		}
 	}
 	return ret;
 }
@@ -146,14 +165,14 @@ static void *recur_lookup(struct elf_object *object, const char *sym) {
 void *dlsym(void *handle, const char *sym) {
 	if (handle == RTLD_DEFAULT) {
 		// first try the executable
-		void *ret = elf_lookup(program, sym);
-		if (ret) return ret;
+		Elf_Sym *ret = elf_lookup(program, sym);
+		if (ret) return (void*)ret->st_value;
 		// all library marked as global
 		struct elf_object *lib = cache_first;
 		while (lib) {
 			if (lib->flags & RTLD_GLOBAL) {
 				ret = elf_lookup(lib, sym);
-				if (ret) return ret;
+				if (ret) return (void*)ret->st_value;
 			}
 			lib = lib->next;
 		}
@@ -165,7 +184,8 @@ void *dlsym(void *handle, const char *sym) {
 	}
 	if (!handle) return NULL;
 	struct elf_object *object = handle;
-	return recur_lookup(object, sym);
+	Elf_Sym *ret = dl_lookup(object, sym);
+	return ret ? (void*)ret->st_value : NULL;
 }
 
 int main(int argc, char **argv, char **envp) {

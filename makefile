@@ -113,13 +113,19 @@ libm.a : $(M_OBJ)
 	$(BUILD_ARCHIVE)
 
 ld-tlibc.so : $(DL_OBJ) $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
-	$(CC) $(DLFLAGS) -nostdlib -o $@ $^ -shared -static-libgcc -Wl,--no-dynamic-linker,-z,now
+	$(CC) $(DLFLAGS) -nostdlib -o $@ $^ -shared -static-libgcc -Wl,--no-dynamic-linker,-z,now,-soname,ld-tlibc.so
 
-libc.so : $(C_SHARED_OBJ)
+libc.so : $(C_SHARED_OBJ) ld-tlibc.so
 	$(CC) $(DYNFLAGS) $(SOFLAGS) -Wl,-soname,libc.so -o $@ $^
 
 libm.so : $(M_SHARED_OBJ) libc.so
 	$(CC) $(DYNFLAGS) $(SOFLAGS) -Wl,-soname,libm.so -o $@ $^
+
+libdl.so : $(BUILDDIR)/shared-stub/dl.o
+	$(CC) $(DYNFLAGS) $(SOFLAGS) -Wl,-soname,libdl.so -o $@ $^
+
+libpthread.so : $(BUILDDIR)/shared-stub/pthread.o
+	$(CC) $(DYNFLAGS) $(SOFLAGS) -Wl,-soname,libpthread.so -o $@ $^
 
 $(BUILDDIR)/%.o : %.c
 	$(MAKE_DIRS)

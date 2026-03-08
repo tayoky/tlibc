@@ -18,6 +18,10 @@ static struct elf_object *program = NULL;
 const char *lib_path = NULL;
 const char *rpath = NULL;
 int dl_debug = 0;
+struct elf_object ld_tlibc = {
+	.name = "ld-tlibc.so",
+	.ref_count = 1,
+};
 
 static struct elf_object *cache_find(const char *name) {
 	struct elf_object *cur = cache_first;
@@ -116,8 +120,21 @@ char *dlerror(void) {
 	return ret;
 }
 
+static void *self_lookup(const char *sym) {
+	if (!strcmp(sym, "dlopen")) return dlopen;
+	if (!strcmp(sym, "dlclose")) return dlclose;
+	if (!strcmp(sym, "dlsym")) return dlsym;
+	if (!strcmp(sym, "dlerror")) return dlerror;
+	return NULL;
+}
+
 static void *recur_lookup(struct elf_object *object, const char *sym) {
-	void *ret = elf_lookup(object, sym);
+	void *ret;
+	if (object == &ld_tlibc) {
+		ret = self_lookup(sym);
+	} else {
+		ret = elf_lookup(object, sym);
+	}
 	if (ret) return ret;
 	for (size_t i=0; i < object->depencies_count; i++) {
 		ret = recur_lookup(object->depencies[i], sym);
@@ -182,6 +199,9 @@ int main(int argc, char **argv, char **envp) {
 		const char *ld_debug = getenv("LD_DEBUG");
 		dl_debug = ld_debug && ld_debug[0];
 	}
+
+	// add the linker itself to the cache
+	cache_add(&ld_tlibc);
 
 	program = elf_load(argv[0], 0);
 	if (!program) {

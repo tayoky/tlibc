@@ -54,6 +54,7 @@ struct elf_object {
 	Elf_Phdr *phdrs;
 	char *strtab;
 	Elf_Sym *symtab;
+	Elf_Dyn *dynamics;
 	uint32_t *hash;
 	struct elf_object **depencies;
 	size_t phdrs_count;
@@ -61,9 +62,6 @@ struct elf_object {
 	size_t symbols_count;
 	size_t hash_size;
 	size_t depencies_count;
-	func_t *fini_array;
-	size_t fini_count;
-	func_t fini;
 	int flags;
 };
 

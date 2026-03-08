@@ -19,7 +19,6 @@ const char *lib_path = NULL;
 const char *rpath = NULL;
 int dl_debug = 0;
 struct elf_object ld_tlibc = {
-	.name = "ld-tlibc.so",
 	.ref_count = 1,
 };
 
@@ -221,6 +220,7 @@ int main(int argc, char **argv, char **envp) {
 	}
 
 	// add the linker itself to the cache
+	ld_tlibc.name = "ld-tlibc.so",
 	cache_add(&ld_tlibc);
 
 	program = elf_load(argv[0], 0);

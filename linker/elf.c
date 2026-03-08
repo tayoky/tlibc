@@ -28,17 +28,6 @@ static int check_ehdr(Elf_Ehdr *header, int is_lib){
 }
 
 static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
-	int prot = 0;
-	if (pheader->p_flags & PF_R) {
-		prot |= PROT_READ;
-	}
-	if (pheader->p_flags & PF_W) {
-		prot |= PROT_WRITE;
-	}
-	if (pheader->p_flags & PF_X) {
-		prot |= PROT_EXEC;
-	}
-
 	// page align everything
 	uintptr_t vaddr = PAGE_ALIGN_DOWN(pheader->p_vaddr) + object->addr;
 	size_t vaddr_off = pheader->p_vaddr % PAGE_SIZE;
@@ -64,12 +53,11 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 				uintptr_t start_bss = vaddr + filesz - PAGE_SIZE + filesz_remainer;
 				memset((void*)start_bss, 0, PAGE_SIZE - filesz_remainer);
 			}
-			mprotect((void*)vaddr, filesz, prot);
 		}
 		if (memsz > filesz) {
 			// we need to fill with anonymous mapping
 			vaddr += filesz;
-			if (mmap((void*)vaddr, memsz - filesz, prot, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) == MAP_FAILED) {
+			if (mmap((void*)vaddr, memsz - filesz, PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) == MAP_FAILED) {
 				// remove the aready mapped part
 				munmap((void*)(vaddr-filesz), filesz);
 				return dl_error("mmap failed");
@@ -92,8 +80,25 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 			munmap((void*)vaddr, memsz);
 			return dl_error("read failed");
 		}
-		// set the protection
-		mprotect((void*)vaddr, memsz, prot);
+	}
+	return 0;
+}
+
+static int set_protections(struct elf_object *object) {
+	for (size_t i=0; i<object->phdrs_count; i++) {
+		int prot = 0;
+		if (object->phdrs[i].p_flags & PF_R) {
+			prot |= PROT_READ;
+		}
+		if (object->phdrs[i].p_flags & PF_W) {
+			prot |= PROT_WRITE;
+		}
+		if (object->phdrs[i].p_flags & PF_X) {
+			prot |= PROT_EXEC;
+		}
+		uintptr_t start = PAGE_ALIGN_DOWN(object->phdrs[i].p_vaddr);
+		uintptr_t end   = PAGE_ALIGN_UP(object->phdrs[i].p_vaddr);
+		mprotect((void*)start, end - start, prot);
 	}
 	return 0;
 }
@@ -110,51 +115,6 @@ const char *get_str(struct elf_object *object, size_t offset) {
 	}
 	dl_error("invalid string offset");
 	return NULL;
-}
-
-static void *load_table(int file, off_t offset, size_t size) {
-	size_t remainer = offset % PAGE_SIZE;
-	offset = PAGE_ALIGN_DOWN(offset);
-	size = PAGE_ALIGN_UP(size + remainer);
-	void *addr = mmap(NULL, size, PROT_READ, MAP_PRIVATE, file, offset);
-	if (addr == MAP_FAILED) return NULL;
-	return (void*)((uintptr_t)addr +  remainer);
-}
-
-static void unload_table(void *ptr, size_t size) {
-	if (!ptr) return;
-	uintptr_t addr = (uintptr_t)ptr;
-	size_t remainer = addr % PAGE_SIZE;
-	ptr = (void*)PAGE_ALIGN_DOWN(addr);
-	size = PAGE_ALIGN_UP(size + remainer);
-	munmap(ptr, size);
-}
-
-static int load_dynamics(int file, Elf_Phdr *pheader, Elf_Dyn **_dynamics, size_t *_dynamics_count) {
-	// dynamics section must be aligned
-#if defined(__x86_64__) || defined(__aarch64__)
-	size_t align = 8;
-#elif defined(__i386__)
-	size_t align = 4;
-#else
-	size_t align = 1;
-#endif
-	if (pheader->p_offset % align) {
-		return dl_error("unaligned PT_DYNAMIC section");
-	}
-
-	Elf_Dyn *dyns = load_table(file, pheader->p_offset, pheader->p_filesz);
-	if (!dyns) return -1;
-	size_t dyns_count = pheader->p_filesz / sizeof(Elf_Dyn);
-	for (size_t i=0; i<dyns_count; i++) {
-		if (dyns[i].d_tag == DT_NULL) {
-			dyns_count = i;
-			break;
-		}
-	}
-	*_dynamics = dyns;
-	*_dynamics_count = dyns_count;
-	return 0;
 }
 
 static size_t get_total_size(struct elf_object *object) {
@@ -174,22 +134,22 @@ static size_t get_total_size(struct elf_object *object) {
 	return end - start;
 }
 
-static Elf_Dyn *find_dynamic(Elf_Dyn *dynamics, size_t dynamics_count, long tag) {
-	for (size_t i=0; i<dynamics_count; i++) {
-		if (dynamics[i].d_tag == tag) {
-			return &dynamics[i];
+static Elf_Dyn *find_dynamic(struct elf_object *object, long tag) {
+	for (size_t i=0; object->dynamics[i].d_tag != DT_NULL; i++) {
+		if (object->dynamics[i].d_tag == tag) {
+			return &object->dynamics[i];
 		}
 	}
 	return NULL;
 }
 
 // TODO : check pointers are in bound
-static int handle_dynamics(struct elf_object *object, Elf_Dyn *dynamics, size_t dynamics_count) {
-	Elf_Dyn *dyn_strtab = find_dynamic(dynamics, dynamics_count, DT_STRTAB);
-	Elf_Dyn *dyn_strsz  = find_dynamic(dynamics, dynamics_count, DT_STRSZ);
-	Elf_Dyn *dyn_symtab = find_dynamic(dynamics, dynamics_count, DT_SYMTAB);
-	Elf_Dyn *dyn_hash   = find_dynamic(dynamics, dynamics_count, DT_HASH);
-	Elf_Dyn *dyn_rpath  = find_dynamic(dynamics, dynamics_count, DT_RPATH);
+static int handle_dynamics(struct elf_object *object) {
+	Elf_Dyn *dyn_strtab = find_dynamic(object, DT_STRTAB);
+	Elf_Dyn *dyn_strsz  = find_dynamic(object, DT_STRSZ);
+	Elf_Dyn *dyn_symtab = find_dynamic(object, DT_SYMTAB);
+	Elf_Dyn *dyn_hash   = find_dynamic(object, DT_HASH);
+	Elf_Dyn *dyn_rpath  = find_dynamic(object, DT_RPATH);
 
 	if (!dyn_strtab || !dyn_strsz) {
 		return dl_error("no string table");
@@ -230,8 +190,8 @@ static int handle_dynamics(struct elf_object *object, Elf_Dyn *dynamics, size_t 
 
 	// determinate depencies count
 	object->depencies_count = 0;
-	for (size_t i=0; i<dynamics_count; i++) {
-		if (dynamics[i].d_tag != DT_NEEDED) continue;
+	for (size_t i=0; object->dynamics[i].d_tag != DT_NULL; i++) {
+		if (object->dynamics[i].d_tag != DT_NEEDED) continue;
 		object->depencies_count++;
 	}
 	object->depencies = dl_alloc(object->depencies_count * sizeof(struct elf_object*));
@@ -239,9 +199,9 @@ static int handle_dynamics(struct elf_object *object, Elf_Dyn *dynamics, size_t 
 
 	// and load them
 	size_t index = 0;
-	for (size_t i=0; i<dynamics_count; i++) {
-		if (dynamics[i].d_tag != DT_NEEDED) continue;
-		const char *name = get_str(object, dynamics[i].d_un.d_val);
+	for (size_t i=0; object->dynamics[i].d_tag != DT_NULL; i++) {
+		if (object->dynamics[i].d_tag != DT_NEEDED) continue;
+		const char *name = get_str(object, object->dynamics[i].d_un.d_val);
 		if (!name) return -1;
 
 		if (dl_debug) fprintf(stderr, "ld-tlibc.so : find depencie '%s'\n", name);
@@ -255,15 +215,15 @@ static int handle_dynamics(struct elf_object *object, Elf_Dyn *dynamics, size_t 
 	return 0;
 }
 
-static int apply_relocs(struct elf_object *object, Elf_Dyn *dynamics, size_t dynamics_count) {
-	Elf_Dyn *dyn_rela    = find_dynamic(dynamics, dynamics_count, DT_RELA);
-	Elf_Dyn *dyn_relasz  = find_dynamic(dynamics, dynamics_count, DT_RELASZ);
-	Elf_Dyn *dyn_relaent = find_dynamic(dynamics, dynamics_count, DT_RELAENT);
-	Elf_Dyn *dyn_rel    = find_dynamic(dynamics, dynamics_count, DT_REL);
-	Elf_Dyn *dyn_relsz  = find_dynamic(dynamics, dynamics_count, DT_RELSZ);
-	Elf_Dyn *dyn_relent = find_dynamic(dynamics, dynamics_count, DT_RELENT);
-	Elf_Dyn *dyn_jmprel = find_dynamic(dynamics, dynamics_count, DT_JMPREL);
-	Elf_Dyn *dyn_plt_rel_sz  = find_dynamic(dynamics, dynamics_count, DT_PLTRELSZ);
+static int apply_relocs(struct elf_object *object) {
+	Elf_Dyn *dyn_rela    = find_dynamic(object, DT_RELA);
+	Elf_Dyn *dyn_relasz  = find_dynamic(object, DT_RELASZ);
+	Elf_Dyn *dyn_relaent = find_dynamic(object, DT_RELAENT);
+	Elf_Dyn *dyn_rel    = find_dynamic(object, DT_REL);
+	Elf_Dyn *dyn_relsz  = find_dynamic(object, DT_RELSZ);
+	Elf_Dyn *dyn_relent = find_dynamic(object, DT_RELENT);
+	Elf_Dyn *dyn_jmprel = find_dynamic(object, DT_JMPREL);
+	Elf_Dyn *dyn_plt_rel_sz  = find_dynamic(object, DT_PLTRELSZ);
 	(void)dyn_rela;
 	(void)dyn_relasz;
 	(void)dyn_relaent;
@@ -278,13 +238,6 @@ static int apply_relocs(struct elf_object *object, Elf_Dyn *dynamics, size_t dyn
 	if (!type) {
 		// TODO : use PLTREL or something
 		type = DT_RELA;
-	}
-	if (find_dynamic(dynamics, dynamics_count, DT_TEXTREL)) {
-		if (getenv("LD_DEBUG")) {
-			puts("TODO : text relocation");
-		}
-		dl_error("text relocation are unsupported");
-		return -1;
 	}
 	
 	if (!dyn_jmprel || !dyn_plt_rel_sz) {
@@ -333,13 +286,10 @@ static int apply_relocs(struct elf_object *object, Elf_Dyn *dynamics, size_t dyn
 	return 0;
 }
 
-static void setup_constructors(struct elf_object *object, Elf_Dyn *dynamics, size_t dynamics_count) {
-	Elf_Dyn *dyn_init            = find_dynamic(dynamics, dynamics_count, DT_INIT);
-	Elf_Dyn *dyn_init_array      = find_dynamic(dynamics, dynamics_count, DT_INIT_ARRAY);
-	Elf_Dyn *dyn_init_arraysz    = find_dynamic(dynamics, dynamics_count, DT_INIT_ARRAYSZ);
-	Elf_Dyn *dyn_fini            = find_dynamic(dynamics, dynamics_count, DT_FINI);
-	Elf_Dyn *dyn_fini_array      = find_dynamic(dynamics, dynamics_count, DT_FINI_ARRAY);
-	Elf_Dyn *dyn_fini_arraysz    = find_dynamic(dynamics, dynamics_count, DT_FINI_ARRAYSZ);
+static void call_constructors(struct elf_object *object) {
+	Elf_Dyn *dyn_init            = find_dynamic(object, DT_INIT);
+	Elf_Dyn *dyn_init_array      = find_dynamic(object, DT_INIT_ARRAY);
+	Elf_Dyn *dyn_init_arraysz    = find_dynamic(object, DT_INIT_ARRAYSZ);
 	if (dyn_init) {
 		func_t init = (void*)(dyn_init->d_un.d_ptr + object->addr);
 		init();
@@ -351,25 +301,22 @@ static void setup_constructors(struct elf_object *object, Elf_Dyn *dynamics, siz
 			init_array[i]();
 		}
 	}
-	if (dyn_fini) {
-		object->fini = (void*)(dyn_fini->d_un.d_ptr + object->addr);
-	} else {
-		object->fini = NULL;
-	}
-	if (dyn_fini_array && dyn_fini_arraysz) {
-		object->fini_array = (void*)(dyn_fini_array->d_un.d_ptr + object->addr);
-		object->fini_count = dyn_fini_arraysz->d_un.d_ptr / sizeof(func_t);
-	} else {
-		object->fini_count = 0;
-	}
 }
 
 static void call_destructors(struct elf_object *object) {
-	if (object->fini) {
-		object->fini();
+	Elf_Dyn *dyn_fini            = find_dynamic(object, DT_FINI);
+	Elf_Dyn *dyn_fini_array      = find_dynamic(object, DT_FINI_ARRAY);
+	Elf_Dyn *dyn_fini_arraysz    = find_dynamic(object, DT_FINI_ARRAYSZ);
+	if (dyn_fini) {
+		func_t fini = (void*)(dyn_fini->d_un.d_ptr + object->addr);
+		fini();
 	}
-	for (size_t i=0; i<object->fini_count; i++) {
-		object->fini_array[i]();
+	if (dyn_fini_array && dyn_fini_arraysz) {
+		func_t *fini_array = (void*)(dyn_fini_array->d_un.d_ptr + object->addr);
+		size_t count = dyn_fini_arraysz->d_un.d_val / sizeof(func_t);
+		for (size_t i=0; i<count; i++) {
+			fini_array[i]();
+		}
 	}
 }
 
@@ -419,48 +366,37 @@ struct elf_object *elf_load(const char *path, int is_lib) {
 	// map segments first
 	for (size_t i=0; i<object->phdrs_count; i++) {
 		Elf_Phdr *pheader = &object->phdrs[i];
+		if (pheader->p_type == PT_DYNAMIC) object->dynamics = (void*)(pheader->p_vaddr + object->addr);
 		if (pheader->p_type != PT_LOAD) continue;
 		if (map_segment(object, file, pheader) < 0) {
 			goto close;
 		}
 	}
 
-	// load dynamics
-	Elf_Dyn *dynamics = NULL;
-	size_t dynamics_count;
-	size_t dynamics_size;
-	for (size_t i=0; i<object->phdrs_count; i++) {
-		Elf_Phdr *pheader = &object->phdrs[i];
-		if (pheader->p_type != PT_DYNAMIC) continue;
-		dynamics_size = pheader->p_filesz;
-		if (load_dynamics(file, pheader, &dynamics, &dynamics_count) < 0) {
-			goto close;
-		}
-		break;
-	}
-	if (!dynamics) {
+	if (!object->dynamics) {
 		dl_error("no PT_DYNAMIC");
 		goto close;
 	}
 
 	// and now handle the loaded dynamics
-	if (handle_dynamics(object, dynamics, dynamics_count) < 0) {
-		goto unload_dyns;
+	if (handle_dynamics(object) < 0) {
+		goto close;
 	}
 
-	if (apply_relocs(object, dynamics, dynamics_count) < 0) {
-		goto unload_dyns;
+	if (apply_relocs(object) < 0) {
+		goto close;
 	}
-
-	setup_constructors(object, dynamics, dynamics_count);
-
-	unload_table(dynamics, dynamics_size);
+	
+	if (set_protections(object) < 0) {
+		goto close;
+	}
+	
+	call_constructors(object);
+	
 	close(file);
 
 	return object;
 	
-unload_dyns:
-	unload_table(dynamics, dynamics_size);
 close:
 	close(file);
 free:

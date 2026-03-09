@@ -187,6 +187,13 @@ static int handle_dynamics(struct elf_object *object) {
 		rpath = get_str(object, dyn_rpath->d_un.d_val);
 		if (!rpath) return -1;
 	}
+	
+	// HACK for environ
+	Elf_Sym *environ_sym = elf_lookup(object, "environ");
+	if (environ_sym) {
+		char ***environ_ptr = (void*)environ_sym->st_value;
+		*environ_ptr = environ;
+	}
 
 	// determinate depencies count
 	object->depencies_count = 0;

@@ -142,23 +142,26 @@ static Elf_Sym *self_lookup(const char *name) {
 	return NULL;
 }
 
-Elf_Sym *dl_lookup(struct elf_object *object, const char *sym) {
-	Elf_Sym *ret;
-	if (object == &ld_tlibc) {
-		ret = self_lookup(sym);
-	} else {
-		ret = elf_lookup(object, sym);
+Elf_Sym *dl_lookup(struct elf_object *object, const char *name, int flags) {
+	Elf_Sym *sym = NULL;
+	// lookup ourself only if not asking for depencies
+	if (!(flags & LOOKUP_DEPENCIES)) {
+		if (object == &ld_tlibc) {
+			sym = self_lookup(name);
+		} else {
+			sym = elf_lookup(object, name);
+		}
 	}
 	for (size_t i=0; i < object->depencies_count; i++) {
-		Elf_Sym *new_sym = dl_lookup(object->depencies[i], sym);
+		Elf_Sym *new_sym = dl_lookup(object->depencies[i], name, flags & ~LOOKUP_DEPENCIES);
 		if (!new_sym) continue;
 		// better than what we found ?
 		// global overwrite weak
-		if (!ret || ELF_ST_BIND(new_sym->st_info) == STB_GLOBAL) {
-			ret = new_sym;
+		if (!sym || (ELF_ST_BIND(new_sym->st_info) == STB_GLOBAL && ELF_ST_BIND(sym->st_info) == STB_WEAK)) {
+			sym = new_sym;
 		}
 	}
-	return ret;
+	return sym;
 }
 
 void *dlsym(void *handle, const char *sym) {
@@ -183,7 +186,7 @@ void *dlsym(void *handle, const char *sym) {
 	}
 	if (!handle) return NULL;
 	struct elf_object *object = handle;
-	Elf_Sym *ret = dl_lookup(object, sym);
+	Elf_Sym *ret = dl_lookup(object, sym, 0);
 	return ret ? (void*)ret->st_value : NULL;
 }
 

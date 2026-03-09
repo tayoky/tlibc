@@ -18,20 +18,18 @@ int reloc(struct elf_object *object, Elf_Rela *rel) {
 			return -1;
 		}
 		Elf_Sym *obj_sym = &object->symtab[sym_index];
-		if (obj_sym->st_shndx == SHN_UNDEF || ELF_ST_BIND(obj_sym->st_info) == STB_WEAK) {
-			// the symbol is undefined or weak
-			// must link
-			const char *name = get_str(object, obj_sym->st_name);
-			if (!name) return -1;
-			sym = dl_lookup(object, name);
-			if (!sym && ELF_ST_BIND(obj_sym->st_info) != STB_WEAK) {
-				dl_error("cannot resolve symbol");
-				return -1;
-			}
-			if (!sym) {
-				sym = obj_sym;
-			}
-		} else {
+		// must link
+		const char *name = get_str(object, obj_sym->st_name);
+		if (!name) return -1;
+		sym = dl_lookup(object, name, LOOKUP_DEPENCIES);
+		if (!sym && obj_sym->st_shndx == SHN_UNDEF && ELF_ST_BIND(obj_sym->st_info) != STB_WEAK) {
+			dl_error("cannot resolve symbol");
+			return -1;
+		}
+		if (!sym) {
+			sym = obj_sym;
+		} else if (ELF_ST_BIND(sym->st_info) == STB_WEAK && ELF_ST_BIND(obj_sym->st_info) == STB_GLOBAL) {
+			// cannot override global with weak
 			sym = obj_sym;
 		}
 	}

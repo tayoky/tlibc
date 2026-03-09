@@ -40,7 +40,7 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 		size_t memsz  = PAGE_ALIGN_UP(pheader->p_memsz + vaddr_off);
 		size_t filesz_remainer = 0;
 
-		if (memsz > filesz && (pheader->p_filesz + vaddr_off) % PAGE_SIZE) {
+		if (pheader->p_memsz > pheader->p_filesz && (pheader->p_filesz + vaddr_off) % PAGE_SIZE) {
 			filesz_remainer = (pheader->p_filesz + vaddr_off) % PAGE_SIZE;
 		}
 

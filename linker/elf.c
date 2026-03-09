@@ -96,8 +96,8 @@ static int set_protections(struct elf_object *object) {
 		if (object->phdrs[i].p_flags & PF_X) {
 			prot |= PROT_EXEC;
 		}
-		uintptr_t start = PAGE_ALIGN_DOWN(object->phdrs[i].p_vaddr);
-		uintptr_t end   = PAGE_ALIGN_UP(object->phdrs[i].p_vaddr);
+		uintptr_t start = PAGE_ALIGN_DOWN(object->phdrs[i].p_vaddr + object->addr);
+		uintptr_t end   = PAGE_ALIGN_UP(object->phdrs[i].p_vaddr + object->addr + object->phdrs[i].p_memsz);
 		mprotect((void*)start, end - start, prot);
 	}
 	return 0;

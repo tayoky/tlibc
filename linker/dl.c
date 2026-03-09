@@ -240,6 +240,6 @@ int main(int argc, char **argv, char **envp) {
 	}
 
 	// emulate entry from kernel
-	abi_enter((void *)program->header.e_entry, argc, argv, 0, envp);
+	abi_enter((void *)program->header.e_entry, argc, argv, envc, envp);
 	return EXIT_FAILURE;
 }

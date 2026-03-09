@@ -190,7 +190,7 @@ static int handle_dynamics(struct elf_object *object) {
 	
 	// HACK for environ
 	Elf_Sym *environ_sym = elf_lookup(object, "environ");
-	if (environ_sym) {
+	if (environ_sym && environ_sym->st_shndx != SHN_UNDEF) {
 		char ***environ_ptr = (void*)environ_sym->st_value;
 		*environ_ptr = environ;
 	}

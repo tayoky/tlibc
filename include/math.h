@@ -35,9 +35,9 @@ typedef double double_t;
 
 #define isunordered(x,y) (isnan(x) || isnan(y))
 
-#define ifunc(name) int name(int x);\
-	long l##name(long x);\
-	long long ll##name(long long x);
+#define ifunc(type, name) type name##f(float x);\
+	type name(double x);\
+	type name##l(long double x);
 #define ffunc(name) float name##f(float x);\
 	double name(double x);\
 	long double name##l(long double x);
@@ -54,10 +54,14 @@ ffunc(tan)
 
 ffunc2(fmin)
 ffunc2(fmax)
+ffunc2(fmod)
 
 ffunc(floor)
 ffunc(ceil)
 ffunc(round)
+ffunc(rint)
+ifunc(long, lrint)
+ifunc(long long, llrint)
 
 ffunc(sqrt)
 

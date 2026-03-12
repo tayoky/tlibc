@@ -58,6 +58,10 @@ typedef atomic_flag pthread_once_t;
 typedef atomic_flag pthread_spinlock_t;
 typedef pid_t pthread_t;
 
+// TODO : implement these
+typedef void *pthread_key_t;
+typedef void *pthread_barrier_t;
+
 #define PTHREAD_PROCESS_PRIVATE 0
 #define PTHREAD_PROCESS_SHARED  1
 
@@ -67,6 +71,7 @@ noreturn void pthread_exit(void *retval);
 int pthread_equal(pthread_t t1, pthread_t t2);
 pthread_t pthread_self(void);
 int pthread_once(pthread_once_t *once_control, void (*init_routine)(void));
+int pthread_detach(pthread_t thread);
 
 int pthread_attr_init(pthread_attr_t *attr);
 int pthread_attr_destroy(pthread_attr_t *attr);
@@ -77,15 +82,13 @@ int pthread_attr_getstack(const pthread_attr_t *restrict attr,void **restrict st
 int pthread_attr_setguardsize(pthread_attr_t *attr, size_t guardsize);
 int pthread_attr_getguardsize(const pthread_attr_t *restrict attr,size_t *restrict guardsize);
 
-/*
- * TODO : implement these
- * int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr);
- * int pthread_cond_destroy(pthread_cond_t *cond);
- * int pthread_cond_broadcast(pthread_cond_t *cond);
- * int pthread_cond_signal(pthread_cond_t *cond);
- * int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime);
- * int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
- */
+
+int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr);
+int pthread_cond_destroy(pthread_cond_t *cond);
+int pthread_cond_broadcast(pthread_cond_t *cond);
+int pthread_cond_signal(pthread_cond_t *cond);
+int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime);
+int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
 
 int pthread_condattr_init(pthread_condattr_t *condattr);
 int pthread_condattr_destroy(pthread_condattr_t *condattr);
@@ -113,6 +116,11 @@ int pthread_mutexattr_getpshared(const pthread_mutexattr_t *restrict mutexattr, 
 int pthread_mutexattr_setpshared(pthread_mutexattr_t *mutexattr, int pshared);
 int pthread_mutexattr_gettype(const pthread_mutexattr_t *restrict mutexattr, int *restrict type);
 int pthread_mutexattr_settype(pthread_mutexattr_t *mutexattr, int type);
+
+int pthread_key_create(pthread_key_t *key, void (*)(void *));
+int pthread_key_delete(pthread_key_t key);
+int pthread_setspecific(pthread_key_t key, const void *value);
+void *pthread_getspecific(pthread_key_t key);
 
 int pthread_spin_init(pthread_spinlock_t *lock, int pshared);
 int pthread_spin_destroy(pthread_spinlock_t *lock);

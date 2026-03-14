@@ -14,13 +14,13 @@ ifeq ($(NEED_CONF),yes)
 include config.mk
 endif
 
-TARGET = stanix
+TARGET = linux
 
 BUILDDIR = build
 
 # first get all the sources
 C_SRC_DIR = ctype libgen time stdlib string wchar stdio unistd locale pwd pthread dl $(TARGET) $(ARCH)
-C_SRC = $(shell find libc -maxdepth 1 -name "*.c") $(foreach DIR, $(C_SRC_DIR), $(shell find libc/$(DIR) -name "*.c" -or -name "*.s"))
+C_SRC = $(wildcard libc/*.c) $(foreach DIR, $(C_SRC_DIR), $(wildcard libc/$(DIR)/**.[cs]))
 C_OBJ = $(addprefix $(BUILDDIR)/, $(addsuffix .o, $(basename $(C_SRC))))
 C_SHARED_OBJ = $(addprefix $(BUILDDIR)/shared-, $(addsuffix .o, $(basename $(C_SRC))))
 
@@ -29,8 +29,8 @@ K_SRC = errno.o string/memset.o string/memcpy.o string/memchr.o string/memcmp.o 
 K_OBJ = $(foreach FILE, $(K_SRC), $(BUILDDIR)/libk/$(FILE))
 
 #if a file exist in libm/$(ARCH) don't take the generic version in libm/generic
-M_ARCH_SRC = $(shell find libm/$(ARCH) -name "*.c" -or -name "*.s")
-M_SRC = $(M_ARCH_SRC) $(filter-out $(foreach FILE,$(M_ARCH_SRC),libm/generic/$(shell basename $(basename $(FILE))).%),$(shell find libm/generic -name "*.c" ))
+M_ARCH_SRC = $(wildcard libm/$(ARCH)/**.[cs])
+M_SRC = $(M_ARCH_SRC) $(filter-out $(foreach FILE,$(M_ARCH_SRC),libm/generic/$(shell basename $(basename $(FILE))).%),$(wildcard libm/generic/**.c))
 M_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(basename $(M_SRC))))
 M_SHARED_OBJ = $(addprefix $(BUILDDIR)/shared-, $(addsuffix .o, $(basename $(M_SRC))))
 
@@ -68,7 +68,7 @@ STATICFLAGS = -fno-PIC
 DYNFLAGS = -fPIC -D__DYNAMIC__=1
 SOFLAGS = -nolibc -shared
 
-KFLAGS = -mcmodel=large -DLIBK -Dmalloc=kmalloc -Dfree=kfree -ffreestanding
+KFLAGS = -mcmodel=large -D__LIBK__=1 -Dmalloc=kmalloc -Dfree=kfree -ffreestanding
 ifeq ($(ARCH),x86_64)
 	KFLAGS += -mno-sse -mno-sse2 -mno-80387 -mno-80387
 endif

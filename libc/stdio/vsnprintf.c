@@ -5,16 +5,23 @@
 #include <ctype.h>
 #include <limits.h>
 #include <string.h>
+#include <math.h>
 #include <sys/types.h>
 
-#define OUT(c) {if(maxlen != 1){\
-	if(buf){\
-		*buf = c;\
-		buf++;\
+#define OUT(c) {\
+	if(maxlen != 1){\
+		if(buf){\
+			*buf = c;\
+			buf++;\
+		}\
+		if(maxlen)maxlen--;\
 	}\
-	if(maxlen)maxlen--;\
-}\
-count++;\
+	count++;\
+}
+
+#define OUT_STR(str) {\
+	const char *ptr = str;\
+	while (*ptr) OUT(*str);\
 }
 
 static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int padding,char padding_char,int min,int high,char sign,int prefix){
@@ -91,16 +98,19 @@ static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int paddi
 	if(buf)   buf    += tmp;\
 	if(maxlen)maxlen -= tmp;\
 }
+#define T(var,type) var = va_arg(args,type);
 
-#define T(var,type) if(lenght == sizeof(type) && !parsed){\
-		parsed = 1;\
-		var = va_arg(args,type);\
-	}
+#define T_CAST(var,type) var = (type)va_arg(args,int);
 
-#define T_CAST(var,type) if(lenght == sizeof(type) && !parsed){\
-		parsed = 1;\
-		var = (type)va_arg(args,int);\
-	}
+#define LEN_NONE  0
+#define LEN_HH    1
+#define LEN_H     2
+#define LEN_L     3
+#define LEN_LL    4
+#define LEN_J     5
+#define LEN_Z     6
+#define LEN_T     7
+#define LEN_BIG_L 8
 
 int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 	int count = 0;
@@ -118,7 +128,6 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 		int alternate_form = 0;
 		//format specifier
 		//start by handling flags
-		//TODO : #
 		for(;;) switch(*fmt){
 		case '#':
 			fmt++;
@@ -178,64 +187,81 @@ finish_flags:;
 				}
 			}
 		}
-		//now lenght
-		size_t lenght;
+		// now parse lenght
+		int lenght;
 		switch(*fmt){
 		default:
-			lenght = sizeof(int);
+			lenght = LEN_NONE;
 			break;
 		case 'h':
 			fmt++;
 			if(*fmt == 'h'){
 				fmt++;
-				lenght = sizeof(char);
+				lenght = LEN_HH;
 			} else {
-				lenght = sizeof(short);
+				lenght = LEN_H;
 			}
 			break;
 		case 'l':
 			fmt++;
 			if(*fmt == 'l'){
 				fmt++;
-				lenght = sizeof(long);
+				lenght = LEN_LL;
 			} else {
-				lenght = sizeof(long long);
+				lenght = LEN_L;
 			}
 			break;
 		case 'j':
 			fmt++;
-			lenght = sizeof(intmax_t);
+			lenght = LEN_J;
 			break;
 		case 'z':
 			fmt++;
-			lenght = sizeof(size_t);
+			lenght = LEN_Z;
 			break;
 		case 't':
 			fmt++;
-			lenght = sizeof(ptrdiff_t);
+			lenght = LEN_T;
 			break;
 		case 'L':
-			//same as ll in this implementation
 			fmt++;
-			lenght = sizeof(long long);
+			lenght = LEN_BIG_L;
 			break;
 		}
 		//now specifier
-		int parsed = 0;
 		switch(*fmt){
 		case 'd':
 		case 'i':
 			//precision on integer remove 0 flag
 			if(precision != -1)padding_char = ' ';
 			intmax_t sint = 0;
-			T(sint,int)
-			T_CAST(sint,short)
-			T_CAST(sint,char)
-			T(sint,long)
-			T(sint,long long)
-			T(sint,intmax_t)
-			T(sint,ssize_t)
-			T(sint,ptrdiff_t)
+			switch (lenght) {
+			case LEN_HH:
+				T_CAST(sint,short);
+				break;
+			case LEN_H:
+				T_CAST(sint,char);
+				break;
+			case LEN_L:
+				T(sint,long);
+				break;
+			case LEN_LL:
+			case LEN_BIG_L:
+				T(sint,long long);
+				break;
+			case LEN_J:
+				T(sint,intmax_t);
+				break;
+			case LEN_Z:
+				T(sint,ssize_t);
+				break;
+			case LEN_T:
+				T(sint,ptrdiff_t);
+				break;
+			default:
+				T(sint,int);
+				break;
+			}
 
 			char sign = 0;
 			if(sint < 0){
@@ -253,14 +279,33 @@ finish_flags:;
 		case 'X':
 			if(precision != -1)padding_char = ' ';
 			intmax_t uint = 0;
-			T(uint,unsigned int)
-			T_CAST(uint,unsigned short)
-			T_CAST(uint,unsigned char)
-			T(uint,unsigned long)
-			T(uint,unsigned long long)
-			T(uint,uintmax_t)
-			T(uint,size_t)
-			T(uint,uintptr_t)
+			switch (lenght) {
+			case LEN_HH:
+				T_CAST(uint,unsigned short);
+				break;
+			case LEN_H:
+				T_CAST(uint,unsigned char);
+				break;
+			case LEN_L:
+				T(uint,unsigned long);
+				break;
+			case LEN_LL:
+			case LEN_BIG_L:
+				T(uint,unsigned long long);
+				break;
+			case LEN_J:
+				T(uint,uintmax_t);
+				break;
+			case LEN_Z:
+				T(uint,size_t);
+				break;
+			case LEN_T:
+				T(uint,uintptr_t);
+				break;
+			default:
+				T(uint,unsigned int);
+				break;
+			}
 
 			//FIXME : i think we need to decrease witdh on prefix
 			int base = 0;
@@ -319,6 +364,51 @@ finish_flags:;
 				}
 			}
 			break;
+		// dynamic linker never print floats and libk cannot use float
+#if !defined(__LIBK__) && !defined(__LD_TLIBC__) 
+		case 'f':
+		case 'F':
+			// default precision for float is 6
+			if (precision == -1) precision = 6;
+			long double number;
+			if (lenght == LEN_BIG_L || lenght == LEN_LL) {
+				T(number, long double);
+			} else {
+				T(number, double);
+			}
+			if (number < 0) {
+				OUT('-');
+				number = -number;
+			}
+			if (isnan(number)) {
+				if (isupper(*fmt)) {
+					OUT_STR("NAN");
+				} else {
+					OUT_STR("nan");
+				}
+				break;
+			}
+			if (isinf(number)) {
+				if (isupper(*fmt)) {
+					OUT_STR("INFINITY");
+				} else {
+					OUT_STR("infinity");
+				}
+				break;
+			}
+			long double integral;
+			if (number >= (long double)LLONG_MAX || number <= (long double)LLONG_MIN){\
+				integral = number;
+			} else {
+				integral = (long double)(long long)number;
+			}
+
+			// TODO : actually print the float
+			if (precision != 0 || alternate_form) {
+				OUT('.');
+			}
+			break;
+#endif
 		case '%':
 			OUT('%');
 			break;

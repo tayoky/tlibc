@@ -2,7 +2,7 @@
 #include <tlibc.h>
 
 int *__errno_location(void){
-#ifdef LIBK
+#ifdef __LIBK__
     static int stub;
     return &stub;
 #else

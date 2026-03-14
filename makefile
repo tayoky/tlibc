@@ -24,7 +24,7 @@ endef
 
 # first get all the sources
 C_SRC_DIR = ctype libgen time stdlib string wchar stdio unistd locale pwd pthread dl $(TARGET) $(ARCH)
-C_SRC = $(wildcard libc/*.c) $(foreach DIR, $(C_SRC_DIR), $(wildcard libc/$(DIR)/*.[cs]))
+C_SRC = $(wildcard libc/*.c) $(foreach DIR, $(C_SRC_DIR), $(wildcard libc/$(DIR)/*.[cs] libc/$(DIR)/*/*.[cs]))
 C_OBJ = $(call src2obj, $(C_SRC), $(BUILDDIR)/)
 C_SHARED_OBJ = $(call src2obj, $(C_SRC), $(BUILDDIR)/shared-)
 

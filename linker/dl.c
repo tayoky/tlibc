@@ -191,6 +191,9 @@ void *dlsym(void *handle, const char *sym) {
 }
 
 int main(int argc, char **argv, char **envp) {
+	open("/dev/tty0", O_RDWR);
+	open("/dev/tty0", O_RDWR);
+	open("/dev/tty0", O_RDWR);
 	const char *progname = strrchr(argv[0], '/');
 	if (progname) {
 		// remove the slash
@@ -239,7 +242,20 @@ int main(int argc, char **argv, char **envp) {
 		envc++;
 	}
 
+	long *auxv_top = (long*)envp;
+	while (*auxv_top) auxv_top++;
+	auxv_top++;
+	while (*auxv_top) auxv_top++;
+	long *auxv = (long*)argv;
+	auxv--;
+
+	// align the size
+	size_t auxv_size = auxv_top - auxv;
+	if (auxv_size % 2) {
+		auxv_size++;
+	}
+
 	// emulate entry from kernel
-	abi_enter((void *)program->header.e_entry, argc, argv, envc, envp);
+	abi_enter((void *)program->header.e_entry, auxv, auxv_size * sizeof(long));
 	return EXIT_FAILURE;
 }

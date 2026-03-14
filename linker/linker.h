@@ -76,7 +76,7 @@ Elf_Sym *dl_lookup(struct elf_object *object, const char *sym, int flags);
 #define LOOKUP_DEPENCIES 0x01
 void elf_unload(struct elf_object *object);
 Elf_Sym *elf_lookup(struct elf_object *object, const char *name);
-void abi_enter(void *entry, int argc, char **argv, int env, char **envp);
+void abi_enter(void *entry, long *auxv, size_t auxv_size);
 int open_lib(const char *path);
 const char *get_str(struct elf_object *object, size_t offset);
 int reloc(struct elf_object *object, Elf_Rela *rel);

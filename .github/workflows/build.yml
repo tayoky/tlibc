@@ -16,7 +16,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: configure
-      run: mkdir -p sysroot/usr && ./configure --prefix=./sysroot/usr --dynamic
+      run: mkdir -p sysroot/usr && ./configure --prefix=./sysroot/usr --enable-dynamic
 
     - name: install header
       run: make header

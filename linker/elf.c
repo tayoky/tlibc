@@ -214,6 +214,7 @@ static int handle_dynamics(struct elf_object *object) {
 		if (dl_debug) fprintf(stderr, "ld-tlibc.so : find depencie '%s'\n", name);
 		void *lib = dlopen(name, RTLD_NOW | RTLD_LOCAL);
 		if (!lib) {
+			if (dl_debug) fprintf(stderr, "ld-tlibc.so : fail to load '%s' : %s\n", name, dlerror());
 			dl_error("cannot access a needed shared library");
 			return -1;
 		}

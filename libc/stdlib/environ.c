@@ -12,20 +12,22 @@ __attribute__((weak)) char **environ;
 #ifdef __DL_TLIBC__
 
 // for the dynamic linker, don't allocate memory
-void __init_environ(int envc, char **envp) {
-	(void)envc;
+void __init_environ(char **envp) {
 	environ = envp;
 }
 
 #else
 
-void __init_environ(int envc, char **envp) {
+void __init_environ(char **envp) {
 	//envp is created by the kernel
 	//so we can't realloc it
 	//copy it to normal memory
 
+	int envc = 0;
+	while (envp[envc]) envc++;
+
 	environ = malloc((envc + 1) * sizeof(char *));
-	for (int i = 0; i < envc; i++) {
+	for (int i = 0; envp[i]; i++) {
 		environ[i] = envp[i];
 	}
 	//last NULL entry

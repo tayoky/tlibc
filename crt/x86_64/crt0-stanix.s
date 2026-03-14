@@ -3,6 +3,7 @@
 .type _start @function
 .hidden main
 _start:
-	lea main(%rip), %r8
+	mov %rsp, %rdi
+	lea main(%rip), %rsi
 	call __init_tlibc
 .size _start, .-_start

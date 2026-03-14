@@ -29,10 +29,10 @@ static void __fini_tlibc(void) {
 }
 #endif
 
-void __init_tlibc(int argc, char **argv, int envc, char **envp, main_t main) {
-	(void)argc;
-	(void)argv;
-	(void)envc;
+void __init_tlibc(long *stack, main_t main) {
+	int argc = *stack;
+	char **argv = (char **)(stack + 1);
+	char **envp = (char **)(stack + argc + 2);
 
 #ifndef __DYNAMIC__ // dynamic linker aready prepare uthread
 	//setup a uthread for the main thread
@@ -47,7 +47,7 @@ void __init_tlibc(int argc, char **argv, int envc, char **envp, main_t main) {
 #endif
 
 	// the dynamic linker need environ access
-	__init_environ(envc, envp);
+	__init_environ(envp);
 
 #ifndef __DL_TLIBC__
 	atexit(__fini_tlibc);

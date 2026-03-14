@@ -15,7 +15,6 @@ include config.mk
 endif
 
 TARGET = stanix
-
 BUILDDIR = build
 
 define src2obj

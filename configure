@@ -1,142 +1,24 @@
 #!/bin/sh
-#delete any old conf file
-rm -f $(dirname $0)/config.mk
 
-HOST=""
+. ./tconf.sh
+
+# defaults
 DYNAMIC=no
-
-if [ "$PREFIX" = "" ] ; then
-	PREFIX="/usr/local"
-fi
-
-if [ "$CFLAGS" = "" ] ; then
-	CFLAGS=""
-fi
-
 SYSROOT=$(realpath ./sysroot)
 
-for i in "$@"; do
-	case $i in
-		--sysroot=*|--with-sysroot=*)
-			SYSROOT="${i#*=}"
-			shift # past argument=value
-			;;
-		--cc=*|--with-CC=*)
-			CC="${i#*=}"
-			shift # past argument=value
-			;;
-		--ar=*|--with-AR=*)
-			AR="${i#*=}"
-			shift # past argument=value
-			;;
-		--as=*|--with-AS=*)
-			AS="${i#*=}"
-			shift # past argument=value
-			;;
-		--ld=*|--with-LD=*)
-			LD="${i#*=}"
-			shift # past argument=value
-			;;
-		--cflags=*)
-			CFLAGS="${i#*=}"
-			shift # past argument=value
-			;;
-		--host=*)
-			HOST="${i#*=}"
-			shift # past argument=value
-			;;
-		--prefix=*)
-			PREFIX="${i#*=}"
-			shift # past argument=value
-			;;
-		--dynamic|--dynamic-support)
-			DYNAMIC=yes
-			shift # past argument=value
-			;;
-		-*|--*)
-			echo "Unknown option $i"
-			exit 1
-			;;
-		*)
-			;;
-	esac
-done
+tconf_init "$@"
 
-#make all path absolute
-SYSROOT=$(realpath "$SYSROOT")
-PREFIX=$(realpath "$PREFIX")
+tconf_search_cc "$HOST"
+tconf_require "C compiler" "$CC"
+tconf_search_as "$HOST"
+tconf_require "assembler" "$AS"
+tconf_search_ar "$HOST"
+tconf_require "archiver" "$AR"
+tconf_find_os
 
-#check tools
-if [ "$HOST" != "" ] ; then
-	PREV="${HOST}-"
-fi
-
-if [ "$CC" = "" ] ; then
-	if ${PREV}gcc --version > /dev/null ; then
-		CC="${PREV}gcc"
-	elif ${PREV}clang --version > /dev/null ; then
-		CC="${PREV}clang"
-	else
-		echo "error : no c compilator found"
-		exit 1
-	fi
-fi
-
-if [ "$LD" = "" ] ; then
-	if ${PREV}ld --version > /dev/null ; then
-		LD="${PREV}ld"
-	else
-		echo "error : no linker found"
-		exit 1
-	fi
-fi
-
-if [ "$AS" = "" ] ; then
-	if ${PREV}as --version > /dev/null ; then
-		AS="${PREV}as"
-	else
-		echo "error : no assembler found"
-		exit 1
-	fi
-fi
-
-if [ "$AR" = "" ] ; then
-	if ${PREV}ar --version > /dev/null ; then
-		AR="${PREV}ar"
-	else
-		echo "error : no archiver found"
-		exit 1
-	fi
-fi
-
-#if host is NULL get it from compiler
-if [ "$HOST" = "" ] ; then
-	HOST=$($CC -dumpmachine)
-fi
+tconf_check_attribute "$CC" "weak"
 
 ARCH=${HOST%%-*}
 
-case "$HOST" in
-	*stanix*)
-		OS="stanix"
-		;;
-	*linux*)
-		OS="linux"
-		;;
-	*)
-		echo "unsuported host : $HOST"
-		exit 1
-esac
-
-echo "#generated automatically by ./configure" > config.mk
-echo "HOST=$HOST" >> config.mk
-echo "ARCH=$ARCH" >> config.mk
-echo "CFLAGS=$CFLAGS" >> config.mk
-echo "OS=$OS" >> config.mk
-echo "PREFIX=$PREFIX" >> config.mk
-echo "CC=$CC" >> config.mk
-echo "LD=$LD" >> config.mk
-echo "AR=$AR" >> config.mk
-echo "AS=$AS" >> config.mk
+tconf_fini
 echo "DYNAMIC=$DYNAMIC" >> config.mk
-echo "SYSROOT=$SYSROOT" >> config.mk

@@ -191,9 +191,6 @@ void *dlsym(void *handle, const char *sym) {
 }
 
 int main(int argc, char **argv, char **envp) {
-	open("/dev/tty0", O_RDWR);
-	open("/dev/tty0", O_RDWR);
-	open("/dev/tty0", O_RDWR);
 	const char *progname = strrchr(argv[0], '/');
 	if (progname) {
 		// remove the slash

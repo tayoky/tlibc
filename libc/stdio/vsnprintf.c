@@ -365,7 +365,7 @@ finish_flags:;
 			}
 			break;
 		// dynamic linker never print floats and libk cannot use float
-#if !defined(__LIBK__) && !defined(__LD_TLIBC__) 
+#if !defined(__LIBK__) && !defined(__DL_TLIBC__) 
 		case 'f':
 		case 'F':
 			// default precision for float is 6

@@ -14,7 +14,7 @@ ifeq ($(NEED_CONF),yes)
 include config.mk
 endif
 
-TARGET = linux
+TARGET = stanix
 
 BUILDDIR = build
 

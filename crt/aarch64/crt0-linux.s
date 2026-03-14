@@ -2,11 +2,11 @@
 
 .section .text
 .globl _start
-.type _start @func
+.type _start @function
 _start:
 	sub sp, sp, 16
 	stp x0, x1, [sp]
-	bl __tlibc_init
+	bl __init_tlibc
 	ldp x0, x1, [sp]
 	add sp, sp, 16
 .size _start, .-_start

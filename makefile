@@ -18,21 +18,25 @@ TARGET = stanix
 
 BUILDDIR = build
 
+define src2obj
+$(patsubst %, $(2)%.o, $(basename $(1)))
+endef
+
 # first get all the sources
 C_SRC_DIR = ctype libgen time stdlib string wchar stdio unistd locale pwd pthread dl $(TARGET) $(ARCH)
-C_SRC = $(wildcard libc/*.c) $(foreach DIR, $(C_SRC_DIR), $(wildcard libc/$(DIR)/**.[cs]))
-C_OBJ = $(addprefix $(BUILDDIR)/, $(addsuffix .o, $(basename $(C_SRC))))
-C_SHARED_OBJ = $(addprefix $(BUILDDIR)/shared-, $(addsuffix .o, $(basename $(C_SRC))))
+C_SRC = $(wildcard libc/*.c) $(foreach DIR, $(C_SRC_DIR), $(wildcard libc/$(DIR)/*.[cs]))
+C_OBJ = $(call src2obj, $(C_SRC), $(BUILDDIR)/)
+C_SHARED_OBJ = $(call src2obj, $(C_SRC), $(BUILDDIR)/shared-)
 
 # objects used in libk
 K_SRC = errno.o string/memset.o string/memcpy.o string/memchr.o string/memcmp.o string/strcat.o string/strlen.o  string/strnlen.o string/strcpy.o string/strncpy.o string/strcmp.o string/strncmp.o string/strncasecmp.o ctype/ctype.o stdio/vsnprintf.o stdio/snprintf.o stdio/vsprintf.o stdio/sprintf.o stdlib/strto.o
 K_OBJ = $(foreach FILE, $(K_SRC), $(BUILDDIR)/libk/$(FILE))
 
 #if a file exist in libm/$(ARCH) don't take the generic version in libm/generic
-M_ARCH_SRC = $(wildcard libm/$(ARCH)/**.[cs])
-M_SRC = $(M_ARCH_SRC) $(filter-out $(foreach FILE,$(M_ARCH_SRC),libm/generic/$(shell basename $(basename $(FILE))).%),$(wildcard libm/generic/**.c))
-M_OBJ = $(addprefix $(BUILDDIR)/,$(addsuffix .o, $(basename $(M_SRC))))
-M_SHARED_OBJ = $(addprefix $(BUILDDIR)/shared-, $(addsuffix .o, $(basename $(M_SRC))))
+M_ARCH_SRC = $(wildcard libm/$(ARCH)/*.s)
+M_SRC = $(M_ARCH_SRC) $(filter-out $(M_ARCH_SRC:libm/$(ARCH)/%.s=libm/generic/%.c),$(wildcard libm/generic/*.c))
+M_OBJ = $(call src2obj, $(M_SRC), $(BUILDDIR)/)
+M_SHARED_OBJ = $(call src2obj, $(M_SRC), $(BUILDDIR)/shared-)
 
 # libc object used by linker
 DL_DEPS = tlibc pthread/uthread $(ARCH)/__get_uthread errno ctype/ctype \
@@ -168,9 +172,9 @@ clean :
 
 #install the header
 header :
-	@mkdir -p $(PREFIX)/include/sys
-	@$(foreach FILE , $(shell echo include/*.h include/$(TARGET)/*.h) , cat prologue.h $(FILE) epilogue.h > $(PREFIX)/include/$(shell basename $(FILE)) && echo "[installing $(shell basename $(FILE))]" &&) true
-	@$(foreach FILE , $(shell echo include/$(TARGET)/sys/*.h) , cat prologue.h $(FILE) epilogue.h > $(PREFIX)/include/sys/$(shell basename $(FILE)) && echo "[installing sys/$(shell basename $(FILE))]" &&) true
+	@mkdir -p "$(PREFIX)/include/sys"
+	@$(foreach FILE , $(wildcard include/*.h) , cat prologue.h $(FILE) epilogue.h > "$(PREFIX)/$(FILE)" && echo "[installing $(FILE:include/%=%)]" &&) true
+	@$(foreach FILE , $(shell find include/$(TARGET) -name "*.h") , cat prologue.h $(FILE) epilogue.h > $(PREFIX)/include/$(FILE:include/$(TARGET)/%=%) && echo "[installing $(FILE:include/$(TARGET)/%=%)]" &&) true
 	@cp include/_cdefs.h $(PREFIX)/include/sys/cdefs.h
 
 install-dynamic : header

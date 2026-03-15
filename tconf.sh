@@ -58,13 +58,9 @@ tconf_init () {
 	fi
 
 	# defaults
-	if test -z "$PREFIX" ; then
-		PREFIX="/usr/local"
-	fi
-
-	if test -z "$CFLAGS" ; then
-		CFLAGS="-Wall -Wextra"
-	fi
+	test -z "$PREFIX" && PREFIX="/usr/local"
+	test -z "$CFLAGS" && CFLAGS="-Wall -Wextra"
+	test -z "$DEBUG" && DEBUG="no"
 
 	# parse options
 	for i in "$@" ; do
@@ -127,7 +123,7 @@ tconf_init () {
 			SYSROOT="${i#*=}"
 			;;
 		--debug)
-			OPT="$OPT -DDEBUG=1"
+			DEBUG=yes
 			;;
 		--enable-*)
 			tconf_set_var $(tconf_to_macro_name "${i##*-}") "yes"
@@ -165,6 +161,7 @@ tconf_echo_conf () {
 }
 
 tconf_fini () {
+	test "$DEBUG" = "yes" && OPT="$OPT -g -DDEBUG=1"
 	{
 		echo "# automaticly generated from $(basename "$0")"
 		tconf_echo_conf PREFIX "$PREFIX"
@@ -201,9 +198,9 @@ tconf_add_subdir () {
 	export CC CXX AS AR LD NM
 	export READELF OBJCOPY STRIP
 	export CFLAGS CXXFLAGS ASFLAGS
-	export ARFLAGS LDFLAGS
+	export ARFLAGS LDFLAGS OPT
 	export HOST BUILD TARGET
-	export PREFIX
+	export PREFIX DEBUG
 	SUBDIR="$1"
 	shift
 	tconf_print "entering subdir $SUBDIR"

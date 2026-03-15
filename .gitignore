@@ -11,3 +11,4 @@ sysroot/*
 #config
 config.mk
 config.h
+tconf

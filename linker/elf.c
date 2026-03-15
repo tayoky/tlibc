@@ -5,6 +5,7 @@
 #include <dlfcn.h>
 #include <sys/mman.h>
 #include <stdio.h>
+#include <fcntl.h>
 #include <elf.h>
 #include "linker.h"
 
@@ -331,13 +332,13 @@ static void call_destructors(struct elf_object *object) {
 struct elf_object *elf_load(const char *path, int is_lib) {
 	struct elf_object *object = dl_alloc(sizeof(struct elf_object));
 	memset(object, 0, sizeof(struct elf_object));
-
-	int file = open_lib(path);
+	
+	int file = is_lib ? open_lib(path) : open(path, O_RDONLY);
 	if (file < 0) {
 		dl_error("cannot open file");
 		goto free;
 	}
-
+	
 	if (read(file, &object->header,sizeof(Elf_Ehdr)) < (ssize_t)sizeof(Elf_Ehdr)) {
 		dl_error("read failed");
 		goto close;
@@ -413,7 +414,7 @@ free:
 }
 
 void elf_unload(struct elf_object *object) {
-	call_destructors(object);
+	if (object->dynamics) call_destructors(object);
 	if (object->header.e_type == ET_DYN && object->addr) {
 		// we can free the whole allocated block
 		munmap((void*)object->addr, get_total_size(object));

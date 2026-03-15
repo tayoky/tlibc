@@ -9,11 +9,8 @@ SYSROOT=$(realpath ./sysroot)
 tconf_init "$@"
 
 tconf_search_cc "$HOST"
-tconf_require "C compiler" "$CC"
 tconf_search_as "$HOST"
-tconf_require "assembler" "$AS"
 tconf_search_ar "$HOST"
-tconf_require "archiver" "$AR"
 tconf_find_os
 
 tconf_check_attribute "$CC" "weak"

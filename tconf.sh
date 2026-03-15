@@ -146,8 +146,8 @@ tconf_init () {
 	done
 
 	# make path absolute
-	test -n "$PREFIX" && PREFIX="$(realpath "$PREFIX")"
-	test -n "$SYSROOT" && SYSROOT="$(realpath "$SYSROOT")"
+	test -n "$PREFIX" && PREFIX="$(realpath -m "$PREFIX")"
+	test -n "$SYSROOT" && SYSROOT="$(realpath -m "$SYSROOT")"
 	
 	return 0
 }
@@ -186,6 +186,7 @@ tconf_fini () {
 		tconf_echo_conf LDFLAGS "$LDFLAGS"
 		tconf_echo_conf HOST "$HOST"
 		tconf_echo_conf ARCH "$ARCH"
+		tconf_echo_conf DEBUG "$DEBUG"
 	} > "$TOP/config.mk"
 	return 0
 }
@@ -196,7 +197,7 @@ tconf_add_subdir () {
 		return 1
 	fi
 	export CC CXX AS AR LD NM
-	export READELF OBJCOPY STRIP
+	export READELF OBJCOPY STRIP PKGCONFIG
 	export CFLAGS CXXFLAGS ASFLAGS
 	export ARFLAGS LDFLAGS OPT
 	export HOST BUILD TARGET
@@ -205,7 +206,10 @@ tconf_add_subdir () {
 	shift
 	tconf_print "entering subdir $SUBDIR"
 	(cd "$SUBDIR" && ./configure "$@")
+	CODE=$?
 	tconf_print "exiting subdir $SUBDIR"
+	test "$CODE" != 0 && exit $CODE
+	return 0
 }
 
 tconf_require () {
@@ -323,7 +327,8 @@ tconf_search_util () {
 	fi
 
 	UTIL_VAR="$1"
-	tconf_print -n "search $2... "
+	UTIL_NAME="$2"
+	tconf_print -n "search $UTIL_NAME... "
 
 	# test if aready set
 	if test -n "$UTIL_VAR" && test -n "$(tconf_get_var $UTIL_VAR)" ; then
@@ -344,7 +349,8 @@ tconf_search_util () {
 		fi
 	done
 	tconf_print "no"
-	return 1
+	tconf_print "no $UTIL_NAME found"
+	exit 1
 }
 
 tconf_search_cc () {
@@ -360,7 +366,7 @@ tconf_search_cxx () {
 		tconf_print "usage : tconf_search_cxx PREFIX"
 		return 1
 	fi
-	tconf_search_util CXX "C++ compiler" "$1" g++ c++ gpp cxx
+	tconf_search_util CXX "C++ compiler" "$1" g++ clang++ c++ gpp cxx
 }
 
 tconf_search_as () {

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/mman.h>
+#include <sys/auxv.h>
 #include <limits.h>
 #include <fcntl.h>
 #include <dlfcn.h>
@@ -88,7 +89,7 @@ void *dlopen(const char *filename, int flags) {
 	}
 	if (flags & RTLD_NOLOAD) return NULL;
 
-	object = elf_load(filename, 1);
+	object = elf_load(filename, 1, -1);
 	if (!object) return NULL;
 
 	object->name      = dl_strdup(name);
@@ -226,7 +227,11 @@ int main(int argc, char **argv, char **envp) {
 	ld_tlibc.name = "ld-tlibc.so",
 	cache_add(&ld_tlibc);
 
-	program = elf_load(argv[0], 0);
+	// maybee the kernel gave us a fd for the executable
+	int fd = (int)getauxval(AT_EXECFD);
+	if (fd == 0) fd = -1;
+
+	program = elf_load(argv[0], 0, fd);
 	if (!program) {
 		fprintf(stderr, "ld-tlibc.so : %s\n", dlerror());
 		return EXIT_FAILURE;

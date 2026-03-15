@@ -329,14 +329,19 @@ static void call_destructors(struct elf_object *object) {
 	}
 }
 
-struct elf_object *elf_load(const char *path, int is_lib) {
+struct elf_object *elf_load(const char *path, int is_lib, int fd) {
 	struct elf_object *object = dl_alloc(sizeof(struct elf_object));
 	memset(object, 0, sizeof(struct elf_object));
 	
-	int file = is_lib ? open_lib(path) : open(path, O_RDONLY);
-	if (file < 0) {
-		dl_error("cannot open file");
-		goto free;
+	int file;
+	if (fd < 0) {
+		file = is_lib ? open_lib(path) : open(path, O_RDONLY);
+		if (file < 0) {
+			dl_error("cannot open file");
+			goto free;
+		}
+	} else {
+		file = fd;
 	}
 	
 	if (read(file, &object->header,sizeof(Elf_Ehdr)) < (ssize_t)sizeof(Elf_Ehdr)) {

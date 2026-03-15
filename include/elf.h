@@ -410,7 +410,16 @@ typedef struct {
 		void *a_ptr;
 		void (*a_fnc)();
 	} a_un;
-} Elf64_auxv_t;
+} Elf32_Auxv;
+
+typedef struct {
+	long a_type;
+	union {
+		long a_val;
+		void *a_ptr;
+		void (*a_fnc)();
+	} a_un;
+} Elf64_Auxv;
 
 #define AT_NULL     0
 #define AT_IGNORE   1

@@ -38,7 +38,7 @@ M_OBJ = $(call src2obj, $(M_SRC), $(BUILDDIR)/)
 M_SHARED_OBJ = $(call src2obj, $(M_SRC), $(BUILDDIR)/shared-)
 
 # libc object used by linker
-DL_DEPS = tlibc pthread/uthread $(ARCH)/__get_uthread errno ctype/ctype \
+DL_DEPS = tlibc auxv pthread/uthread $(ARCH)/__get_uthread errno ctype/ctype \
 	string/strcmp string/strchr string/strrchr string/strcpy string/strlen string/strnlen \
 	string/memset string/memcmp string/memchr string/memcpy \
 	stdio/vsnprintf stdio/vsprintf stdio/sprintf stdio/fwrite stdio/__fileio_write stdio/fflush\

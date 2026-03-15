@@ -71,7 +71,7 @@ void dl_free(void *ptr);
 char *dl_strdup(const char *str);
 char *dl_strndup(const char *str, size_t count);
 int dl_error(char *str);
-struct elf_object *elf_load(const char *path, int lib);
+struct elf_object *elf_load(const char *path, int lib, int fd);
 Elf_Sym *dl_lookup(struct elf_object *object, const char *sym, int flags);
 #define LOOKUP_DEPENCIES 0x01
 void elf_unload(struct elf_object *object);

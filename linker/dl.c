@@ -6,6 +6,7 @@
 #include <sys/auxv.h>
 #include <limits.h>
 #include <fcntl.h>
+#include <errno.h>
 #include <dlfcn.h>
 #include <elf.h>
 #include "linker.h"
@@ -191,6 +192,59 @@ void *dlsym(void *handle, const char *sym) {
 	return ret ? (void*)ret->st_value : NULL;
 }
 
+static const char *auxv_name(long type) {
+	switch (type) {
+	case AT_NULL:
+	    return "AT_NULL";
+	case AT_IGNORE:
+	    return "AT_IGNORE";
+	case AT_EXECFD:
+	    return "AT_EXECFD";
+	case AT_PHDR:
+	    return "AT_PHDR";
+	case AT_PHENT:
+	    return "AT_PHENT";
+	case AT_PHNUM:
+	    return "AT_PHNUM";
+	case AT_PAGESZ:
+	    return "AT_PAGESZ";
+	case AT_BASE:
+	    return "AT_BASE";
+	case AT_FLAGS:
+	    return "AT_FLAGS";
+	case AT_ENTRY:
+	    return "AT_ENTRY";
+	case AT_NOTELF:
+	    return "AT_NOTELF";
+	case AT_UID:
+	    return "AT_UID";
+	case AT_EUID:
+	    return "AT_EUID";
+	case AT_GID:
+	    return "AT_GID";
+	case AT_EGID:
+	    return "AT_EGID";
+	case AT_PLATFORM:
+	    return "AT_PLATFORM";
+	case AT_HWCAP:
+	    return "AT_HWCAP";
+	case AT_CLKTCK:
+	    return "AT_CLKTCK";
+	case AT_SECURE:
+	    return "AT_SECURE";
+	case AT_BASE_PLATFORM:
+	    return "AT_BASE_PLATFORM";
+	case AT_RANDOM:
+	    return "AT_RANDOM";
+	case AT_HWCAP2:
+	    return "AT_HWCAP2";
+	case AT_EXECFN:
+	    return "AT_EXECFN";
+	default:
+		return "AT_???";
+	}
+}
+
 int main(int argc, char **argv, char **envp) {
 	const char *progname = strrchr(argv[0], '/');
 	if (progname) {
@@ -221,6 +275,20 @@ int main(int argc, char **argv, char **envp) {
 		lib_path = getenv("LD_LIBRARY_PATH");
 		const char *ld_debug = getenv("LD_DEBUG");
 		dl_debug = ld_debug && ld_debug[0];
+
+		if (getenv("LD_SHOW_AUXV")) {
+			long *auxv = (long *)envp;
+	
+			// jump over envp
+			while (*auxv) auxv++;
+			auxv++;
+
+			Elf_Auxv *entry = (Elf_Auxv *)auxv;
+			while (entry->a_type != AT_NULL) {
+				fprintf(stderr, "%s: %ld\n", auxv_name(entry->a_type), entry->a_un.a_val);
+				entry++;
+			}
+		}
 	}
 
 	// add the linker itself to the cache
@@ -228,8 +296,9 @@ int main(int argc, char **argv, char **envp) {
 	cache_add(&ld_tlibc);
 
 	// maybee the kernel gave us a fd for the executable
+	errno = 0;
 	int fd = (int)getauxval(AT_EXECFD);
-	if (fd == 0) fd = -1;
+	if (fd == 0 && errno == ENOENT) fd = -1;
 
 	program = elf_load(argv[0], 0, fd);
 	if (!program) {

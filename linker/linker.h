@@ -13,6 +13,7 @@
 #define Elf_Sym  Elf32_Sym
 #define Elf_Dyn  Elf32_Dyn
 #define Elf_Rela Elf32_Rela
+#define Elf_Auxv Elf32_Auxv
 #define ELF_R_SYM(i)  ELF32_R_SYM(i)
 #define ELF_R_TYPE(i) ELF32_R_TYPE(i)
 #define ELF_R_INFO(i) ELF32_R_INFO(i)
@@ -28,6 +29,7 @@
 #define Elf_Sym  Elf64_Sym
 #define Elf_Dyn  Elf64_Dyn
 #define Elf_Rela Elf64_Rela
+#define Elf_Auxv Elf64_Auxv
 #define ELF_R_SYM(i)  ELF64_R_SYM(i)
 #define ELF_R_TYPE(i) ELF64_R_TYPE(i)
 #define ELF_R_INFO(i) ELF64_R_INFO(i)

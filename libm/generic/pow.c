@@ -3,9 +3,6 @@
 #include "internal.h"
 
 float powf(float n, float p) {
-#ifdef HAVE_BUILTIN_POWF
-	return __builtin_powf(n, p);
-#else
     unsigned int E, M;
 
     M = (*(unsigned int*) &n) & 0x007FFFFF; 
@@ -26,15 +23,11 @@ float powf(float n, float p) {
     float signP = n > 0.0f? 1.0f : -1.0f;
 
     return (*(float*) &result) * (((int) p) % 2? signP : 1.0f);
-#endif
 }
 
 
 double pow(double n, double p) {
-#ifdef HAVE_BUILTIN_POW
-	return __builtin_pow(n, p);
-#else
 	// TODO : standalone pow
+	(void)p;
 	return n;
-#endif
 }

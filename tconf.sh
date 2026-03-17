@@ -13,7 +13,7 @@ tconf_get_var () {
 }
 
 tconf_to_macro_name () {
-	echo "$@" | tr "a-z./ " "A-Z___"
+	echo "$@" | tr "a-z./ " "A-Z___" | tr -s _
 }
 
 tconf_to_file_name () {
@@ -241,7 +241,7 @@ tconf_check_code () {
 	fi
 
 	echo "$3" > "$FILE"
-	if env "CFLAGS=$CFLAGS $4" $1 "$FILE" -o "$FILE.out" >/dev/null 2>/dev/null ; then
+	if $1 $CFLAGS $4 "$FILE" -o "$FILE.out" >/dev/null 2>/dev/null ; then
 		tconf_print "yes"
 		return 0
 	else
@@ -257,7 +257,7 @@ tconf_check_code_define () {
 	fi
 
 	if tconf_check_code "$1" "$2" "$3" "$4" ; then
-		OPT="$OPT -DHAVE_$(tconf_to_macro_name "$2")=1"
+		OPT="$OPT -D$(tconf_to_macro_name "HAVE_$2")=1"
 	fi
 }
 
@@ -269,6 +269,19 @@ tconf_check_func () {
 	tconf_check_code_define "$1" "$3" "#include <$2>
 void *volatile ptr = (void*)$3;
 int main() {
+	return 0;
+}"
+}
+
+tconf_check_builtin () {
+	if [ $# != 3 ] ; then
+		tconf_print "usage : tconf_check_builtin CC BUILTIN PARAM"
+		return 1
+	fi
+	tconf_check_code_define "$1" "$2" "// include stddef to get NULL for some tests
+#include <stddef.h>
+int main() {
+	$2($3);
 	return 0;
 }"
 }

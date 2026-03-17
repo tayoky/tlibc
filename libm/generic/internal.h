@@ -71,4 +71,32 @@ template(long double,l)
 
 #undef template
 
+// check for builtin
+#if defined(__GNUC__) || defined(__clang__)
+#define HAVE_BUILTIN_COS  1
+#define HAVE_BUILTIN_COSF 1
+#define HAVE_BUILTIN_COSL 1
+#define HAVE_BUILTIN_SIN 1
+#define HAVE_BUILTIN_SINF 1
+#define HAVE_BUILTIN_SINL 1
+#define HAVE_BUILTIN_TAN 1
+#define HAVE_BUILTIN_TANF 1
+#define HAVE_BUILTIN_TANL 1
+#define HAVE_BUILTIN_ACOS 1
+#define HAVE_BUILTIN_ACOSF 1
+#define HAVE_BUILTIN_ACOSL 1
+#define HAVE_BUILTIN_ASIN 1
+#define HAVE_BUILTIN_ASINF 1
+#define HAVE_BUILTIN_ASINL 1
+#define HAVE_BUILTIN_ATAN 1
+#define HAVE_BUILTIN_ATANF 1
+#define HAVE_BUILTIN_ATANL 1
+#define HAVE_BUILTIN_ATAN2 1
+#define HAVE_BUILTIN_ATAN2F 1
+#define HAVE_BUILTIN_ATAN2L 1
+#define HAVE_BUILTIN_POW 1
+#define HAVE_BUILTIN_POWF 1
+#define HAVE_BUILTIN_POWL 1
+#endif
+
 #endif

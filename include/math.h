@@ -51,6 +51,10 @@ ffunc(fabs)
 ffunc(cos)
 ffunc(sin)
 ffunc(tan)
+ffunc(acos)
+ffunc(asin)
+ffunc(atan)
+ffunc2(atan2)
 
 ffunc2(fmin)
 ffunc2(fmax)
@@ -71,7 +75,7 @@ float ldexpf(float a,int exp);
 double ldexp(double a,int exp);
 long double ldexpl(long double a,int exp);
 
-float powf(float x,float y);
+ffunc2(pow)
 
 #undef ifunc
 #undef ffunc

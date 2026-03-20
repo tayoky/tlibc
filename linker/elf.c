@@ -175,14 +175,6 @@ static int handle_dynamics(struct elf_object *object) {
 	object->hash_size = (2 + hash_start[0] + hash_start[1]) * sizeof(uint32_t);
 	object->hash = (void*)(dyn_hash->d_un.d_ptr + object->addr);
 
-	// relocate symbols
-	for (size_t i=0; i<object->symbols_count; i++){
-		Elf_Sym *sym = &object->symtab[i];
-		if (sym->st_shndx == SHN_UNDEF) continue;
-		if (sym->st_shndx == SHN_ABS) continue;
-		sym->st_value += object->addr;
-	}
-
 	// optional DT_RPATH for executables
 	if (object->header.e_type == ET_EXEC && dyn_rpath) {
 		rpath = get_str(object, dyn_rpath->d_un.d_val);

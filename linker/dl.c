@@ -144,7 +144,7 @@ static Elf_Sym *self_lookup(const char *name) {
 	return NULL;
 }
 
-Elf_Sym *dl_lookup(struct elf_object *object, const char *name, int flags) {
+Elf_Sym *dl_lookup(struct elf_object *object, const char *name, int flags, struct elf_object **found_object) {
 	Elf_Sym *sym = NULL;
 	// lookup ourself only if not asking for depencies
 	if (!(flags & LOOKUP_DEPENCIES)) {
@@ -153,14 +153,17 @@ Elf_Sym *dl_lookup(struct elf_object *object, const char *name, int flags) {
 		} else {
 			sym = elf_lookup(object, name);
 		}
+		if (found_object) *found_object = object;
 	}
 	for (size_t i=0; i < object->depencies_count; i++) {
-		Elf_Sym *new_sym = dl_lookup(object->depencies[i], name, flags & ~LOOKUP_DEPENCIES);
+		struct elf_object *new_object;
+		Elf_Sym *new_sym = dl_lookup(object->depencies[i], name, flags & ~LOOKUP_DEPENCIES, &new_object);
 		if (!new_sym) continue;
 		// better than what we found ?
 		// global overwrite weak
 		if (!sym || (ELF_ST_BIND(new_sym->st_info) == STB_GLOBAL && ELF_ST_BIND(sym->st_info) == STB_WEAK)) {
 			sym = new_sym;
+			if (found_object) *found_object = new_object;
 		}
 	}
 	return sym;
@@ -188,8 +191,9 @@ void *dlsym(void *handle, const char *sym) {
 	}
 	if (!handle) return NULL;
 	struct elf_object *object = handle;
-	Elf_Sym *ret = dl_lookup(object, sym, 0);
-	return ret ? (void*)ret->st_value : NULL;
+	struct elf_object *found_object;
+	Elf_Sym *ret = dl_lookup(object, sym, 0, &found_object);
+	return ret ? (void*)ret->st_value + found_object->addr : NULL;
 }
 
 static const char *auxv_name(long type) {

@@ -7,11 +7,12 @@
 #define A rel->r_addend
 #define B object->addr
 #define P (object->addr + rel->r_offset)
-#define S sym->st_value
+#define S sym_val
 
 int reloc(struct elf_object *object, Elf_Rela *rel) {
 	size_t sym_index = ELF_R_SYM(rel->r_info);
 	Elf_Sym *sym = NULL;
+	uintptr_t sym_val = 0;
 	if (sym_index != 0) {
 		if (sym_index >= object->symbols_count) {
 			dl_error("invalid symbol index");
@@ -21,16 +22,19 @@ int reloc(struct elf_object *object, Elf_Rela *rel) {
 		// must link
 		const char *name = get_str(object, obj_sym->st_name);
 		if (!name) return -1;
-		sym = dl_lookup(object, name, LOOKUP_DEPENCIES);
+		struct elf_object *found_object;
+		sym = dl_lookup(object, name, LOOKUP_DEPENCIES, &found_object);
 		if (!sym && obj_sym->st_shndx == SHN_UNDEF && ELF_ST_BIND(obj_sym->st_info) != STB_WEAK) {
 			dl_error("cannot resolve symbol");
 			return -1;
 		}
 		if (!sym) {
 			sym = obj_sym;
+			sym_val = obj_sym->st_value + found_object->addr;
 		} else if (ELF_ST_BIND(sym->st_info) == STB_WEAK && ELF_ST_BIND(obj_sym->st_info) == STB_GLOBAL) {
 			// cannot override global with weak
 			sym = obj_sym;
+			sym_val = obj_sym->st_value + found_object->addr;
 		}
 	}
 

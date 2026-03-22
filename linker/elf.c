@@ -184,7 +184,7 @@ static int handle_dynamics(struct elf_object *object) {
 	// HACK for environ
 	Elf_Sym *environ_sym = elf_lookup(object, "environ");
 	if (environ_sym && environ_sym->st_shndx != SHN_UNDEF) {
-		char ***environ_ptr = (void*)environ_sym->st_value;
+		char ***environ_ptr = (void*)(environ_sym->st_value + object->addr);
 		*environ_ptr = environ;
 	}
 
@@ -296,10 +296,11 @@ static void call_constructors(struct elf_object *object) {
 		init();
 	}
 	if (dyn_init_array && dyn_init_arraysz) {
-		func_t *init_array = (void*)(dyn_init_array->d_un.d_ptr + object->addr);
+		uintptr_t *init_array = (void*)(dyn_init_array->d_un.d_ptr + object->addr);
 		size_t count = dyn_init_arraysz->d_un.d_val / sizeof(func_t);
 		for (size_t i=0; i<count; i++) {
-			init_array[i]();
+			func_t func = (func_t)(init_array[i] + object->addr);
+			func();
 		}
 	}
 }
@@ -313,10 +314,11 @@ static void call_destructors(struct elf_object *object) {
 		fini();
 	}
 	if (dyn_fini_array && dyn_fini_arraysz) {
-		func_t *fini_array = (void*)(dyn_fini_array->d_un.d_ptr + object->addr);
+		uintptr_t *fini_array = (void*)(dyn_fini_array->d_un.d_ptr + object->addr);
 		size_t count = dyn_fini_arraysz->d_un.d_val / sizeof(func_t);
 		for (size_t i=0; i<count; i++) {
-			fini_array[i]();
+			func_t func = (func_t)(fini_array[i] + object->addr);
+			func();
 		}
 	}
 }
@@ -397,7 +399,7 @@ struct elf_object *elf_load(const char *path, int is_lib, int fd) {
 		goto close;
 	}
 	
-	call_constructors(object);
+	//call_constructors(object);
 	
 	close(file);
 

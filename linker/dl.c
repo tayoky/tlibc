@@ -173,13 +173,13 @@ void *dlsym(void *handle, const char *sym) {
 	if (handle == RTLD_DEFAULT) {
 		// first try the executable
 		Elf_Sym *ret = elf_lookup(program, sym);
-		if (ret) return (void*)ret->st_value;
+		if (ret) return (void*)(ret->st_value + program->addr);
 		// all library marked as global
 		struct elf_object *lib = cache_first;
 		while (lib) {
 			if (lib->flags & RTLD_GLOBAL) {
 				ret = elf_lookup(lib, sym);
-				if (ret) return (void*)ret->st_value;
+				if (ret) return (void*)(ret->st_value + lib->addr);
 			}
 			lib = lib->next;
 		}
@@ -331,6 +331,6 @@ int main(int argc, char **argv, char **envp) {
 	}
 
 	// emulate entry from kernel
-	abi_enter((void *)program->header.e_entry, auxv, auxv_size * sizeof(long));
+	abi_enter((void *)(program->header.e_entry + program->addr), auxv, auxv_size * sizeof(long));
 	return EXIT_FAILURE;
 }

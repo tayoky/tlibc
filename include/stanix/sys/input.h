@@ -94,7 +94,7 @@ struct input_request {
 #define INPUT_KEY_BACKSPACE    17000053
 #define INPUT_KEY_ENTER        17000054
 #define INPUT_KEY_DELETE       17000055
-#define INPUT_KEY_INERT        17000056
+#define INPUT_KEY_INSERT       17000056
 #define INPUT_KEY_HOME         17000057
 #define INPUT_KEY_END          17000058
 #define INPUT_KEY_ARROW_UP     17000059

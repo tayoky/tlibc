@@ -14,6 +14,6 @@
 typedef __PTRDIFF_TYPE__ ptrdiff_t;
 typedef __WCHAR_TYPE__ wchar_t;
 
-#define offsetof(struct_type,member) (size_t)&((struct struct_type *)0)->member
+#define offsetof(struct_type,member) ((size_t)&((struct_type *)0)->member)
 
 #endif

@@ -28,6 +28,8 @@ int sprintf(char * str,const char *fmt,...);
 int vsprintf(char * buf,const char *fmt,va_list args);
 int snprintf(char * str,size_t maxlen, const char *fmt,...);
 int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args);
+int dprintf(int fd, const char *fmt, ...);
+int vdprintf(int fd, const char *fmt, va_list args);
 int fprintf(FILE *stream, const char *fmt, ...);
 int vfprintf(FILE *stream, const char *fmt, va_list args);
 int printf(const char *fmt, ...);

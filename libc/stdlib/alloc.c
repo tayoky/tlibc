@@ -48,7 +48,7 @@ void *malloc(size_t amount){
 		return NULL;
 	}
 	//align amount
-	amount = (amount + 7) & ~7;
+	amount = (amount + 15) & ~15;
 	heap_segment *current_seg = heap.first_seg;
 
 	while (current_seg->lenght < amount || current_seg->magic != HEAP_SEG_MAGIC_FREE){

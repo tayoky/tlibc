@@ -21,7 +21,7 @@
 
 #define OUT_STR(str) {\
 	const char *ptr = str;\
-	while (*ptr) OUT(*str);\
+	while (*ptr) OUT(*(ptr++));\
 }
 
 static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int padding,char padding_char,int min,int high,char sign,int prefix){
@@ -92,12 +92,68 @@ static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int paddi
 	return count;
 }
 
-#define print_uint(...) tmp = _print_uint(__VA_ARGS__);{\
+#define print_uint(...) do {\
+	int tmp = _print_uint(__VA_ARGS__);\
 	count += tmp;\
 	if(maxlen && (size_t)tmp > maxlen - 1)tmp = maxlen - 1;\
 	if(buf)   buf    += tmp;\
 	if(maxlen)maxlen -= tmp;\
+} while(0);
+
+#if !defined(__LIBK__) && !defined(__DL_TLIBC__)
+static int _print_float(char *buf,size_t maxlen,long double number,int base,int padding,char padding_char,int precision,int high,int positive_sign,int alternate_form){
+	int count = 0;
+	if (isnan(number)) {
+		if (high) {
+			OUT_STR("NAN");
+		} else {
+			OUT_STR("nan");
+		}
+		return count;
+	}
+	if (number < 0) {
+		OUT('-');
+		number = -number;
+	} else if (positive_sign) {
+		OUT(positive_sign);
+	}
+	if (isinf(number)) {
+		if (high) {
+			OUT_STR("INFINITY");
+		} else {
+			OUT_STR("infinity");
+		}
+		return count;
+	}
+	long double integral;
+	if (number >= (long double)LLONG_MAX || number <= (long double)LLONG_MIN){\
+		integral = number;
+	} else {
+		integral = (long double)(long long)number;
+	}
+
+	// TODO : actually print the float
+	print_uint(buf, maxlen, integral, base, 0, 0, 1, high, 0, alternate_form);
+	if (precision != 0 || alternate_form) {
+		OUT('.');
+	}
+	long double decimal = number - integral;
+	for (int i=0; i<precision; i++) {
+		decimal *= base;
+	}
+	print_uint(buf, maxlen, decimal, base, 0, 0, precision, high, 0, 0);
+	return count;
 }
+
+#define print_float(...) do {\
+	int tmp = _print_float(__VA_ARGS__);\
+	count += tmp;\
+	if(maxlen && (size_t)tmp > maxlen - 1)tmp = maxlen - 1;\
+	if(buf)   buf    += tmp;\
+	if(maxlen)maxlen -= tmp;\
+} while (0);
+#endif
+
 #define T(var,type) var = va_arg(args,type);
 
 #define T_CAST(var,type) var = (type)va_arg(args,int);
@@ -114,7 +170,6 @@ static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int paddi
 
 int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 	int count = 0;
-	int tmp;
 	while(*fmt){
 		if(*fmt != '%'){
 			OUT(*fmt);
@@ -376,37 +431,7 @@ finish_flags:;
 			} else {
 				T(number, double);
 			}
-			if (number < 0) {
-				OUT('-');
-				number = -number;
-			}
-			if (isnan(number)) {
-				if (isupper(*fmt)) {
-					OUT_STR("NAN");
-				} else {
-					OUT_STR("nan");
-				}
-				break;
-			}
-			if (isinf(number)) {
-				if (isupper(*fmt)) {
-					OUT_STR("INFINITY");
-				} else {
-					OUT_STR("infinity");
-				}
-				break;
-			}
-			long double integral;
-			if (number >= (long double)LLONG_MAX || number <= (long double)LLONG_MIN){\
-				integral = number;
-			} else {
-				integral = (long double)(long long)number;
-			}
-
-			// TODO : actually print the float
-			if (precision != 0 || alternate_form) {
-				OUT('.');
-			}
+			print_float(buf, maxlen, number, 10, width*padding_sign, padding_char, precision, *fmt == 'F', positive_sign, alternate_form);
 			break;
 #endif
 		case '%':

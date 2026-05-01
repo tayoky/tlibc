@@ -101,7 +101,7 @@ static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int paddi
 } while(0);
 
 #if !defined(__LIBK__) && !defined(__DL_TLIBC__)
-static int _print_float(char *buf,size_t maxlen,long double number,int base,int padding,char padding_char,int precision,int high,int positive_sign,int alternate_form){
+static int _print_float(char *buf,size_t maxlen,long double number,int base,int padding,char padding_char,int precision,int high,int positive_sign,int alternate_form, int exponent){
 	int count = 0;
 	if (isnan(number)) {
 		if (high) {
@@ -431,7 +431,29 @@ finish_flags:;
 			} else {
 				T(number, double);
 			}
-			print_float(buf, maxlen, number, 10, width*padding_sign, padding_char, precision, *fmt == 'F', positive_sign, alternate_form);
+			print_float(buf, maxlen, number, 10, width*padding_sign, padding_char, precision, *fmt == 'F', positive_sign, alternate_form, 0);
+			break;
+		case 'e':
+		case 'E':
+			// default precision for float is 6
+			if (precision == -1) precision = 6;
+			if (lenght == LEN_BIG_L || lenght == LEN_LL) {
+				T(number, long double);
+			} else {
+				T(number, double);
+			}
+			print_float(buf, maxlen, number, 10, width*padding_sign, padding_char, precision, *fmt == 'E', positive_sign, alternate_form, 1);
+			break;
+		case 'g':
+		case 'G':
+			// default precision for float is 6
+			if (precision == -1) precision = 6;
+			if (lenght == LEN_BIG_L || lenght == LEN_LL) {
+				T(number, long double);
+			} else {
+				T(number, double);
+			}
+			print_float(buf, maxlen, number, 10, width*padding_sign, padding_char, precision, *fmt == 'G', positive_sign, alternate_form, 0);
 			break;
 #endif
 		case '%':

@@ -20,6 +20,8 @@
 #define F_DUPFD 0
 #define F_GETFD 1
 #define F_SETFD 2
+#define F_SETFL 3
+#define F_GETFL 3
 
 #define FD_CLOEXEC  0x10
 

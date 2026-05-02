@@ -40,27 +40,34 @@
 #ifndef __UINT64_TYPE__
 #define __UINT64_TYPE__ unsigned __INT64_TYPE__
 #endif
+#ifndef __INTMAX_TYPE__
+#define __INTMAX_TYPE__ long long
+#endif
+#ifndef __UINTMAX_TYPE__
+#define __UINTMAX_TYPE__ unsigned __INTMAX_TYPE__
+#endif
 #ifndef __PTRDIFF_TYPE__
 #ifdef __INTPTR_TYPE__
 #define __PTRDIFF_TYPE__ __INTPTR_TYPE__
 #else
 #define __PTRDIFF_TYPE__ long
 #endif
+#endif
 #ifndef __SIZE_TYPE__
 #define __SIZE_TYPE__ unsigned __PTRDIFF_TYPE__
 #endif
 
 // signed
-typedef signed char        int8_t;
-typedef signed short       int16_t;
-typedef signed int         int32_t;
-typedef signed long long   int64_t;
+typedef __INT8_TYPE__      int8_t;
+typedef __INT16_TYPE__     int16_t;
+typedef __INT32_TYPE__     int32_t;
+typedef __INT64_TYPE__     int64_t;
 
 // unsigned
-typedef unsigned char      uint8_t;
-typedef unsigned short     uint16_t;
-typedef unsigned int       uint32_t;
-typedef unsigned long long uint64_t;
+typedef __UINT8_TYPE__      uint8_t;
+typedef __UINT16_TYPE__     uint16_t;
+typedef __UINT32_TYPE__     uint32_t;
+typedef __UINT64_TYPE__     uint64_t;
 
 // now least
 
@@ -91,15 +98,12 @@ typedef unsigned int       uint_fast32_t;
 typedef unsigned long long uint_fast64_t;
 
 // max
-typedef int64_t  intmax_t;
-typedef uint64_t uintmax_t;
+typedef __INTMAX_TYPE__  intmax_t;
+typedef __UINTMAX_TYPE__ uintmax_t;
 
 //ptr
-#ifndef __intptr_t_defined
-#define __intptr_t_defined 1
 typedef __PTRDIFF_TYPE__ intptr_t;
 typedef __SIZE_TYPE__    uintptr_t;
-#endif
 
 // integer min limits
 #define INT8_MIN	-128
@@ -178,5 +182,7 @@ typedef __SIZE_TYPE__    uintptr_t;
 #define UINT32_C(x)	x ## U
 #define UINT64_C(x)	x ## ULL
 #define UINTMAX_C(x)	UINT64_C(x)
+
+#endif
 
 #endif

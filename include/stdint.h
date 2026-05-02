@@ -1,52 +1,96 @@
 
+// use TLIBC_ prefix to avoid collision with compiler stdint
+#ifndef _TLIBC_STDINT_H
+#define _TLIBC_STDINT_H
 
-//TCC don't provide stdint
-#ifndef __tinycc__
-#ifndef _STDINT_H
-#define _STDINT_H
+// TCC don't provide stdint
+#if !defined(__TINYC__) && defined(__has_include_next)
+#if __has_include_next(<stdint.h>)
+#define HAVE_COMPILER_STDINT
+#endif
+#endif
+
+#ifdef HAVE_COMPILER_STDINT
+#include_next <stdint.h>
+#else
 #include <stddef.h>
 
-//signed
+// fallback in case the compiler do not provide macro
+#ifndef __INT8_TYPE__
+#define __INT8_TYPE__ signed char
+#endif
+#ifndef __UINT8_TYPE__
+#define __UINT8_TYPE__ unsigned char
+#endif
+#ifndef __INT16_TYPE__
+#define __INT16_TYPE__ short
+#endif
+#ifndef __UINT16_TYPE__
+#define __UINT16_TYPE__ unsigned __INT16_TYPE__
+#endif
+#ifndef __INT32_TYPE__
+#define __INT32_TYPE__ int
+#endif
+#ifndef __UINT32_TYPE__
+#define __UINT32_TYPE__ unsigned __INT32_TYPE__
+#endif
+#ifndef __INT64_TYPE__
+#define __INT64_TYPE__ long long
+#endif
+#ifndef __UINT64_TYPE__
+#define __UINT64_TYPE__ unsigned __INT64_TYPE__
+#endif
+#ifndef __PTRDIFF_TYPE__
+#ifdef __INTPTR_TYPE__
+#define __PTRDIFF_TYPE__ __INTPTR_TYPE__
+#else
+#define __PTRDIFF_TYPE__ long
+#endif
+#ifndef __SIZE_TYPE__
+#define __SIZE_TYPE__ unsigned __PTRDIFF_TYPE__
+#endif
+
+// signed
 typedef signed char        int8_t;
 typedef signed short       int16_t;
 typedef signed int         int32_t;
 typedef signed long long   int64_t;
 
-//unsigned
+// unsigned
 typedef unsigned char      uint8_t;
 typedef unsigned short     uint16_t;
 typedef unsigned int       uint32_t;
 typedef unsigned long long uint64_t;
 
-//now least
+// now least
 
-//signed least
+// signed least
 typedef signed char        int_least8_t;
 typedef signed short       int_least16_t;
 typedef signed int         int_least32_t;
 typedef signed long long   int_least64_t;
 
-//unsigned least
+// unsigned least
 typedef unsigned char      uint_least8_t;
 typedef unsigned short     uint_least16_t;
 typedef unsigned int       uint_least32_t;
 typedef unsigned long long uint_least64_t;
 
-//now fast
+// now fast
 
-//signed fast
+// signed fast
 typedef signed char        int_fast8_t;
 typedef signed int         int_fast16_t;
 typedef signed int         int_fast32_t;
 typedef signed long long   int_fast64_t;
 
-//unsigned fast
+// unsigned fast
 typedef unsigned char      uint_fast8_t;
 typedef unsigned int       uint_fast16_t;
 typedef unsigned int       uint_fast32_t;
 typedef unsigned long long uint_fast64_t;
 
-//max
+// max
 typedef int64_t  intmax_t;
 typedef uint64_t uintmax_t;
 
@@ -114,7 +158,7 @@ typedef __SIZE_TYPE__    uintptr_t;
 #define UINTPTR_MAX	UINT64_MAX
 
 #ifndef __SIZE_MAX__
-#include <limits.h> //we are goinf to use SSIZE_MAX
+#include <limits.h> //we are going to use SSIZE_MAX
 #define __SIZE_MAX__ (SSIZE_MAX * 2 + 1)
 #endif
 #ifndef SIZE_MAX
@@ -135,7 +179,4 @@ typedef __SIZE_TYPE__    uintptr_t;
 #define UINT64_C(x)	x ## ULL
 #define UINTMAX_C(x)	UINT64_C(x)
 
-#endif
-#else
-#include_next <stdint.h>
 #endif

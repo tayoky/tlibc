@@ -1,5 +1,5 @@
-#ifndef SYS_TYPES_H
-#define SYS_TYPES_H
+#ifndef _SYS_TYPES_H
+#define _SYS_TYPES_H
 
 
 typedef long pid_t;

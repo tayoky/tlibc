@@ -1,5 +1,5 @@
-#ifndef INFO_H
-#define INFO_H
+#ifndef _INFO_H
+#define _INFO_H
 
 #define PATH_SEPARATOR ':'
 

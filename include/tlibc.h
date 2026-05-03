@@ -1,5 +1,5 @@
-#ifndef TLIBC_H
-#define TLIBC_H
+#ifndef _TLIBC_H
+#define _TLIBC_H
 
 //this is reserved for internal use
 //this should not be used by common program that use crt0.o

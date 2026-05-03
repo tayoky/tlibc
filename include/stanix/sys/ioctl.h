@@ -1,5 +1,5 @@
-#ifndef IOCTL_H
-#define IOCTL_H
+#ifndef _IOCTL_H
+#define _IOCTL_H
 
 #include <sys/types.h>
 

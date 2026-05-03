@@ -1,5 +1,5 @@
-#ifndef SYS_TIME_H
-#define SYS_TIME_H
+#ifndef _SYS_TIME_H
+#define _SYS_TIME_H
 
 #include <sys/type.h>
 

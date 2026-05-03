@@ -1,5 +1,5 @@
-#ifndef LIMITS_H
-#define LIMITS_H
+#ifndef _LIMITS_H
+#define _LIMITS_H
 
 
 //intergers limits

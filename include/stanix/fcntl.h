@@ -1,5 +1,5 @@
-#ifndef FCNTL_H
-#define FCNTL_H
+#ifndef _FCNTL_H
+#define _FCNTL_H
 
 #include <sys/type.h>
 #include <sys/types.h>

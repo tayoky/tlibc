@@ -1,5 +1,5 @@
-#ifndef MATH_H
-#define MATH_H
+#ifndef _MATH_H
+#define _MATH_H
 
 #include <limits.h>
 #include <float.h>

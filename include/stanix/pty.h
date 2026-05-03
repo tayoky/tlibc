@@ -1,5 +1,5 @@
-#ifndef PTY_H
-#define PTY_H
+#ifndef _PTY_H
+#define _PTY_H
 
 #include <termios.h>
 #include <sys/ioctl.h>

@@ -1,5 +1,5 @@
-#ifndef SYS_SIGNAL_H
-#define SYS_SIGNAL_H
+#ifndef _SYS_SIGNAL_H
+#define _SYS_SIGNAL_H
 
 #define _NSIG 33 //counting 0 (mask is 1-32)
 #define NSIG _NSIG

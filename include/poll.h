@@ -1,5 +1,5 @@
-#ifndef POLL_H
-#define POLL_H
+#ifndef _POLL_H
+#define _POLL_H
 
 struct pollfd {
 	int   fd;      //file descriptor

@@ -1,5 +1,5 @@
-#ifndef SYS_WAIT_H
-#define SYS_WAIT_H
+#ifndef _SYS_WAIT_H
+#define _SYS_WAIT_H
 
 #include <sys/types.h>
 

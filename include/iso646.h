@@ -1,5 +1,5 @@
-#ifndef ISO646_H
-#define ISO646_H
+#ifndef _ISO646_H
+#define _ISO646_H
 
 #ifndef and
 #define and &&

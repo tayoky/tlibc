@@ -1,5 +1,5 @@
-#ifndef STDBOOL_H
-#define STDBOOL_H
+#ifndef _STDBOOL_H
+#define _STDBOOL_H
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ > 201710L /* bool, true and false are keywords. */ 
 #else 

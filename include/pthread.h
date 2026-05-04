@@ -54,9 +54,9 @@ typedef struct __pthread_mutex {
 } pthread_mutex_t;
 #define PTHREAD_MUTEX_INITIALIZER {\
 	.attr = {\
-		.protocol = PTHREAD_PRIO_NONE,\
-		.type     = PTHREAD_MUTEX_DEFAULT,\
 		.pshared  = PTHREAD_PROCESS_PRIVATE,\
+		.type     = PTHREAD_MUTEX_DEFAULT,\
+		.protocol = PTHREAD_PRIO_NONE,\
 	},\
 	.lock_count = 0,\
 	.lock = 0,\

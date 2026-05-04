@@ -1,7 +1,7 @@
 #ifndef _CDEFS_H
 #define _CDEFS_H
 
-#ifdef __cpluscplus
+#ifdef __cplusplus
 #define _BEGIN_C_HEADER extern "C" {
 #define _END_C_HEADER   }
 // c++ does not have the restrict keywrod

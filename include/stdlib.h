@@ -62,7 +62,7 @@ extern char **environ;
 int system(const char *command);
 
 //tmp files
-#ifdef __cpluscplus
+#ifdef __cplusplus
 // template is a keyword in c++
 int mkostemp(char *_template, int flags);
 int mkstemp(char *_template);

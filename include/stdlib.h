@@ -17,8 +17,8 @@ int atexit(void (*func)(void));
 
 void *malloc(size_t amount);
 void free(void *ptr);
-void *calloc(size_t num,size_t size);
-void *realloc(void *ptr,size_t new_size);
+void *calloc(size_t num, size_t size);
+void *realloc(void *ptr, size_t new_size);
 
 void abort(void);
 
@@ -30,15 +30,15 @@ int atoi(const char *str);
 double atof(const char *str);
 
 #define strto(type,name) type name(const char *str, char **end,int base);
-strto(long,strtol)
-strto(long long,strtoll)
-strto(unsigned long,strtoul)
-strto(unsigned long long,strtoull)
+strto(long, strtol)
+strto(long long, strtoll)
+strto(unsigned long, strtoul)
+strto(unsigned long long, strtoull)
 #undef strto
 #define strtd(type,name) type name(const char *str, char **end);
-strtd(float,strtof)
-strtd(double,strtod)
-strtd(long double,strtold)
+strtd(float, strtof)
+strtd(double, strtod)
+strtd(long double, strtold)
 #undef strtd
 
 //math stuff
@@ -46,11 +46,11 @@ strtd(long double,strtold)
 int abs(int);
 long labs(long);
 long long llabs(long long);
-void qsort_r(void *base,size_t n,size_t size,int (*compar)(const void*,const void *,void *),void *arg);
-void qsort(void *base,size_t n,size_t size,int (*compar)(const void*,const void *));
-void *bsearch(const void *key, const void *base, size_t n, size_t size, int (*compar)(const void *,const void *));
+void qsort_r(void *base, size_t n, size_t size, int (*compar)(const void *, const void *, void *), void *arg);
+void qsort(void *base, size_t n, size_t size, int (*compar)(const void *, const void *));
+void *bsearch(const void *key, const void *base, size_t n, size_t size, int (*compar)(const void *, const void *));
 
-char *realpath(const char *path,char *resolved_path);
+char *realpath(const char *path, char *resolved_path);
 
 //environement variables
 
@@ -74,8 +74,9 @@ int mkstemp(char *template);
 #endif
 
 //wchar conversion
-int mbtowc(wchar_t *pwcs,const char *str,size_t n);
-size_t mbstowcs(wchar_t *pwcs,const char *str,size_t n);
+int mbtowc(wchar_t *pwcs, const char *str, size_t n);
+size_t mbstowcs(wchar_t *pwcs, const char *str, size_t n);
+int mblen(const char *str, size_t n);
 
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1

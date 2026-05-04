@@ -50,7 +50,7 @@ typedef struct __pthread_mutexattr {
 typedef struct __pthread_mutex {
 	pthread_mutexattr_t attr;
 	size_t lock_count;
-	atomic_long lock;
+	volatile long lock;
 } pthread_mutex_t;
 #define PTHREAD_MUTEX_INITIALIZER {\
 	.attr = {\
@@ -62,10 +62,10 @@ typedef struct __pthread_mutex {
 	.lock = 0,\
 }
 
-typedef atomic_flag pthread_once_t;
+typedef volatile int pthread_once_t;
 #define PTHREAD_ONCE_INIT ATOMIC_FLAG_INIT
 
-typedef atomic_flag pthread_spinlock_t;
+typedef volatile int pthread_spinlock_t;
 typedef pid_t pthread_t;
 
 // TODO : implement these

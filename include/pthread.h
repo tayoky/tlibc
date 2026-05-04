@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <stddef.h>
-#include <stdnoreturn.h>
+#include <tlibcnoreturn.h>
 #include <sched.h>
 
 #ifdef __STDC_NO_ATOMICS__
@@ -77,7 +77,7 @@ typedef void *pthread_barrier_t;
 
 int pthread_create(pthread_t *thread,const pthread_attr_t *attr,void *(*start_routine)(void *),void *arg);
 int pthread_join(pthread_t thread, void **arg);
-noreturn void pthread_exit(void *retval);
+TLIBC_NORETURN void pthread_exit(void *retval);
 int pthread_equal(pthread_t t1, pthread_t t2);
 pthread_t pthread_self(void);
 int pthread_once(pthread_once_t *once_control, void (*init_routine)(void));

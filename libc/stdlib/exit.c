@@ -1,4 +1,4 @@
-#include <stdnoreturn.h>
+#include <tlibcnoreturn.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <limits.h>
@@ -15,7 +15,7 @@ int atexit(void (*func)(void)){
 	return 0;
 }
 
-noreturn void exit(int status){
+TLIBC_NORETURN void exit(int status){
 	for(int i=atexit_count-1; i>=0; i--){
 		atexit_funcs[i]();
 	}

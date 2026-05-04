@@ -1,7 +1,7 @@
 #ifndef _STDLIB_H
 #define _STDLIB_H
 
-#include <stdnoreturn.h> 
+#include <tlibcnoreturn.h>
 #include <stddef.h>
 #include <limits.h>
 
@@ -11,8 +11,8 @@ void srand(unsigned int seed);
 
 #define RAND_MAX INT_MAX
 
-noreturn void _Exit(int status);
-noreturn void exit(int status);
+TLIBC_NORETURN void _Exit(int status);
+TLIBC_NORETURN void exit(int status);
 int atexit(void (*func)(void));
 
 void *malloc(size_t amount);
@@ -62,9 +62,16 @@ extern char **environ;
 int system(const char *command);
 
 //tmp files
+#ifdef __cpluscplus
+// template is a keyword in c++
+int mkostemp(char *_template, int flags);
+int mkstemp(char *_template);
+int mkstemp(char *_template);
+#else
 int mkostemp(char *template, int flags);
 int mkstemp(char *template);
 int mkstemp(char *template);
+#endif
 
 //wchar conversion
 int mbtowc(wchar_t *pwcs,const char *str,size_t n);

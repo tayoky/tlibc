@@ -3,7 +3,7 @@
 
 #include <sys/type.h>
 #include <sys/types.h>
-#include <stdnoreturn.h>
+#include <tlibcnoreturn.h>
 #include <fcntl.h>
 
 //we can't include stdint because of namespace pollution
@@ -48,7 +48,7 @@ int dup2(int oldfd, int newfd);
 
 void *sbrk(intptr_t increment);
 
-noreturn void _exit(int status);
+TLIBC_NORETURN void _exit(int status);
 
 int close(int fd);
 

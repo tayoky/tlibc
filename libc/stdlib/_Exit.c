@@ -1,7 +1,7 @@
-#include <stdnoreturn.h>
+#include <tlibcnoreturn.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-noreturn void _Exit(int status){
+TLIBC_NORETURN void _Exit(int status){
 	_exit(status);
 }

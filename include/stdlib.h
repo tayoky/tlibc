@@ -41,8 +41,19 @@ strtd(double, strtod)
 strtd(long double, strtold)
 #undef strtd
 
-//math stuff
+// math stuff
 
+typedef struct {
+    int quot;
+    int rem;
+} div_t;
+
+typedef struct {
+    long quot;
+    long rem;
+} ldiv_t;
+div_t div(int number, int denom);
+ldiv_t ldiv(long int number, long int denom);
 int abs(int);
 long labs(long);
 long long llabs(long long);

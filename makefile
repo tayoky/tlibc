@@ -92,7 +92,7 @@ endif
 
 define install_lib
 	@echo "[install $(1)]"
-	@cp $(1) "$(PREFIX)/lib/$(1)"
+	@cp $(1) "$(DESTDIR)/$(PREFIX)/lib/$(1)"
 endef
 
 MAKE_DIRS = @mkdir -p $(shell dirname $@)
@@ -166,30 +166,31 @@ $(BUILDDIR)/shared-%.o : CFLAGS += $(DYNFLAGS)
 $(BUILDDIR)/linker/% : CFLAGS += $(DLFLAGS)
 
 clean : 
-	rm -fr $(BUILDDIR)
+	rm -fr "$(BUILDDIR)"
 
 
 #install the header
 header :
-	@mkdir -p "$(PREFIX)/include/sys"
-	@$(foreach FILE , $(wildcard include/*.h) , cat prologue.h $(FILE) epilogue.h > "$(PREFIX)/$(FILE)" && echo "[installing $(FILE:include/%=%)]" &&) true
-	@$(foreach FILE , $(shell find include/$(TARGET) -name "*.h") , cat prologue.h $(FILE) epilogue.h > $(PREFIX)/include/$(FILE:include/$(TARGET)/%=%) && echo "[installing $(FILE:include/$(TARGET)/%=%)]" &&) true
-	@cp include/_cdefs.h $(PREFIX)/include/sys/cdefs.h
+	@echo "[installing tlibc headers]"
+	@mkdir -p "$(DESTDIR)/$(PREFIX)/include/sys"
+	@$(foreach FILE , $(wildcard include/*.h) , cat prologue.h $(FILE) epilogue.h > "$(DESTDIR)/$(PREFIX)/$(FILE)" &&) true
+	@$(foreach FILE , $(shell find include/$(TARGET) -name "*.h") , cat prologue.h $(FILE) epilogue.h > "$(DESTDIR)/$(PREFIX)/include/$(FILE:include/$(TARGET)/%=%)" &&) true
+	@cp include/_cdefs.h "$(DESTDIR)/$(PREFIX)/include/sys/cdefs.h"
 
 install-dynamic : header
-	@mkdir -p $(PREFIX)/lib
+	@mkdir -p "$(DESTDIR)/$(PREFIX)/lib"
 	$(call install_lib,libc.so)
 	$(call install_lib,libm.so)
 	$(call install_lib,ld-tlibc.so)
 
 install : $(INSTALL_TARGET)
-	@mkdir -p $(PREFIX)/lib
+	@mkdir -p "$(DESTDIR)/$(PREFIX)/lib"
 	@echo "[install crti.o]"
-	@cp $(BUILDDIR)/crt/$(ARCH)/crti.o $(PREFIX)/lib
+	@cp "$(BUILDDIR)/crt/$(ARCH)/crti.o" "$(DESTDIR)/$(PREFIX)/lib"
 	@echo "[install crtn.o]"
-	@cp $(BUILDDIR)/crt/$(ARCH)/crtn.o $(PREFIX)/lib
+	@cp "$(BUILDDIR)/crt/$(ARCH)/crtn.o" "$(DESTDIR)/$(PREFIX)/lib"
 	@echo "[install crt0.o]"
-	@cp $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o $(PREFIX)/lib/crt0.o
+	@cp "$(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o" "$(DESTDIR)/$(PREFIX)/lib/crt0.o"
 	$(call install_lib,libc.a)
 	$(call install_lib,libm.a)
 	$(call install_lib,libpthread.a)

@@ -5,6 +5,7 @@
 #include <sys/time.h>
 #include <stddef.h>
 #include <stdnoreturn.h>
+#include <sched.h>
 
 #ifdef __STDC_NO_ATOMICS__
 //we are cooked
@@ -51,6 +52,15 @@ typedef struct __pthread_mutex {
 	size_t lock_count;
 	atomic_long lock;
 } pthread_mutex_t;
+#define PTHREAD_MUTEX_INITIALIZER {\
+	.attr = {\
+		.protocol = PTHREAD_PRIO_NONE,\
+		.type     = PTHREAD_MUTEX_DEFAULT,\
+		.pshared  = PTHREAD_PROCESS_PRIVATE,\
+	},\
+	.lock_count = 0,\
+	.lock = 0,\
+}
 
 typedef atomic_flag pthread_once_t;
 #define PTHREAD_ONCE_INIT ATOMIC_FLAG_INIT
@@ -72,6 +82,7 @@ int pthread_equal(pthread_t t1, pthread_t t2);
 pthread_t pthread_self(void);
 int pthread_once(pthread_once_t *once_control, void (*init_routine)(void));
 int pthread_detach(pthread_t thread);
+int pthread_cancel(pthread_t thread);
 
 int pthread_attr_init(pthread_attr_t *attr);
 int pthread_attr_destroy(pthread_attr_t *attr);

@@ -1,4 +1,9 @@
-#define STUB(name) int name(){return 0;}
+#include <stdio.h>
+
+#define STUB(name) int name(){\
+    fprintf(stderr, "tlibc : STUB " #name " was called\n");\
+    return 0;\
+}
 
 STUB(utime)
 STUB(alarm)
@@ -13,6 +18,7 @@ STUB(pthread_cond_signal)
 STUB(pthread_cond_timedwait)
 STUB(pthread_cond_wait)
 STUB(pthread_detach)
+STUB(pthread_cancel)
 STUB(pthread_key_create)
 STUB(pthread_key_delete)
 STUB(pthread_setspecific)

@@ -30,7 +30,7 @@ typedef struct __pthread_condattr {
 typedef struct __pthread_cond {
 	pthread_condattr_t attr;
 } pthread_cond_t;
-#define PTHREAD_COND_INITALIZER {{0, CLOCK_MONOTONIC}}
+#define PTHREAD_COND_INITIALIZER {{0, CLOCK_MONOTONIC}}
 
 typedef struct __pthread_mutexattr {
 	int pshared;

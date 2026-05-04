@@ -20,6 +20,7 @@ struct tm {
 };
 
 time_t time(time_t * tloc);
+double  difftime(time_t time1, time_t time0);
 struct tm *gmtime(const time_t *clock);
 struct tm *gmtime_r(const time_t *clock, struct tm *tm);
 struct tm *localtime(const time_t *clock);

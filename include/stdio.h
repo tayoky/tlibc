@@ -82,6 +82,7 @@ int ungetc(int c,FILE *stream);
 
 int fflush(FILE *stream);
 int setvbuf(FILE *stream, char *buf, int type, size_t size);
+void setbuf(FILE *stream, char *buf);
 
 int rename(const char *oldpath, const char *newpath);
 int remove(const char *pathname);

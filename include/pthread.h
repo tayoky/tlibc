@@ -66,7 +66,7 @@ typedef struct __pthread_mutex {
 }
 
 typedef TLIBC_ATOMIC_INT pthread_once_t;
-#define PTHREAD_ONCE_INIT ATOMIC_FLAG_INIT
+#define PTHREAD_ONCE_INIT 0
 
 typedef TLIBC_ATOMIC_INT pthread_spinlock_t;
 typedef pid_t pthread_t;

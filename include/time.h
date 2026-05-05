@@ -32,6 +32,7 @@ char *ctime_r(const time_t *clock, char *buf);
 time_t mktime(struct tm *);
 int clock_gettime(clockid_t clock_id, struct timespec *tp);
 int clock_settime(clockid_t clock_id, struct timespec *tp);
+clock_t clock(void);
 int nanosleep(const struct timespec *, struct timespec *);
 void tzset(void);
 size_t strftime(char *, size_t, const char *, const struct tm *);
@@ -41,5 +42,7 @@ size_t strftime_l(char *buf, size_t size, const char *fmt, const struct tm *tm,l
 extern char *tzname[2];
 extern long timezone;
 extern int daylight;
+
+#define CLOCKS_PER_SEC 1000000
 
 #endif

@@ -6,6 +6,7 @@
 }
 
 STUB(utime)
+STUB(clock)
 STUB(alarm)
 STUB(popen)
 STUB(pclose)

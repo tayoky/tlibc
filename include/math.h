@@ -55,6 +55,9 @@ ffunc(acos)
 ffunc(asin)
 ffunc(atan)
 ffunc2(atan2)
+ffunc(cosh)
+ffunc(sinh)
+ffunc(tanh)
 
 ffunc2(fmin)
 ffunc2(fmax)
@@ -69,13 +72,24 @@ ifunc(long long, llrint)
 
 ffunc(sqrt)
 
+ffunc(log)
 ffunc(log2)
+ffunc(log10)
 
 float ldexpf(float a,int exp);
 double ldexp(double a,int exp);
 long double ldexpl(long double a,int exp);
 
+double frexp(double num, int *exp);
+float frexpf(float num, int *exp);
+long double frexpl(long double num, int *exp);
+
+double modf(double x, double *iptr);
+float modff(float value, float *iptr);
+long double modfl(long double value, long double *iptr);
+
 ffunc2(pow)
+ffunc(exp)
 
 #undef ifunc
 #undef ffunc

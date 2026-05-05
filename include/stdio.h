@@ -7,19 +7,6 @@
 //maybee should be equal to PATH_MAX from limits.h ???
 #define FILENAME_MAX 256
 
-struct _FILE{
-	struct _FILE *next;
-	struct _FILE *prev;
-	char *buf;
-	size_t bufsize;
-	size_t usedsize;
-	unsigned long error;
-	int fd;
-	int eof;
-	int unget;
-	int buftype;
-	int internalbuf;
-};
 typedef struct _FILE FILE;
 
 typedef size_t fpos_t;

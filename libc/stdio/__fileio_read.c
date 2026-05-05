@@ -1,7 +1,7 @@
-#include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
 #include <stdio.h>
+#include <stdio-internal.h>
 
 ssize_t __fileio_read(FILE *stream, void *buf, size_t count) {
 	if(!stream){

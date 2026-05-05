@@ -1,7 +1,7 @@
 #include <stdio.h>
+#include <stdio-internal.h>
 #include <string.h>
 
-int fputs(const char *str,FILE *stream){
-	stream->error = 0;
-	return !fwrite(str,sizeof(char),strlen(str),stream) && stream->error ? -1 : 0;
+int fputs(const char *str, FILE *stream){
+	return __fileio_write(stream, str, strlen(str)) < 0 ? -1 : 0;
 }

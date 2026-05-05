@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdio-internal.h>
 
 int ungetc(int c,FILE *stream){
 	//TODO : move position indicator

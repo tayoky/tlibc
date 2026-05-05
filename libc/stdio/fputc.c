@@ -1,7 +1,5 @@
-#include <sys/types.h>
 #include <stdio.h>
-
-ssize_t __fileio_write(FILE *stream, const void *buf, size_t count);
+#include <stdio-internal.h>
 
 int fputc(int lc, FILE *stream) {
 	unsigned char c = (unsigned char)lc;

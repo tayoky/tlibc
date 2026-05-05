@@ -1,7 +1,7 @@
 #include <stdio.h>
+#include <stdio-internal.h>
 #include <unistd.h>
 #include <errno.h>
-#undef errno
 
 int fseek(FILE *stream, long int offset, int origin){
 	if(!stream) return __set_errno(-EBADF);

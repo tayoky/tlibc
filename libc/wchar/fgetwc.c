@@ -1,5 +1,6 @@
 #include <wchar.h>
 #include <stdio.h>
+#include <stdio-internal.h>
 #include <limits.h>
 #include <errno.h>
 

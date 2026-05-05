@@ -1,11 +1,10 @@
 #include <stdio.h>
+#include <stdio-internal.h>
 #include <stdarg.h>
 
 #ifndef PRINTF_MAX
 #define PRINTF_MAX 4096
 #endif
-
-ssize_t __fileio_write(FILE *stream, const void *buf, size_t count);
 
 int vfprintf(FILE *stream, const char *fmt, va_list args){
 	char buf[PRINTF_MAX];

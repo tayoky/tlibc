@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdio-internal.h>
 #include <errno.h>
 
 FILE *__create_stream(void);

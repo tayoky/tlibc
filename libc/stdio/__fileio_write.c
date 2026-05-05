@@ -1,8 +1,8 @@
-#include <sys/types.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
+#include <stdio-internal.h>
 
 ssize_t __fileio_write(FILE *stream, const void *buf, size_t count) {
 	if (!stream) {

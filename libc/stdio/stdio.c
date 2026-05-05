@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdio-internal.h>
 
 static FILE _stdin = {
 	.fd = 0,

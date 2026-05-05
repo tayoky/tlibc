@@ -7,11 +7,14 @@
 #include <tlibcnoreturn.h>
 #include <sched.h>
 
-#ifdef __STDC_NO_ATOMICS__
-//we are cooked
-#error "no atomic functions"
+#if defined(__STDC_NO_ATOMICS__) || defined(__cplusplus)
+// stdatomic in c++ is kind of broken
+#define TLIBC_ATOMIC_INT  volatile int
+#define TLIBC_ATOMIC_LONG volatile long
 #else
 #include <stdatomic.h>
+#define TLIBC_ATOMIC_INT  atomic_int
+#define TLIBC_ATOMIC_LONG atomic_long
 #endif
 
 typedef struct __pthread_attr {
@@ -50,7 +53,7 @@ typedef struct __pthread_mutexattr {
 typedef struct __pthread_mutex {
 	pthread_mutexattr_t attr;
 	size_t lock_count;
-	volatile long lock;
+	TLIBC_ATOMIC_LONG lock;
 } pthread_mutex_t;
 #define PTHREAD_MUTEX_INITIALIZER {\
 	.attr = {\
@@ -62,10 +65,10 @@ typedef struct __pthread_mutex {
 	.lock = 0,\
 }
 
-typedef volatile int pthread_once_t;
+typedef TLIBC_ATOMIC_INT pthread_once_t;
 #define PTHREAD_ONCE_INIT ATOMIC_FLAG_INIT
 
-typedef volatile int pthread_spinlock_t;
+typedef TLIBC_ATOMIC_INT pthread_spinlock_t;
 typedef pid_t pthread_t;
 
 // TODO : implement these

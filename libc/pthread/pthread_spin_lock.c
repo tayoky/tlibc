@@ -5,6 +5,6 @@
 //TODO : maybee yeld
 
 int pthread_spin_lock(pthread_spinlock_t *lock){
-    while(atomic_flag_test_and_set(lock));
+    while(atomic_exchange(lock, 1));
     return 0;
 }

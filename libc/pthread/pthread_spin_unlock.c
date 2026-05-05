@@ -2,6 +2,6 @@
 #include <stdatomic.h>
 
 int pthread_spin_unlock(pthread_spinlock_t *lock){
-    atomic_flag_clear(lock);
+    atomic_store(lock, 0);
     return 0;
 }

@@ -8,11 +8,19 @@ typedef float float_t;
 typedef double double_t;
 
 //macro
-#define fpclassify(x)
+
+// on GCC we can use builtins
+#define fpclassify(x) __builtin_fpclassify(FP_NAN, FP_INFINITE, FP_NORMAL, FP_SUBNORMAL, FP_ZERO, x)
 #define isfinite(x) __builtin_isfinite(x)
 #define isinf(x) __builtin_isinf_sign(x)
 #define isnan(x) __builtin_isnan(x)
 #define isnormal(x)
+
+#define FP_NAN       0
+#define FP_INFINITE  1
+#define FP_NORMAL    2
+#define FP_SUBNORMAL 3
+#define FP_ZERO      4
 
 //builtin are only faster on GCC
 #if defined(__GNUC__) && !defined(__clang__)

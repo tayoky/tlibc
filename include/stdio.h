@@ -9,7 +9,21 @@
 
 typedef struct _FILE FILE;
 
-typedef size_t fpos_t;
+#ifdef __TLIBC__
+struct __fpos {
+	size_t offset;
+};
+#else
+// we want fpos_t to be opaque but apps need to know it's size
+struct __fpos {
+	long xjdjen;
+	long xuxufj;
+	long zuzjdb;
+	long zuzud;
+};
+#endif
+
+typedef struct __fpos fpos_t;
 
 int sprintf(char * str,const char *fmt,...);
 int vsprintf(char * buf,const char *fmt,va_list args);
@@ -40,9 +54,11 @@ size_t fwrite(const void * ptr, size_t size, size_t n, FILE *stream);
 int fileno(FILE *stream);
 
 //seek func
-int fseek(FILE *stream, long int offset, int origin);
-long int ftell(FILE *stream);
+int fseek(FILE *stream, long offset, int origin);
+long ftell(FILE *stream);
 void rewind(FILE *stream);
+int fgetpos(FILE *stream, fpos_t *pos);
+int fsetpos(FILE *stream, fpos_t *pos);
 
 //put/get
 int fgetc(FILE *stream);

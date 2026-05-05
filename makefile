@@ -65,7 +65,8 @@ CFLAGS += -Wall \
 	-ffreestanding \
 	-I include \
 	-I include/$(TARGET) \
-	-D$(ARCH)=1
+	-D$(ARCH)=1 \
+	-D__TLIBC__
 
 STATICFLAGS = -fno-PIC
 DYNFLAGS = -fPIC -D__DYNAMIC__=1

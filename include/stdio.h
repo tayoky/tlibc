@@ -25,10 +25,10 @@ struct __fpos {
 
 typedef struct __fpos fpos_t;
 
-int sprintf(char * str,const char *fmt,...);
-int vsprintf(char * buf,const char *fmt,va_list args);
-int snprintf(char * str,size_t maxlen, const char *fmt,...);
-int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args);
+int sprintf(char *str, const char *fmt, ...);
+int vsprintf(char *buf, const char *fmt, va_list args);
+int snprintf(char *str, size_t maxlen, const char *fmt, ...);
+int vsnprintf(char *buf, size_t maxlen, const char *fmt, va_list args);
 int dprintf(int fd, const char *fmt, ...);
 int vdprintf(int fd, const char *fmt, va_list args);
 int fprintf(FILE *stream, const char *fmt, ...);
@@ -36,19 +36,21 @@ int vfprintf(FILE *stream, const char *fmt, va_list args);
 int printf(const char *fmt, ...);
 int vprintf(const char *fmt, va_list args);
 
-int sscanf(const char *buf,const char *fmt,...);
-int vsscanf(const char *buf,const char *fmt,va_list args);
-int fscanf(FILE *stream,const char *fmt,...);
-int vfscanf(FILE *stream,const char *fmt,va_list args);
+int sscanf(const char *buf, const char *fmt, ...);
+int vsscanf(const char *buf, const char *fmt, va_list args);
+int fscanf(FILE *stream, const char *fmt, ...);
+int vfscanf(FILE *stream, const char *fmt, va_list args);
+int vscanf(const char *fmt, va_list args);
+int scanf(const char *fmt, ...);
 
 
-FILE *fopen(const char *path,const char *mode);
-FILE *freopen(const char *pathname,const char *mode,FILE *stream);
-FILE *fdopen(int handle,const char *type);
+FILE *fopen(const char *path, const char *mode);
+FILE *freopen(const char *pathname, const char *mode, FILE *stream);
+FILE *fdopen(int handle, const char *type);
 FILE *tmpfile(void);
 int fclose(FILE *stream);
-size_t fread(void * ptr, size_t size, size_t n, FILE *stream);
-size_t fwrite(const void * ptr, size_t size, size_t n, FILE *stream);
+size_t fread(void *ptr, size_t size, size_t n, FILE *stream);
+size_t fwrite(const void *ptr, size_t size, size_t n, FILE *stream);
 
 
 int fileno(FILE *stream);
@@ -64,12 +66,12 @@ int fsetpos(FILE *stream, fpos_t *pos);
 int fgetc(FILE *stream);
 int getc(FILE *stream);
 int getchar(void);
-char *fgets (char *string, int n, FILE *stream);
+char *fgets(char *string, int n, FILE *stream);
 char *gets(char *buffer);
-int fputc(int c,FILE *stream);
-int putc(int c,FILE *stream);
+int fputc(int c, FILE *stream);
+int putc(int c, FILE *stream);
 int putchar(int c);
-int fputs(const char *string,FILE *stream);
+int fputs(const char *string, FILE *stream);
 int puts(const char *string);
 
 void clearerr(FILE *stream);
@@ -77,7 +79,7 @@ int feof(FILE *stream);
 int ferror(FILE *stream);
 void perror(const char *string);
 
-int ungetc(int c,FILE *stream);
+int ungetc(int c, FILE *stream);
 
 #define _IONBF 0
 #define _IOFBF 1

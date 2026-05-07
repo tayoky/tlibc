@@ -3,7 +3,7 @@
 . ./tconf.sh
 
 # defaults
-DYNAMIC=no
+SHARED=no
 test -z "$SYSROOT" && SYSROOT=$(realpath ./sysroot)
 
 tconf_init "$@"
@@ -18,4 +18,4 @@ tconf_check_attribute "$CC" "weak"
 ARCH=${HOST%%-*}
 
 tconf_fini
-echo "DYNAMIC=$DYNAMIC" >> config.mk
+echo "SHARED=$SHARED" >> config.mk

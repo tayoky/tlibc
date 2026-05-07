@@ -81,14 +81,14 @@ DLFLAGS = -D__DL_TLIBC__=1 -fPIC -mgeneral-regs-only -fvisibility=hidden
 
 ALL = libc.a libk.a libm.a libpthread.a libdl.a $(BUILDDIR)/crt/$(ARCH)/crti.o $(BUILDDIR)/crt/$(ARCH)/crtn.o $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
 
-ifeq ($(DYNAMIC),yes)
+ifeq ($(SHARED),yes)
 	ALL += libc.so libm.so ld-tlibc.so
 endif
 
 INSTALL_TARGET = header all
 
-ifeq ($(DYNAMIC),yes)
-	INSTALL_TARGET += install-dynamic
+ifeq ($(SHARED),yes)
+	INSTALL_TARGET += install-shared
 endif
 
 define install_lib
@@ -178,7 +178,7 @@ header :
 	@$(foreach FILE , $(shell find include/$(TARGET) -name "*.h") , cat prologue.h $(FILE) epilogue.h > "$(DESTDIR)/$(PREFIX)/include/$(FILE:include/$(TARGET)/%=%)" &&) true
 	@cp include/_cdefs.h "$(DESTDIR)/$(PREFIX)/include/sys/cdefs.h"
 
-install-dynamic : header
+install-shared : header
 	@mkdir -p "$(DESTDIR)/$(PREFIX)/lib"
 	$(call install_lib,libc.so)
 	$(call install_lib,libm.so)
@@ -201,4 +201,4 @@ config.mk :
 	$(error run ./configure before running make)
 .mk :
 
-.PHONY : all install install-dynamic header clean
+.PHONY : all install install-shared header clean

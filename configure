@@ -3,8 +3,8 @@
 . ./tconf.sh
 
 # defaults
-SHARED=no
-test -z "$SYSROOT" && SYSROOT=$(realpath ./sysroot)
+: ${SHARED:=no}
+: ${SYSROOT=./sysroot}
 
 tconf_init "$@"
 

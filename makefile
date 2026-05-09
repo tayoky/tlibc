@@ -117,7 +117,7 @@ libm.a : $(M_OBJ)
 	$(BUILD_ARCHIVE)
 
 ld-tlibc.so : $(DL_OBJ) $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
-	$(CC) $(DLFLAGS) -nostdlib -o $@ $^ -shared -static-libgcc -Wl,--no-dynamic-linker,-z,now,-soname,ld-tlibc.so
+	$(CC) $(DLFLAGS) -nostdlib -shared -o $@ $^ -static-libgcc -Wl,--no-dynamic-linker,-z,now,-soname,ld-tlibc.so,-Bsymbolic,-e,_start
 
 libc.so : $(C_SHARED_OBJ) ld-tlibc.so
 	$(CC) $(DYNFLAGS) $(SOFLAGS) -Wl,-soname,libc.so -o $@ $^

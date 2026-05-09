@@ -117,7 +117,7 @@ libm.a : $(M_OBJ)
 	$(BUILD_ARCHIVE)
 
 ld-tlibc.so : $(DL_OBJ) $(BUILDDIR)/crt/$(ARCH)/crt0-$(TARGET).o
-	$(CC) $(DLFLAGS) -nostdlib -shared -o $@ $^ -static-libgcc -Wl,--no-dynamic-linker,-z,now,-soname,ld-tlibc.so,-Bsymbolic,-e,_start
+	$(CC) $(DLFLAGS) -v -nostdlib -shared -o $@ $^ -static-libgcc -Wl,--no-dynamic-linker,-z,now,-soname,ld-tlibc.so,-Bsymbolic,-e,_start
 
 libc.so : $(C_SHARED_OBJ) ld-tlibc.so
 	$(CC) $(DYNFLAGS) $(SOFLAGS) -Wl,-soname,libc.so -o $@ $^
@@ -178,7 +178,7 @@ header :
 	@$(foreach FILE , $(shell find include/$(TARGET) -name "*.h") , cat prologue.h $(FILE) epilogue.h > "$(DESTDIR)/$(PREFIX)/include/$(FILE:include/$(TARGET)/%=%)" &&) true
 	@cp include/_cdefs.h "$(DESTDIR)/$(PREFIX)/include/sys/cdefs.h"
 
-install-shared : header
+install-shared : all header
 	@mkdir -p "$(DESTDIR)/$(PREFIX)/lib"
 	$(call install_lib,libc.so)
 	$(call install_lib,libm.so)

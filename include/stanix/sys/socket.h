@@ -9,6 +9,9 @@
 #define SOCK_SEQPACKET 3
 #define SOCK_RAW       4
 
+#define SOCK_NONBLOCK 8
+#define SOCK_CLOEXEC  16
+
 typedef unsigned int sa_family_t;
 typedef size_t socklen_t;
 

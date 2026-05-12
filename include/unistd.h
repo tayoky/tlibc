@@ -5,13 +5,7 @@
 #include <sys/types.h>
 #include <tlibcnoreturn.h>
 #include <fcntl.h>
-
-//we can't include stdint because of namespace pollution
-#ifndef __intptr_t_defined
-#define __intptr_t_defined 1
-typedef __PTRDIFF_TYPE__ intptr_t;
-typedef __SIZE_TYPE__    uintptr_t;
-#endif
+#include <stdint.h>
 
 #ifndef SEEK_SET
 #define SEEK_SET 0

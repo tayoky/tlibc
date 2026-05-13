@@ -4,6 +4,7 @@
 #build
 *.a
 *.so
+build
 
 #sysroot
 sysroot/*
@@ -12,3 +13,4 @@ sysroot/*
 config.mk
 config.h
 tconf
+Makefile

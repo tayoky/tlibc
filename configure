@@ -3,6 +3,7 @@
 . ./tconf.sh
 
 # defaults
+: ${SHARED:=static}
 : ${SHARED:=no}
 : ${SYSROOT=./sysroot}
 
@@ -18,4 +19,7 @@ tconf_check_attribute "$CC" "weak"
 ARCH=${HOST%%-*}
 
 tconf_fini
-echo "SHARED=$SHARED" >> config.mk
+tconf_echo_conf "STATIC" "$STATIC" >> config.mk
+tconf_echo_conf "SHARED" "$STATIC" >> config.mk
+
+./tmakegen

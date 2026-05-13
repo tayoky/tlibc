@@ -42,8 +42,6 @@ void __init_tlibc(long *stack, main_t main) {
 	// the dynamic linker cannot use static stdio
 	// because it cannot have reloc
 	__init_stdio();
-#else
-	__init_heap();
 #endif
 
 	// the dynamic linker need environ access

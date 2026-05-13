@@ -19,7 +19,8 @@ typedef struct {
 	uintptr_t start;
 	uintptr_t lenght;
 	heap_segment *first_seg;
-}heap_info;
+	int initalized;
+} heap_info;
 
 heap_info heap;
 
@@ -28,7 +29,7 @@ heap_info heap;
 #define HEAP_SEG_MAGIC_ALLOCATED 0x0505
 
 
-void __init_heap(void){
+static void init_heap(void){
 	//get the heap start and initial size
 	heap.start = (uintptr_t)brk_ptr;
 	mmap(brk_ptr,PAGE_SIZE,PROT_WRITE | PROT_READ,MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED,0,0);
@@ -47,6 +48,8 @@ void *malloc(size_t amount){
 	if(!amount){
 		return NULL;
 	}
+	if (!heap.initalized) init_heap();
+
 	//align amount
 	amount = (amount + 15) & ~15;
 	heap_segment *current_seg = heap.first_seg;

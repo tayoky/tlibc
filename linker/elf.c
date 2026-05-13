@@ -399,7 +399,7 @@ struct elf_object *elf_load(const char *path, int is_lib, int fd) {
 		goto close;
 	}
 	
-	//call_constructors(object);
+	if (!is_lib) call_constructors(object);
 	
 	close(file);
 

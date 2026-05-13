@@ -89,6 +89,12 @@ echo "
 	@echo \"GEN \$@\"
 	\$(Q)cat prologue.h \$^ epilogue.h > \$@
 
+# cdefs contain the guards itself
+\$(BUILDDIR)/headers/sys/cdefs.h : include/_cdefs.h
+	@mkdir -p \"\$(@D)\"
+	@echo \"GEN \$@\"
+	\$(Q)cat \$^ > \$@
+
 \$(BUILDDIR)/headers/%/ :
 	@mkdir -p \"\$@\"
 
@@ -111,7 +117,7 @@ tmake_add_data "headers" "include" $H_SRC
 
 # src inside directories
 echo "
-install-headers : \$(patsubst include/\$(TARGET)/%,\$(BUILDDIR)/headers/%,\$(wildcard include/\$(TARGET)/*/*.h))" >> "$MAKEFILE"
+install-headers : \$(patsubst include/\$(TARGET)/%,\$(BUILDDIR)/headers/%,\$(wildcard include/\$(TARGET)/*/*.h)) \$(BUILDDIR)/headers/sys/cdefs.h" >> "$MAKEFILE"
 
 CRTS_SRC="crt/\$(ARCH)/crti.o crt/\$(ARCH)/crtn.o crt/\$(ARCH)/crt0-\$(TARGET).o"
 CRTS="\$(BUILDDIR)/crts/crti.o \$(BUILDDIR)/crts/crtn.o \$(BUILDDIR)/crts/crt0.o"

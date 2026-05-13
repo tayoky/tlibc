@@ -19,7 +19,7 @@ jobs:
       run: mkdir -p sysroot/usr && ./configure --prefix=./sysroot/usr --enable-shared
 
     - name: install header
-      run: make header
+      run: make install-headers
 
     - name: build
       run: make

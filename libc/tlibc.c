@@ -34,7 +34,7 @@ void __init_tlibc(long *stack, main_t main) {
 	char **argv = (char **)(stack + 1);
 	char **envp = (char **)(stack + argc + 2);
 
-#ifndef __DYNAMIC__ // dynamic linker aready prepare uthread
+#if !defined(__DYNAMIC__) || defined(__DL_TLIBC__) // dynamic linker aready prepare uthread
 	//setup a uthread for the main thread
 	__set_tls(__new_uthread());
 #endif

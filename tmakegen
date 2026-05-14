@@ -46,11 +46,11 @@ tmake_add_static_library "libk" $K_SRC CFLAGS="\$(KFLAGS)"
 DL_DEPS="tlibc.c auxv.c pthread/uthread.c \$(ARCH)/__get_uthread.s errno.c ctype/ctype.c \
 	string/strcmp.c string/strchr.c string/strrchr.c string/strcpy.c string/strlen.c string/strnlen.c \
 	string/memset.c string/memcmp.c string/memchr.c string/memcpy.c \
-	stdio/vsnprintf.c stdio/vsprintf.c stdio/sprintf.c stdio/fwrite.c stdio/__fileio_write.c stdio/fflush.c\
-	stdio/puts.c stdio/putchar.c stdio/fputs.c stdio/fputc.c stdio/stdio.c stdio/vfprintf.c stdio/fprintf.c\
+	stdio/vsnprintf.c stdio/vsprintf.c stdio/sprintf.c stdio/fwrite.c stdio/__fileio_write.c stdio/fflush.c \
+	stdio/puts.c stdio/putchar.c stdio/fputs.c stdio/fputc.c stdio/stdio.c stdio/vfprintf.c stdio/fprintf.c \
 	stdlib/exit.c stdlib/environ.c stdlib/getenv.c"
 
-DL_SRC="$(echo linker/*.c) linker/abi/\$(ARCH)-\$(TARGET).s crt/\$(ARCH)/crt0-\$(TARGET).s"
+DL_SRC="$(echo linker/*.c) linker/abi/\$(ARCH)-\$(TARGET).s crt/\$(ARCH)/crt0-\$(TARGET).s \$(shell find libc/\$(TARGET) -name "*.c")"
 for I in $DL_DEPS ; do
 	DL_SRC="$DL_SRC libc/$I"
 done

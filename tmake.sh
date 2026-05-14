@@ -1,6 +1,6 @@
 # source this in your tmakegen
 
-TMAKE_VERSION="v0.1.5"
+TMAKE_VERSION="v0.1.6"
 
 tmake_init () {
 	MAKEFILE="$(realpath ./Makefile)"
@@ -74,6 +74,8 @@ Makefile : $SCRIPT $(realpath --relative-to="$DIR" "$TMAKE")
 clean :
 	@echo \"CLEAN \$(BUILDDIR)\"
 	\$(Q)rm -fr \"\$(BUILDDIR)\""
+
+	echo "generated $MAKEFILE" >&2
 } >> "$MAKEFILE"
 
 tmake_error () {
@@ -123,6 +125,9 @@ tmake_apply_flags () {
 			;;
 		DEPENDENCIES=*)
 			TARGET_DEPENDENCIES="$TARGET_DEPENDENCIES ${1#*=}"
+			;;
+		DDEPENDENCIES=*)
+			TARGET_DDEPENDENCIES="$TARGET_DEPENDENCIES ${1#*=}"
 			;;
 		HAVE_C=*)
 			HAVE_C="${1#*=}"
@@ -207,6 +212,7 @@ tmake_add_target () {
 	TARGET_ASFLAGS="\$(ASFLAGS)"
 	TARGET_LDFLAGS="\$(LDFLAGS)"
 	TARGET_DEPENDENCIES=""
+	TARGET_DDEPENDENCIES=""
 	shift 3
 	for SRC in "$@" ; do
 		if tmake_is_flags "$SRC" ; then
@@ -261,7 +267,7 @@ clean-$TARGET_TARGET :
 	tmake_add_compile_rules "$TARGET_TARGET"
 
 	TARGETS="$TARGETS $TARGET_TARGET"
-	ALL_DEPENDENCIES=""
+	ALL_DEPENDENCIES="$TARGET_DDEPENDENCIES"
 	for DEPENDENCY in $TARGET_DEPENDENCIES ; do
 		ALL_DEPENDENCIES="$ALL_DEPENDENCIES\$(LINK_$DEPENDENCY) "
 	done
@@ -378,6 +384,7 @@ install-$TARG : \$(SRC_$TARG)
 	@mkdir -p \"\$(DESTDIR)\$(PREFIX)/$DEST\"
 	@echo \"INSTALL_DATA \$(SRC_$TARG)\"
 	\$(Q)cp -r \$(SRC_$TARG) \"\$(DESTDIR)\$(PREFIX)/$DEST\"
+
 .PHONY : uninstall-$TARG
 uninstall : uninstall-$TARG
 uninstall-$TARG :

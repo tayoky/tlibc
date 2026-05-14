@@ -4,27 +4,6 @@
 
 extern struct __locale _locale;
 
-static const char *type2name(int category){
-	switch(category){
-	case LC_ALL:
-		return "LC_ALL";
-	case LC_MONETARY:
-		return "LC_MONETARY";
-	case LC_NUMERIC:
-		return "LC_NUMERIC";
-	case LC_COLLATE:
-		return "LC_COLLATE";
-	case LC_CTYPE:
-		return "LC_CTYPE";
-	case LC_MESSAGES:
-		return "LC_MESSAGES";
-	case LC_TIME:
-		return "LC_TIME";
-	default:
-		return NULL;
-	}
-}
-
 char *setlocale(int category,const char *locale){
 	if(category>LC_ALL)return NULL;
 

@@ -10,7 +10,7 @@
 
 typedef __WINT_TYPE__ wint_t;
 
-#define WEOF EOF
+#define WEOF 0xffffffffU
 
 //maybee change size of this for UTF 7 ??
 typedef int mbstate_t;

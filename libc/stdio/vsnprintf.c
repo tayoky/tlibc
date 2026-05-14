@@ -24,7 +24,7 @@
 	while (*ptr) OUT(*(ptr++));\
 }
 
-static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int padding,char padding_char,int min,int high,char sign,int prefix){
+static int _print_uint(char *buf, size_t maxlen, uint64_t value, int base, int padding, char padding_char, int min, int high, char sign, int prefix) {
 	static const char h[] = "0123456789ABCDEF";
 	static const char l[] = "0123456789abcdef";
 	const char *figures = high ? h : l;
@@ -33,31 +33,31 @@ static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int paddi
 	int i = 63;
 	str[63] = '\0';
 	uint64_t v = value;
-	while(value){
+	while (value) {
 		i--;
 		str[i] = figures[value % base];
 		value /= base;
 	}
 
-	
 
-	if(padding > 0){
-		if(sign)padding--;
-		if(prefix && v && (base == 2 || base == 16))padding -= 2;
-		if(prefix && base == 8 && str[i] != '0' && min <= 63 - i)padding--;
-		while(padding > 63 - i && padding > min){
+
+	if (padding > 0) {
+		if (sign)padding--;
+		if (prefix && v && (base == 2 || base == 16))padding -= 2;
+		if (prefix && base == 8 && str[i] != '0' && min <= 63 - i)padding--;
+		while (padding > 63 - i && padding > min) {
 			padding--;
 			OUT(padding_char);
 		}
 		padding = 0;
 	}
 
-	if(sign){
+	if (sign) {
 		OUT(sign);
 	}
 
-	if(prefix && v){
-		switch(base){
+	if (prefix && v) {
+		switch (base) {
 		case 2:
 			OUT('0');
 			OUT('b');
@@ -68,24 +68,24 @@ static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int paddi
 			break;
 		}
 	}
-		
-	if(prefix && base == 8 && str[i] != '0' && min <= 63 - i){
+
+	if (prefix && base == 8 && str[i] != '0' && min <= 63 - i) {
 		OUT('0');
 	}
 
 
-	while(min > 63 - i){
+	while (min > 63 - i) {
 		min--;
 		OUT('0');
 	}
-	
-	while(str[i]){
+
+	while (str[i]) {
 		OUT(str[i]);
 		i++;
 	}
 
 	//print padding last if neccesary
-	while(-padding > count){
+	while (-padding > count) {
 		OUT(padding_char);
 	}
 
@@ -101,7 +101,7 @@ static int _print_uint(char *buf,size_t maxlen,uint64_t value,int base,int paddi
 } while(0);
 
 #if !defined(__LIBK__) && !defined(__DL_TLIBC__)
-static int _print_float(char *buf,size_t maxlen,long double number,int base,int padding,char padding_char,int precision,int high,int positive_sign,int alternate_form, int exponent){
+static int _print_float(char *buf, size_t maxlen, long double number, int base, int padding, char padding_char, int precision, int high, int positive_sign, int alternate_form, int exponent) {
 	int count = 0;
 	if (isnan(number)) {
 		if (high) {
@@ -126,8 +126,9 @@ static int _print_float(char *buf,size_t maxlen,long double number,int base,int 
 		return count;
 	}
 	long double integral;
-	if (number >= (long double)LLONG_MAX || number <= (long double)LLONG_MIN){\
-		integral = number;
+	if (number >= (long double)LLONG_MAX || number <= (long double)LLONG_MIN) {
+		\
+			integral = number;
 	} else {
 		integral = (long double)(long long)number;
 	}
@@ -138,7 +139,7 @@ static int _print_float(char *buf,size_t maxlen,long double number,int base,int 
 		OUT('.');
 	}
 	long double decimal = number - integral;
-	for (int i=0; i<precision; i++) {
+	for (int i=0; i < precision; i++) {
 		decimal *= base;
 	}
 	print_uint(buf, maxlen, decimal, base, 0, 0, precision, high, 0, 0);
@@ -168,10 +169,10 @@ static int _print_float(char *buf,size_t maxlen,long double number,int base,int 
 #define LEN_T     7
 #define LEN_BIG_L 8
 
-int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
+int vsnprintf(char *buf, size_t maxlen, const char *fmt, va_list args) {
 	int count = 0;
-	while(*fmt){
-		if(*fmt != '%'){
+	while (*fmt) {
+		if (*fmt != '%') {
 			OUT(*fmt);
 			fmt++;
 			continue;
@@ -183,14 +184,14 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 		int alternate_form = 0;
 		//format specifier
 		//start by handling flags
-		for(;;) switch(*fmt){
+		for (;;) switch (*fmt) {
 		case '#':
 			fmt++;
 			alternate_form = 1;
 			break;
 		case '0':
 			fmt++;
-			if(padding_sign == -1)break;
+			if (padding_sign == -1)break;
 			padding_char = '0';
 			break;
 		case '-':
@@ -200,7 +201,7 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 			break;
 		case ' ':
 			fmt++;
-			if(!positive_sign)positive_sign = ' ';
+			if (!positive_sign)positive_sign = ' ';
 			break;
 		case '+':
 			fmt++;
@@ -209,18 +210,18 @@ int vsnprintf(char * buf,size_t maxlen, const char *fmt,va_list args){
 		default:
 			goto finish_flags;
 		}
-finish_flags:;
+	finish_flags:;
 		//now handle width
 		int width = 0;
-		if(*fmt == '*'){
+		if (*fmt == '*') {
 			fmt++;
-			width = va_arg(args,int);
-			if(width < 0){
+			width = va_arg(args, int);
+			if (width < 0) {
 				width = -width;
 				padding_sign = -padding_sign;
 			}
 		} else {
-			while(isdigit(*fmt)){
+			while (isdigit(*fmt)) {
 				width *= 10;
 				width += *fmt - '0';
 				fmt++;
@@ -228,14 +229,14 @@ finish_flags:;
 		}
 		//now we handle precision
 		int precision = -1;
-		if(*fmt == '.'){
+		if (*fmt == '.') {
 			fmt++;
-			if(*fmt == '*'){
+			if (*fmt == '*') {
 				fmt++;
-				precision = va_arg(args,int);
+				precision = va_arg(args, int);
 			} else {
 				precision = 0;
-				while(isdigit(*fmt)){
+				while (isdigit(*fmt)) {
 					precision *= 10;
 					precision += *fmt - '0';
 					fmt++;
@@ -244,13 +245,13 @@ finish_flags:;
 		}
 		// now parse lenght
 		int lenght;
-		switch(*fmt){
+		switch (*fmt) {
 		default:
 			lenght = LEN_NONE;
 			break;
 		case 'h':
 			fmt++;
-			if(*fmt == 'h'){
+			if (*fmt == 'h') {
 				fmt++;
 				lenght = LEN_HH;
 			} else {
@@ -259,7 +260,7 @@ finish_flags:;
 			break;
 		case 'l':
 			fmt++;
-			if(*fmt == 'l'){
+			if (*fmt == 'l') {
 				fmt++;
 				lenght = LEN_LL;
 			} else {
@@ -284,87 +285,87 @@ finish_flags:;
 			break;
 		}
 		//now specifier
-		switch(*fmt){
+		switch (*fmt) {
 		case 'd':
 		case 'i':
 			//precision on integer remove 0 flag
-			if(precision != -1)padding_char = ' ';
+			if (precision != -1)padding_char = ' ';
 			intmax_t sint = 0;
 			switch (lenght) {
 			case LEN_HH:
-				T_CAST(sint,short);
+				T_CAST(sint, short);
 				break;
 			case LEN_H:
-				T_CAST(sint,char);
+				T_CAST(sint, char);
 				break;
 			case LEN_L:
-				T(sint,long);
+				T(sint, long);
 				break;
 			case LEN_LL:
 			case LEN_BIG_L:
-				T(sint,long long);
+				T(sint, long long);
 				break;
 			case LEN_J:
-				T(sint,intmax_t);
+				T(sint, intmax_t);
 				break;
 			case LEN_Z:
-				T(sint,ssize_t);
+				T(sint, ssize_t);
 				break;
 			case LEN_T:
-				T(sint,ptrdiff_t);
+				T(sint, ptrdiff_t);
 				break;
 			default:
-				T(sint,int);
+				T(sint, int);
 				break;
 			}
 
 			char sign = 0;
-			if(sint < 0){
+			if (sint < 0) {
 				sint = -sint;
 				sign = '-';
-			} else if(positive_sign){
+			} else if (positive_sign) {
 				sign = positive_sign;
 			}
-			print_uint(buf,maxlen,sint,10,width*padding_sign,padding_char,precision == -1 ? 1 : precision,0,sign,0);
+			print_uint(buf, maxlen, sint, 10, width * padding_sign, padding_char, precision == -1 ? 1 : precision, 0, sign, 0);
 			break;
 		case 'u':
 		case 'o':
 		case 'b':
 		case 'x':
 		case 'X':
-			if(precision != -1)padding_char = ' ';
+			if (precision != -1)padding_char = ' ';
 			intmax_t uint = 0;
 			switch (lenght) {
 			case LEN_HH:
-				T_CAST(uint,unsigned short);
+				T_CAST(uint, unsigned short);
 				break;
 			case LEN_H:
-				T_CAST(uint,unsigned char);
+				T_CAST(uint, unsigned char);
 				break;
 			case LEN_L:
-				T(uint,unsigned long);
+				T(uint, unsigned long);
 				break;
 			case LEN_LL:
 			case LEN_BIG_L:
-				T(uint,unsigned long long);
+				T(uint, unsigned long long);
 				break;
 			case LEN_J:
-				T(uint,uintmax_t);
+				T(uint, uintmax_t);
 				break;
 			case LEN_Z:
-				T(uint,size_t);
+				T(uint, size_t);
 				break;
 			case LEN_T:
-				T(uint,uintptr_t);
+				T(uint, uintptr_t);
 				break;
 			default:
-				T(uint,unsigned int);
+				T(uint, unsigned int);
 				break;
 			}
 
 			//FIXME : i think we need to decrease witdh on prefix
 			int base = 0;
-			switch(*fmt){
+			switch (*fmt) {
 			case 'u':
 				base = 10;
 				break;
@@ -379,12 +380,12 @@ finish_flags:;
 				base = 16;
 				break;
 			}
-			print_uint(buf,maxlen,uint,base,width*padding_sign,padding_char,precision == -1 ? 1 : precision,*fmt == 'X',positive_sign,alternate_form);
+			print_uint(buf, maxlen, uint, base, width * padding_sign, padding_char, precision == -1 ? 1 : precision, *fmt == 'X', positive_sign, alternate_form);
 			break;
 		case 'p':
-			if(precision != -1)padding_char = ' ';
-			uint = (uintptr_t)va_arg(args,void *);
-			print_uint(buf,maxlen,uint,16,width*padding_sign,padding_char,precision == -1 ? (int)sizeof(uintptr_t) * CHAR_BIT / 4: precision,*fmt == 'X',positive_sign,alternate_form);
+			if (precision != -1)padding_char = ' ';
+			uint = (uintptr_t)va_arg(args, void *);
+			print_uint(buf, maxlen, uint, 16, width * padding_sign, padding_char, precision == -1 ? (int)sizeof(uintptr_t) * CHAR_BIT / 4 : precision, *fmt == 'X', positive_sign, alternate_form);
 			break;
 		case 's':
 		case 'c':;
@@ -392,34 +393,39 @@ finish_flags:;
 			char *str;
 			char ch;
 			size_t len;
-			if(*fmt == 'c'){
+			if (*fmt == 'c') {
 				len = 1;
-				int c = va_arg(args,int);
+				int c = va_arg(args, int);
 				ch = (char)c;
 				str = &ch;
 			} else {
-				str = va_arg(args,char *);
-				len = strnlen(str,precision);
+				str = va_arg(args, char *);
+				if (str) {
+					len = strnlen(str, precision);
+				} else {
+					str = "(null)";
+					len = 6;
+				}
 			}
 
-			if(padding_sign == 1){
-				while((size_t)width > len){
+			if (padding_sign == 1) {
+				while ((size_t)width > len) {
 					OUT(padding_char);
 					width--;
 				}
 			}
-			for(size_t i=0; i<len; i++){
+			for (size_t i=0; i < len; i++) {
 				OUT(*str);
 				str++;
 			}
-			if(padding_sign == -1){
-				while((size_t)width > len){
+			if (padding_sign == -1) {
+				while ((size_t)width > len) {
 					OUT(padding_char);
 					width--;
 				}
 			}
 			break;
-		// dynamic linker never print floats and libk cannot use float
+			// dynamic linker never print floats and libk cannot use float
 #if !defined(__LIBK__) && !defined(__DL_TLIBC__) 
 		case 'f':
 		case 'F':
@@ -431,7 +437,7 @@ finish_flags:;
 			} else {
 				T(number, double);
 			}
-			print_float(buf, maxlen, number, 10, width*padding_sign, padding_char, precision, *fmt == 'F', positive_sign, alternate_form, 0);
+			print_float(buf, maxlen, number, 10, width * padding_sign, padding_char, precision, *fmt == 'F', positive_sign, alternate_form, 0);
 			break;
 		case 'e':
 		case 'E':
@@ -442,7 +448,7 @@ finish_flags:;
 			} else {
 				T(number, double);
 			}
-			print_float(buf, maxlen, number, 10, width*padding_sign, padding_char, precision, *fmt == 'E', positive_sign, alternate_form, 1);
+			print_float(buf, maxlen, number, 10, width * padding_sign, padding_char, precision, *fmt == 'E', positive_sign, alternate_form, 1);
 			break;
 		case 'g':
 		case 'G':
@@ -453,7 +459,7 @@ finish_flags:;
 			} else {
 				T(number, double);
 			}
-			print_float(buf, maxlen, number, 10, width*padding_sign, padding_char, precision, *fmt == 'G', positive_sign, alternate_form, 0);
+			print_float(buf, maxlen, number, 10, width * padding_sign, padding_char, precision, *fmt == 'G', positive_sign, alternate_form, 0);
 			break;
 #endif
 		case '%':
@@ -461,11 +467,11 @@ finish_flags:;
 			break;
 		}
 		fmt++;
-	
+
 	}
 
 	//don't count the '\0'
-	if(buf){
+	if (buf) {
 		*buf = '\0';
 	}
 	return count;

@@ -2,6 +2,7 @@
 #include <tlibc.h>
 #include <limits.h>
 #include <stddef.h>
+#include <string.h>
 
 #define UTHREAD_SIZE ((sizeof(struct __uthread) + PAGE_SIZE - 1) / PAGE_SIZE * PAGE_SIZE)
 
@@ -24,6 +25,7 @@ struct __uthread *__new_uthread(void){
 
     uthread->self = uthread;
     uthread->err = 0;
+    memset(uthread->keys, 0, sizeof(uthread->keys));
 
     return uthread;
 }

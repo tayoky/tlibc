@@ -1,11 +1,14 @@
 #ifndef _TLIBC_H
 #define _TLIBC_H
 
+#include <limits.h>
+
 //this is reserved for internal use
 //this should not be used by common program that use crt0.o
 
 struct __uthread {
     struct __uthread *self;
+    void *keys[PTHREAD_KEYS_MAX];
     int err;
 };
 

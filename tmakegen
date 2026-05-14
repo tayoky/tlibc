@@ -59,7 +59,7 @@ tmake_add_shared_library "ld-tlibc" $DL_SRC CFLAGS="\$(DYNFLAGS) -D__DL_TLIBC__=
 
 # libc target
 C_SRC_DIR="ctype libgen time stdlib string wchar stdio unistd locale pwd pthread dl"
-C_SRC="\$(wildcard libc/\$(TARGET)/*.[cs] libc/\$(TARGET)/*/*.[cs] libc/\$(ARCH)/*.[cs])"
+C_SRC="\$(wildcard libc/\$(TARGET)/*.[cs] libc/\$(TARGET)/*/*.[cs] libc/\$(ARCH)/*.[cs]) $(echo libc/*.c)"
 
 for SRC_DIR in $C_SRC_DIR ; do
 	C_SRC="$C_SRC $(find "libc/$SRC_DIR" -name "*.c")"
@@ -70,7 +70,7 @@ tmake_add_static_library "libc" $C_SRC HAVE_C=yes HAVE_S=yes
 tmake_add_shared_library "libc" $C_SRC CFLAGS="\$(DYNFLAGS)" LDFLAGS="-Wl,-soname,libc.so" DEPENDENCIES="ld-tlibc" HAVE_C=yes HAVE_S=yes
 
 # libm target
-tmake_add_library "libm" "\$(M_SRC)" LDFLAGS="-Wl,-soname,libm.so" DEPENDENCIES="libc" HAVE_C=yes HAVE_S=yes
+tmake_add_library "libm" "\$(M_SRC)" LDFLAGS="-Wl,-soname,libm.so -lgcc_s" DEPENDENCIES="libc" HAVE_C=yes HAVE_S=yes
 
 # stub libs (libdl and libpthread)
 tmake_add_static_library "libdl" stub/dl.c CFLAGS="-fno-PIC"

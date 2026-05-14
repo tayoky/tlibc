@@ -9,7 +9,7 @@
 #include <elf.h>
 #include "linker.h"
 
-static int check_ehdr(Elf_Ehdr *header, int is_lib){
+static int check_ehdr(Elf_Ehdr *header, int is_lib) {
 	if (memcmp(header->e_ident, ELFMAG, 4)) {
 		return 0;
 	}
@@ -46,28 +46,28 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 		}
 
 		if (filesz > 0) {
-			if (mmap((void*)vaddr, filesz, PROT_WRITE, MAP_PRIVATE | MAP_FIXED, file, offset) == MAP_FAILED) {
+			if (mmap((void *)vaddr, filesz, PROT_WRITE, MAP_PRIVATE | MAP_FIXED, file, offset) == MAP_FAILED) {
 				return dl_error("mmap failed");
 			}
 			// zero the last page
 			if (filesz_remainer) {
 				uintptr_t start_bss = vaddr + filesz - PAGE_SIZE + filesz_remainer;
-				memset((void*)start_bss, 0, PAGE_SIZE - filesz_remainer);
+				memset((void *)start_bss, 0, PAGE_SIZE - filesz_remainer);
 			}
 		}
 		if (memsz > filesz) {
 			// we need to fill with anonymous mapping
 			vaddr += filesz;
-			if (mmap((void*)vaddr, memsz - filesz, PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) == MAP_FAILED) {
+			if (mmap((void *)vaddr, memsz - filesz, PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) == MAP_FAILED) {
 				// remove the aready mapped part
-				munmap((void*)(vaddr-filesz), filesz);
+				munmap((void *)(vaddr - filesz), filesz);
 				return dl_error("mmap failed");
 			}
 		}
 	} else {
 		size_t memsz = PAGE_ALIGN_UP(pheader->p_memsz + vaddr_off);
 
-		if (mmap((void*)vaddr, memsz, PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) == MAP_FAILED) {
+		if (mmap((void *)vaddr, memsz, PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) == MAP_FAILED) {
 			return dl_error("mmap failed");
 		}
 
@@ -78,7 +78,7 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 
 		lseek(file, pheader->p_offset, SEEK_SET);
 		if (read(file, (void *)(vaddr + vaddr_off), pheader->p_filesz) < (ssize_t)pheader->p_filesz) {
-			munmap((void*)vaddr, memsz);
+			munmap((void *)vaddr, memsz);
 			return dl_error("read failed");
 		}
 	}
@@ -86,7 +86,7 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 }
 
 static int set_protections(struct elf_object *object) {
-	for (size_t i=0; i<object->phdrs_count; i++) {
+	for (size_t i=0; i < object->phdrs_count; i++) {
 		int prot = 0;
 		if (object->phdrs[i].p_flags & PF_R) {
 			prot |= PROT_READ;
@@ -99,7 +99,7 @@ static int set_protections(struct elf_object *object) {
 		}
 		uintptr_t start = PAGE_ALIGN_DOWN(object->phdrs[i].p_vaddr + object->addr);
 		uintptr_t end   = PAGE_ALIGN_UP(object->phdrs[i].p_vaddr + object->addr + object->phdrs[i].p_memsz);
-		mprotect((void*)start, end - start, prot);
+		mprotect((void *)start, end - start, prot);
 	}
 	return 0;
 }
@@ -121,7 +121,7 @@ const char *get_str(struct elf_object *object, size_t offset) {
 static size_t get_total_size(struct elf_object *object) {
 	uintptr_t start = UINTPTR_MAX;
 	uintptr_t end   = 0;
-	for (size_t i=0; i<object->phdrs_count; i++) {
+	for (size_t i=0; i < object->phdrs_count; i++) {
 		Elf_Phdr *pheader = &object->phdrs[i];
 		if (pheader->p_type != PT_LOAD) continue;
 		if (PAGE_ALIGN_DOWN(pheader->p_vaddr) < start) {
@@ -156,7 +156,7 @@ static int handle_dynamics(struct elf_object *object) {
 		return dl_error("no string table");
 	}
 	object->strtab_size = dyn_strsz->d_un.d_val;
-	object->strtab = (void*)(dyn_strtab->d_un.d_ptr + object->addr);
+	object->strtab = (void *)(dyn_strtab->d_un.d_ptr + object->addr);
 	if (!object->strtab) return -1;
 
 	if (!dyn_symtab || !dyn_hash) {
@@ -164,27 +164,27 @@ static int handle_dynamics(struct elf_object *object) {
 	}
 
 	// start by firguring out the size of the hash and symbol table
-	uint32_t *hash_start = (void*)(dyn_hash->d_un.d_ptr + object->addr);
+	uint32_t *hash_start = (void *)(dyn_hash->d_un.d_ptr + object->addr);
 
 	// nchain (second entry) contain symtab entries count
 	object->symbols_count = hash_start[1];
-	object->symtab = (void*)(dyn_symtab->d_un.d_ptr + object->addr);
+	object->symtab = (void *)(dyn_symtab->d_un.d_ptr + object->addr);
 
 	// 2 + nbucket + nchain give total entries count
 	// we can use that to load hash table
 	object->hash_size = (2 + hash_start[0] + hash_start[1]) * sizeof(uint32_t);
-	object->hash = (void*)(dyn_hash->d_un.d_ptr + object->addr);
+	object->hash = (void *)(dyn_hash->d_un.d_ptr + object->addr);
 
 	// optional DT_RPATH for executables
 	if (object->header.e_type == ET_EXEC && dyn_rpath) {
 		rpath = get_str(object, dyn_rpath->d_un.d_val);
 		if (!rpath) return -1;
 	}
-	
+
 	// HACK for environ
 	Elf_Sym *environ_sym = elf_lookup(object, "environ");
 	if (environ_sym && environ_sym->st_shndx != SHN_UNDEF) {
-		char ***environ_ptr = (void*)(environ_sym->st_value + object->addr);
+		char ***environ_ptr = (void *)(environ_sym->st_value + object->addr);
 		*environ_ptr = environ;
 	}
 
@@ -194,8 +194,8 @@ static int handle_dynamics(struct elf_object *object) {
 		if (object->dynamics[i].d_tag != DT_NEEDED) continue;
 		object->depencies_count++;
 	}
-	object->depencies = dl_alloc(object->depencies_count * sizeof(struct elf_object*));
-	memset(object->depencies, 0, object->depencies_count * sizeof(struct elf_object*));
+	object->depencies = dl_alloc(object->depencies_count * sizeof(struct elf_object *));
+	memset(object->depencies, 0, object->depencies_count * sizeof(struct elf_object *));
 
 	// and load them
 	size_t index = 0;
@@ -240,32 +240,37 @@ static int apply_relocs(struct elf_object *object) {
 		// TODO : use PLTREL or something
 		type = DT_RELA;
 	}
-	
+
 	if (!dyn_jmprel || !dyn_plt_rel_sz) {
 		return dl_error("no relocation table");
 	}
 
 	size_t rel_ent;
-	void *plt_table = (void*)(dyn_jmprel->d_un.d_ptr + object->addr);
+	void *plt_table = (void *)(dyn_jmprel->d_un.d_ptr + object->addr);
 	size_t plt_rel_size = dyn_plt_rel_sz->d_un.d_val;
 	void *table;
 	size_t rel_size;
+	int have_dyn_reloc = 1;
 	switch (type) {
 	case DT_RELA:
+		rel_ent = sizeof(Elf_Rela);
 		if (!dyn_rela || !dyn_relasz || !dyn_relaent) {
-			return dl_error("no relocation table");
+			have_dyn_reloc = 0;
+			break;
 		}
 		rel_size = dyn_relasz->d_un.d_val;
 		rel_ent = dyn_relaent->d_un.d_val;
-		table = (void*)(dyn_rela->d_un.d_ptr + object->addr);
+		table = (void *)(dyn_rela->d_un.d_ptr + object->addr);
 		break;
 	case DT_REL:
+		rel_ent = sizeof(Elf_Rel);
 		if (!dyn_rel || !dyn_relsz || !dyn_relent) {
-			return dl_error("no relocation table");
+			have_dyn_reloc = 0;
+			break;
 		}
 		rel_size = dyn_relsz->d_un.d_val;
 		rel_ent = dyn_relent->d_un.d_val;
-		table = (void*)(dyn_rel->d_un.d_ptr + object->addr);
+		table = (void *)(dyn_rel->d_un.d_ptr + object->addr);
 		break;
 	}
 	if (!plt_table) {
@@ -273,15 +278,17 @@ static int apply_relocs(struct elf_object *object) {
 	}
 
 	// dynamic relocs
-	for (size_t i=0; i<rel_size; i+=rel_ent) {
-		uintptr_t addr = (uintptr_t)table + i;
-		if (reloc(object, (Elf_Rela*)addr) < 0) return -1;
+	if (have_dyn_reloc) {
+		for (size_t i=0; i < rel_size; i+=rel_ent) {
+			uintptr_t addr = (uintptr_t)table + i;
+			if (reloc(object, (Elf_Rela *)addr) < 0) return -1;
+		}
 	}
 
 	// plt relocs
-	for (size_t i=0; i<plt_rel_size; i+=rel_ent) {
+	for (size_t i=0; i < plt_rel_size; i+=rel_ent) {
 		uintptr_t addr = (uintptr_t)plt_table + i;
-		if (reloc(object, (Elf_Rela*)addr) < 0) return -1;
+		if (reloc(object, (Elf_Rela *)addr) < 0) return -1;
 	}
 
 	return 0;
@@ -292,15 +299,14 @@ static void call_constructors(struct elf_object *object) {
 	Elf_Dyn *dyn_init_array      = find_dynamic(object, DT_INIT_ARRAY);
 	Elf_Dyn *dyn_init_arraysz    = find_dynamic(object, DT_INIT_ARRAYSZ);
 	if (dyn_init) {
-		func_t init = (void*)(dyn_init->d_un.d_ptr + object->addr);
+		func_t init = (void *)(dyn_init->d_un.d_ptr + object->addr);
 		init();
 	}
 	if (dyn_init_array && dyn_init_arraysz) {
-		uintptr_t *init_array = (void*)(dyn_init_array->d_un.d_ptr + object->addr);
+		func_t *init_array = (void *)(dyn_init_array->d_un.d_ptr + object->addr);
 		size_t count = dyn_init_arraysz->d_un.d_val / sizeof(func_t);
-		for (size_t i=0; i<count; i++) {
-			func_t func = (func_t)(init_array[i] + object->addr);
-			func();
+		for (size_t i=0; i < count; i++) {
+			init_array[i]();
 		}
 	}
 }
@@ -310,15 +316,14 @@ static void call_destructors(struct elf_object *object) {
 	Elf_Dyn *dyn_fini_array      = find_dynamic(object, DT_FINI_ARRAY);
 	Elf_Dyn *dyn_fini_arraysz    = find_dynamic(object, DT_FINI_ARRAYSZ);
 	if (dyn_fini) {
-		func_t fini = (void*)(dyn_fini->d_un.d_ptr + object->addr);
+		func_t fini = (void *)(dyn_fini->d_un.d_ptr + object->addr);
 		fini();
 	}
 	if (dyn_fini_array && dyn_fini_arraysz) {
-		uintptr_t *fini_array = (void*)(dyn_fini_array->d_un.d_ptr + object->addr);
+		func_t *fini_array = (void *)(dyn_fini_array->d_un.d_ptr + object->addr);
 		size_t count = dyn_fini_arraysz->d_un.d_val / sizeof(func_t);
-		for (size_t i=0; i<count; i++) {
-			func_t func = (func_t)(fini_array[i] + object->addr);
-			func();
+		for (size_t i=0; i < count; i++) {
+			fini_array[i]();
 		}
 	}
 }
@@ -326,7 +331,7 @@ static void call_destructors(struct elf_object *object) {
 struct elf_object *elf_load(const char *path, int is_lib, int fd) {
 	struct elf_object *object = dl_alloc(sizeof(struct elf_object));
 	memset(object, 0, sizeof(struct elf_object));
-	
+
 	int file;
 	if (fd < 0) {
 		file = is_lib ? open_lib(path) : open(path, O_RDONLY);
@@ -337,8 +342,8 @@ struct elf_object *elf_load(const char *path, int is_lib, int fd) {
 	} else {
 		file = fd;
 	}
-	
-	if (read(file, &object->header,sizeof(Elf_Ehdr)) < (ssize_t)sizeof(Elf_Ehdr)) {
+
+	if (read(file, &object->header, sizeof(Elf_Ehdr)) < (ssize_t)sizeof(Elf_Ehdr)) {
 		dl_error("read failed");
 		goto close;
 	}
@@ -351,7 +356,7 @@ struct elf_object *elf_load(const char *path, int is_lib, int fd) {
 	object->phdrs_count = object->header.e_phnum;
 	object->phdrs = dl_alloc(sizeof(Elf_Phdr) * object->phdrs_count);
 	uintptr_t off = object->header.e_phoff;
-	for (size_t i=0; i<object->header.e_phnum; i++,off += object->header.e_phentsize) {
+	for (size_t i=0; i < object->header.e_phnum; i++, off += object->header.e_phentsize) {
 		Elf_Phdr *pheader = &object->phdrs[i];
 		lseek(file, off, SEEK_SET);
 		if (read(file, pheader, sizeof(*pheader)) < (ssize_t)sizeof(*pheader)) {
@@ -369,12 +374,12 @@ struct elf_object *elf_load(const char *path, int is_lib, int fd) {
 		}
 		object->addr = (uintptr_t)addr;
 	}
-	if (dl_debug) fprintf(stderr, "ld-tlibc.so : load elf '%s' at %p\n", path, (void*)object->addr);
+	if (dl_debug) fprintf(stderr, "ld-tlibc.so : load elf '%s' at %p\n", path, (void *)object->addr);
 
 	// map segments first
-	for (size_t i=0; i<object->phdrs_count; i++) {
+	for (size_t i=0; i < object->phdrs_count; i++) {
 		Elf_Phdr *pheader = &object->phdrs[i];
-		if (pheader->p_type == PT_DYNAMIC) object->dynamics = (void*)(pheader->p_vaddr + object->addr);
+		if (pheader->p_type == PT_DYNAMIC) object->dynamics = (void *)(pheader->p_vaddr + object->addr);
 		if (pheader->p_type != PT_LOAD) continue;
 		if (map_segment(object, file, pheader) < 0) {
 			goto close;
@@ -394,17 +399,17 @@ struct elf_object *elf_load(const char *path, int is_lib, int fd) {
 	if (apply_relocs(object) < 0) {
 		goto close;
 	}
-	
+
 	if (set_protections(object) < 0) {
 		goto close;
 	}
-	
-	if (!is_lib) call_constructors(object);
-	
+
+	call_constructors(object);
+
 	close(file);
 
 	return object;
-	
+
 close:
 	close(file);
 free:
@@ -416,9 +421,9 @@ void elf_unload(struct elf_object *object) {
 	if (object->dynamics) call_destructors(object);
 	if (object->header.e_type == ET_DYN && object->addr) {
 		// we can free the whole allocated block
-		munmap((void*)object->addr, get_total_size(object));
+		munmap((void *)object->addr, get_total_size(object));
 	}
-	for (size_t i=0; i<object->depencies_count; i++) {
+	for (size_t i=0; i < object->depencies_count; i++) {
 		if (!object->depencies[i]) continue;
 		dlclose(object->depencies[i]);
 	}
@@ -442,7 +447,7 @@ static unsigned long elf_hash(const unsigned char *name) {
 }
 
 Elf_Sym *elf_lookup(struct elf_object *object, const char *name) {
-	uint32_t hash = elf_hash((const unsigned char*)name);
+	uint32_t hash = elf_hash((const unsigned char *)name);
 	uint32_t nbucket = object->hash[0];
 	uint32_t nchain  = object->hash[1];
 	uint32_t *bucket = object->hash + 2;

@@ -5,7 +5,7 @@
 
 static void (*atexit_funcs[ATEXIT_MAX])(void);
 static int atexit_count = 0;
-/*
+
 int atexit(void (*func)(void)){
 	if(atexit_count >= 64){
 		return -1;
@@ -14,7 +14,7 @@ int atexit(void (*func)(void)){
 	atexit_count++;
 	return 0;
 }
-*/
+
 
 TLIBC_NORETURN void exit(int status) {
 	for (int i = atexit_count - 1; i >= 0; i--) {

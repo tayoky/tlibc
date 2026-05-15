@@ -1,10 +1,10 @@
-#include <stdio.h>
 #include <stdio-internal.h>
+#include <stdio.h>
 #include <unistd.h>
 
 extern FILE *__streams;
 
-int fflush(FILE *stream){
+int fflush(FILE *stream) {
 	if (stream == NULL) {
 		fflush(stdout);
 		fflush(stdin);

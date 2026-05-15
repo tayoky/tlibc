@@ -1,18 +1,18 @@
 #include <stdio.h>
 
-char *fgets(char *string, int n, FILE *stream){
-	//read until '\n'
+char *fgets(char *string, int n, FILE *stream) {
+	// read until '\n'
 	int c = 0;
 	char *ret = string;
 	do {
-		if(n <= 1){
+		if (n <= 1) {
 			break;
 		}
 		c = fgetc(stream);
 
-		//if EOF quit immediatlely
-		if(c == EOF){
-			if(ret == string)return NULL;
+		// if EOF quit immediatlely
+		if (c == EOF) {
+			if (ret == string) return NULL;
 			break;
 		}
 
@@ -21,6 +21,6 @@ char *fgets(char *string, int n, FILE *stream){
 		n--;
 	} while (c != '\n');
 
-	if(n >= 1)*string = '\0';
+	if (n >= 1) *string = '\0';
 	return ret;
 }

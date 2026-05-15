@@ -1,16 +1,16 @@
-#include <stdlib.h>
 #include <limits.h>
+#include <stdlib.h>
 
 static unsigned int s = 0;
 
-int rand(void){
+int rand(void) {
 	return rand_r(&s);
 }
 
-int rand_r(unsigned int *seedp){
+int rand_r(unsigned int *seedp) {
 	*seedp = *seedp * 18483838 + 12345;
-	return *seedp%RAND_MAX;
+	return *seedp % RAND_MAX;
 }
-void srand(unsigned int seed){
+void srand(unsigned int seed) {
 	s = seed;
 }

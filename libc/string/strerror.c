@@ -1,8 +1,8 @@
-#include <string.h>
 #include <errno.h>
 #include <stdio.h>
+#include <string.h>
 
-static const char * _error_strings[] = {
+static const char *_error_strings[] = {
 	[EPERM] = "Operation not permitted",
 	[ENOENT] = "No such file or directory",
 	[ESRCH] = "No such process",
@@ -120,11 +120,11 @@ static const char * _error_strings[] = {
 };
 
 static char _error_string_unkown[100];
-const char *strerror(int errnum){
-	if((errnum >= 0 || (size_t)errnum < (size_t)sizeof(_error_strings) / sizeof(char *)) && _error_strings[errnum]){
+const char *strerror(int errnum) {
+	if ((errnum >= 0 || (size_t)errnum < (size_t)sizeof(_error_strings) / sizeof(char *)) && _error_strings[errnum]) {
 		return _error_strings[errnum];
 	} else {
-		snprintf(_error_string_unkown,99,"%d",errnum);
+		snprintf(_error_string_unkown, 99, "%d", errnum);
 		return _error_string_unkown;
 	}
 }

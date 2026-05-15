@@ -1,31 +1,31 @@
 #include <sys/time.h>
-#include <time.h>
-#include <unistd.h>
-#include <stdio.h>
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <unistd.h>
 
-char *tzname[2] = {NULL,NULL};
+char *tzname[2] = {NULL, NULL};
 long timezone;
 int daylight;
 
-static int is_leap(long year){
-	//not divisible by 4
-	if(year % 4){
+static int is_leap(long year) {
+	// not divisible by 4
+	if (year % 4) {
 		return 0;
 	}
 
-	//exception for mutiple of 100 that can't be divided by 400
-	if((year % 400) && !(year % 100)){
+	// exception for mutiple of 100 that can't be divided by 400
+	if ((year % 400) && !(year % 100)) {
 		return 0;
 	}
 
 	return 1;
 }
 
-static long nbofdayin(long year,int month){
-	switch (month){
+static long nbofdayin(long year, int month) {
+	switch (month) {
 	case 12:
 		return 31;
 	case 11:
@@ -47,50 +47,50 @@ static long nbofdayin(long year,int month){
 	case 3:
 		return 31;
 	case 2:
-		if(is_leap(year)){
+		if (is_leap(year)) {
 			return 29;
 		} else {
 			return 28;
 		}
 	case 1:
 		return 31;
-			
+
 	default:
 		return -1;
 	}
 }
 
-clock_t    clock(void);
+clock_t clock(void);
 
 struct tm *getdate(const char *);
 
 
-struct tm *gmtime_r(const time_t *clock, struct tm *tm){
-	if(!tm){
+struct tm *gmtime_r(const time_t *clock, struct tm *tm) {
+	if (!tm) {
 		return NULL;
 	}
 
 	tm->tm_gmtoff = 0;
 
-	tm->tm_sec  = *clock % 60;
-	tm->tm_min  = (*clock / 60) % 60;
+	tm->tm_sec = *clock % 60;
+	tm->tm_min = (*clock / 60) % 60;
 	tm->tm_hour = (*clock / 3600) % 24;
 
-	//day since 1 january 1970
+	// day since 1 january 1970
 	long day = (*clock / 86400);
 
-	//the 1 january 1970 is an thursday
+	// the 1 january 1970 is an thursday
 	tm->tm_wday = (day + 4) % 7;
 
 	long year = 1970;
-	for(;;){
-		if(is_leap(year)){
-			if(day < 366){
+	for (;;) {
+		if (is_leap(year)) {
+			if (day < 366) {
 				break;
 			}
 			day -= 366;
 		} else {
-			if(day < 365){
+			if (day < 365) {
 				break;
 			}
 			day -= 365;
@@ -100,13 +100,13 @@ struct tm *gmtime_r(const time_t *clock, struct tm *tm){
 
 	tm->tm_year = year - 1900;
 	tm->tm_yday = day;
-	
+
 	int month = 1;
-	for(;;){
-		if(day < nbofdayin(year,month)){
+	for (;;) {
+		if (day < nbofdayin(year, month)) {
 			break;
 		}
-		day -= nbofdayin(year,month);
+		day -= nbofdayin(year, month);
 		month++;
 	}
 
@@ -117,13 +117,13 @@ struct tm *gmtime_r(const time_t *clock, struct tm *tm){
 }
 
 
-time_t mktime(struct tm *tm){
+time_t mktime(struct tm *tm) {
 	time_t sec = tm->tm_hour * 3600 + tm->tm_min * 60 + tm->tm_sec;
 	sec += tm->tm_yday * 86400;
 	long year = tm->tm_year + 1900;
-	while(year > 1970){
+	while (year > 1970) {
 		year--;
-		if(is_leap(year)){
+		if (is_leap(year)) {
 			sec += 366 * 86400;
 		} else {
 			sec += 365 * 86400;
@@ -132,17 +132,17 @@ time_t mktime(struct tm *tm){
 	return sec;
 }
 
-char      *strptime(const char *, const char *, struct tm *);
+char *strptime(const char *, const char *, struct tm *);
 
-time_t time(time_t * tloc){
+time_t time(time_t *tloc) {
 	struct timeval tv;
-	if(gettimeofday(&tv,NULL)){
-		if(tloc){
+	if (gettimeofday(&tv, NULL)) {
+		if (tloc) {
 			*tloc = 0;
 		}
 		return 0;
 	}
-	if(tloc){
+	if (tloc) {
 		*tloc = tv.tv_sec;
 	}
 	return tv.tv_sec;

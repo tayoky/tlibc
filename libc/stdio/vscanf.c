@@ -1,5 +1,5 @@
 #include <stdio.h>
 
 int vscanf(const char *fmt, va_list args) {
-    return vfscanf(stdin, fmt, args);
+	return vfscanf(stdin, fmt, args);
 }

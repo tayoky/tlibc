@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdio-internal.h>
+#include <stdio.h>
 
 static FILE _stdin = {
 	.fd = 0,
@@ -30,13 +30,13 @@ FILE *stdout;
 FILE *stderr;
 
 void __init_stdio(void) {
-	stdin  = &_stdin;
+	stdin = &_stdin;
 	stdout = &_stdout;
 	stderr = &_stderr;
 }
 
 #else
-FILE *stdin  = &_stdin;
+FILE *stdin = &_stdin;
 FILE *stdout = &_stdout;
 FILE *stderr = &_stderr;
 #endif

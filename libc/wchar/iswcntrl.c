@@ -1,6 +1,6 @@
 #include <wchar.h>
 
-int iswcntrl(wint_t wc){
-	//maybee there are others ???
+int iswcntrl(wint_t wc) {
+	// maybee there are others ???
 	return wc <= 32 || wc == 0x7f;
 }

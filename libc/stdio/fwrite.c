@@ -1,8 +1,8 @@
 #include <sys/types.h>
-#include <stdio.h>
 #include <stdio-internal.h>
+#include <stdio.h>
 
-size_t fwrite(const void *ptr, size_t size, size_t n, FILE *stream){
+size_t fwrite(const void *ptr, size_t size, size_t n, FILE *stream) {
 	ssize_t w = __fileio_write(stream, ptr, size * n);
 	if (w < 0) return 0;
 	return w / size;

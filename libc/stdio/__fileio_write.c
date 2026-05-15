@@ -1,8 +1,8 @@
-#include <unistd.h>
-#include <string.h>
 #include <errno.h>
-#include <stdio.h>
 #include <stdio-internal.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
 ssize_t __fileio_write(FILE *stream, const void *buf, size_t count) {
 	if (!stream) {
@@ -17,7 +17,7 @@ ssize_t __fileio_write(FILE *stream, const void *buf, size_t count) {
 			stream->error = errno;
 			return wsize;
 		}
-		if((size_t)wsize < count){
+		if ((size_t)wsize < count) {
 			stream->eof = 1;
 		}
 		return wsize;

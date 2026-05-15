@@ -1,18 +1,18 @@
-#include <stdio.h>
-#include <stdio-internal.h>
 #include <errno.h>
+#include <stdio-internal.h>
+#include <stdio.h>
 
 FILE *__create_stream(void);
 
-FILE *fdopen(int handle,const char *type){
+FILE *fdopen(int handle, const char *type) {
 	(void)type;
-	if(handle < 0){
+	if (handle < 0) {
 		__set_errno(-EBADF);
 		return NULL;
 	}
 
 	FILE *stream = __create_stream();
-	if(!stream)return NULL;
+	if (!stream) return NULL;
 	stream->fd = handle;
 	setvbuf(stream, NULL, _IOFBF, 0);
 

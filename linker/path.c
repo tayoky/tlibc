@@ -1,12 +1,12 @@
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include <fcntl.h>
 #include "linker.h"
 
 static int try_dir(const char *dir, const char *path) {
-	char full_path[strlen(dir) + strlen(path) +1];
+	char full_path[strlen(dir) + strlen(path) + 1];
 	sprintf(full_path, "%s/%s", dir, path);
 	return open(full_path, O_RDONLY);
 }

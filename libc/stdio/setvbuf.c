@@ -1,9 +1,9 @@
-#include <stdio.h>
-#include <stdio-internal.h>
 #include <errno.h>
+#include <stdio-internal.h>
+#include <stdio.h>
 #include <stdlib.h>
 
-int setvbuf(FILE *stream, char *buf, int type, size_t size){
+int setvbuf(FILE *stream, char *buf, int type, size_t size) {
 	if (!stream) return __set_errno(-EBADF);
 	if (type > _IOLBF) return __set_errno(-EINVAL);
 
@@ -11,7 +11,7 @@ int setvbuf(FILE *stream, char *buf, int type, size_t size){
 	if (type == _IONBF) {
 		size = 0;
 	} else {
-		if(!buf && !size) size = BUFSIZ;
+		if (!buf && !size) size = BUFSIZ;
 	}
 
 	if (size != stream->bufsize || buf) {

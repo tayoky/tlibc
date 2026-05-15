@@ -1,6 +1,6 @@
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 
 extern char **environ;
 
@@ -18,7 +18,7 @@ char *getenv(const char *name) {
 	}
 
 	if (!environ[key]) {
-		//key not found
+		// key not found
 		errno = ESRCH;
 		return NULL;
 	}

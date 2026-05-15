@@ -1,17 +1,14 @@
 #include <string.h>
 
-//we keep this two together, so the compiler can inline memcpy in memmove
+// we keep this two together, so the compiler can inline memcpy in memmove
 
 void *memcpy(void *dest, const void *src, size_t n) {
 	void *prev = dest;
 #if defined(__x86_64__) || defined(__i386__)
-	asm volatile("rep movsb"
-		: "+D" (dest),
-		  "+S" (src),
-		  "+c" (n));
+	asm volatile("rep movsb" : "+D"(dest), "+S"(src), "+c"(n));
 #else
 	char *cdest = dest;
-	const char *csrc  = src;
+	const char *csrc = src;
 	while (n > 0) {
 		*cdest = *csrc;
 		cdest++;
@@ -33,12 +30,7 @@ void *memmove(void *dest, const void *src, size_t n) {
 
 #if defined(__x86_64__) || defined(__i386__)
 	void *prev = dest;
-	asm volatile("std \n rep movsb \n cld"
-		: "=D" (dest),
-		  "=S" (src),
-		  "+c" (n)
-		: "D" ((char *)dest + n - 1),
-		  "S" ((char *)src  + n - 1));
+	asm volatile("std \n rep movsb \n cld" : "=D"(dest), "=S"(src), "+c"(n) : "D"((char *)dest + n - 1), "S"((char *)src + n - 1));
 	return prev;
 #else
 	while (n < 0) {

@@ -1,13 +1,13 @@
-#include <time.h>
-#include <string.h>
-#include <stdlib.h>
 #include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
-static char *get_str(char *tz,char **end){
+static char *get_str(char *tz, char **end) {
 	char *start = tz;
 	int extended = 0;
-	for(;;){
-		switch(*tz){
+	for (;;) {
+		switch (*tz) {
 		case '\0':
 			return NULL;
 		case '<':
@@ -20,26 +20,26 @@ static char *get_str(char *tz,char **end){
 			continue;
 		case '-':
 		case '+':
-			if(!extended)goto finish;
+			if (!extended) goto finish;
 		}
-		if(isdigit(*tz)){
-			if(!extended)goto finish;
+		if (isdigit(*tz)) {
+			if (!extended) goto finish;
 		}
-		if(!isalpha(*tz)){
+		if (!isalpha(*tz)) {
 			return NULL;
 		}
 
 		tz++;
 	}
 finish:
-	if(tz - start < 3)return NULL;
+	if (tz - start < 3) return NULL;
 	*end = tz;
-	return strndup(start,tz - start);
+	return strndup(start, tz - start);
 }
 
-static long get_offset(char *tz,char **end,int *error){
+static long get_offset(char *tz, char **end, int *error) {
 	int sign = 1;
-	switch(*tz){
+	switch (*tz) {
 	case '+':
 		tz++;
 		break;
@@ -52,14 +52,14 @@ static long get_offset(char *tz,char **end,int *error){
 	long off = 0;
 	char *e;
 
-	for(long mul=3600; mul>=1; mul/=60){
-		off += strtol(tz,&e,10) * mul;
-		if(e == tz){
+	for (long mul = 3600; mul >= 1; mul /= 60) {
+		off += strtol(tz, &e, 10) * mul;
+		if (e == tz) {
 			*error = 1;
 			return 0;
 		}
 		tz = e;
-		if(*tz != ':'){
+		if (*tz != ':') {
 			*end = tz;
 			return sign * off;
 		}
@@ -67,10 +67,10 @@ static long get_offset(char *tz,char **end,int *error){
 	*end = tz;
 	return sign * off;
 }
-//TODO : parse timezone file
-void tzset(void){
+// TODO : parse timezone file
+void tzset(void) {
 	char *tz = getenv("TZ");
-	if(!tz){
+	if (!tz) {
 fallback:
 		free(tzname[0]);
 		free(tzname[1]);
@@ -82,11 +82,11 @@ fallback:
 	}
 	int error = 0;
 
-	if(*tz == ',')tz++;
-	char *std = get_str(tz,&tz);
-	if(!std)goto fallback;
-	long off = get_offset(tz,&tz,&error);
-	if(error){
+	if (*tz == ',') tz++;
+	char *std = get_str(tz, &tz);
+	if (!std) goto fallback;
+	long off = get_offset(tz, &tz, &error);
+	if (error) {
 		free(std);
 		goto fallback;
 	}

@@ -1,17 +1,17 @@
 #include <wchar.h>
 
-wchar_t *fgetws(wchar_t *ws, int n, FILE *stream){
+wchar_t *fgetws(wchar_t *ws, int n, FILE *stream) {
 	wchar_t *ret = ws;
-	//read until '\n'
+	// read until '\n'
 	wint_t wc = 0;
 	do {
-		if(n <= 0){
+		if (n <= 0) {
 			break;
 		}
 		wc = fgetwc(stream);
 
-		//if EOF quit immediatlely
-		if(wc == WEOF){
+		// if EOF quit immediatlely
+		if (wc == WEOF) {
 			break;
 		}
 
@@ -20,6 +20,6 @@ wchar_t *fgetws(wchar_t *ws, int n, FILE *stream){
 		n--;
 	} while (wc != L'\n');
 
-	if(n >= 1)*ws = L'\0';
+	if (n >= 1) *ws = L'\0';
 	return ret;
 }

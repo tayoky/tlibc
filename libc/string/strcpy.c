@@ -1,8 +1,8 @@
 #include <string.h>
 
-char *strcpy(char *dest, const char *src){
+char *strcpy(char *dest, const char *src) {
 	char *d = dest;
-	while (*src){
+	while (*src) {
 		*(dest++) = *(src++);
 	}
 	*dest = '\0';

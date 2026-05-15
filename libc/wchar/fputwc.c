@@ -1,6 +1,6 @@
-#include <wchar.h>
-#include <stdio.h>
 #include <limits.h>
+#include <stdio.h>
+#include <wchar.h>
 
 wint_t fputwc(wchar_t wc, FILE *stream) {
 	char buf[MB_CUR_MAX];

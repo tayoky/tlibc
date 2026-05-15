@@ -1,32 +1,35 @@
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
 #include <errno.h>
 #include <grp.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
 static struct group _gbuf;
 static char _buf[1048];
 static FILE *grp_file = NULL;
 
-#define OUT(c) if(size > 0){\
-            *(unsigned char *)buf = c;\
-            buf++;\
-            size--;\
-        } else {\
-            return __set_errno(-ERANGE);\
-        }
-#define PARSE_STR(var,end) var = buf;\
-    while((c = fgetc(stream)) != end){\
-        if(c == EOF)return -1;\
-        OUT(c);\
-    }\
-    OUT('\0');
-#define PARSE_INT(var,end) var = 0;\
-    while((c = fgetc(stream)) != end){\
-        if(c == EOF)return -1;\
-        var *= 10;\
-        var += c - '0';\
-    }
+#define OUT(c) \
+	if (size > 0) { \
+		*(unsigned char *)buf = c; \
+		buf++; \
+		size--; \
+	} else { \
+		return __set_errno(-ERANGE); \
+	}
+#define PARSE_STR(var, end) \
+	var = buf; \
+	while ((c = fgetc(stream)) != end) { \
+		if (c == EOF) return -1; \
+		OUT(c); \
+	} \
+	OUT('\0');
+#define PARSE_INT(var, end) \
+	var = 0; \
+	while ((c = fgetc(stream)) != end) { \
+		if (c == EOF) return -1; \
+		var *= 10; \
+		var += c - '0'; \
+	}
 
 
 int fgetgrent_r(FILE *stream, struct group *gbuf, char *buf, size_t size, struct group **gbufp) {
@@ -52,20 +55,20 @@ int fgetgrent_r(FILE *stream, struct group *gbuf, char *buf, size_t size, struct
 	// do some padding
 	uintptr_t padding = (uintptr_t)buf % sizeof(char *);
 	if (padding) {
-		padding = sizeof(char*) - padding;
-		if (size < sizeof(char*) * (users_count + 1)) {
+		padding = sizeof(char *) - padding;
+		if (size < sizeof(char *) * (users_count + 1)) {
 			return __set_errno(-ERANGE);
 		}
 		buf += padding;
 		size -= padding;
 	}
-	if (size < sizeof(char*) * (users_count + 1)) {
+	if (size < sizeof(char *) * (users_count + 1)) {
 		return __set_errno(-ERANGE);
 	}
 
-	gbuf->gr_mem = (char**)buf;
+	gbuf->gr_mem = (char **)buf;
 	ptr = users;
-	for (int i=0; i<users_count; i++) {
+	for (int i = 0; i < users_count; i++) {
 		gbuf->gr_mem[i] = ptr;
 		ptr += strlen(ptr) + 1;
 	}
@@ -74,32 +77,32 @@ int fgetgrent_r(FILE *stream, struct group *gbuf, char *buf, size_t size, struct
 	return 0;
 }
 
-struct group *fgetgrent(FILE *stream){
-    if (fgetgrent_r(stream, &_gbuf, _buf, sizeof(_buf), NULL) < 0) {
-        return NULL;
-    } else {
-        return &_gbuf;
-    }
+struct group *fgetgrent(FILE *stream) {
+	if (fgetgrent_r(stream, &_gbuf, _buf, sizeof(_buf), NULL) < 0) {
+		return NULL;
+	} else {
+		return &_gbuf;
+	}
 }
 
 void setgrent(void) {
-    if (grp_file) {
-        rewind(grp_file);
-    } else {
-        grp_file = fopen("/etc/group","r");
-    }
+	if (grp_file) {
+		rewind(grp_file);
+	} else {
+		grp_file = fopen("/etc/group", "r");
+	}
 }
 
 void endgrent(void) {
-    if (grp_file) {
-        fclose(grp_file);
-        grp_file = NULL;
-    }
+	if (grp_file) {
+		fclose(grp_file);
+		grp_file = NULL;
+	}
 }
 
 int getgrent_r(struct group *gbuf, char *buf, size_t size, struct group **gbufp) {
-    if (!grp_file) setgrent();
-    return fgetgrent_r(grp_file, gbuf, buf, size, gbufp);
+	if (!grp_file) setgrent();
+	return fgetgrent_r(grp_file, gbuf, buf, size, gbufp);
 }
 
 struct group *getgrent(void) {

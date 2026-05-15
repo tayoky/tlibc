@@ -2,6 +2,7 @@
 #define _GRP_H
 
 #include <sys/types.h>
+#include <stdio.h>
 
 struct group {
 	char *gr_name;

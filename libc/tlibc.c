@@ -1,9 +1,9 @@
-#include <tlibc.h>
+#include <locale.h>
+#include <sched.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sched.h>
-#include <locale.h>
+#include <tlibc.h>
 
 #ifndef __DYNAMIC__
 void _init(void);
@@ -35,7 +35,7 @@ void __init_tlibc(long *stack, main_t main) {
 	char **envp = (char **)(stack + argc + 2);
 
 #if !defined(__DYNAMIC__) || defined(__DL_TLIBC__) // dynamic linker aready prepare uthread
-	//setup a uthread for the main thread
+	// setup a uthread for the main thread
 	__set_tls(__new_uthread());
 #endif
 #ifdef __DL_TLIBC__

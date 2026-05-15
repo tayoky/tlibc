@@ -1,6 +1,6 @@
+#include <errno.h>
 #include <pthread.h>
 #include <unistd.h>
-#include <errno.h>
 
 int pthread_mutex_trylock(pthread_mutex_t *mutex) {
 	if (!mutex) return EINVAL;

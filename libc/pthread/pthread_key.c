@@ -1,6 +1,6 @@
-#include <pthread.h>
-#include <limits.h>
 #include <errno.h>
+#include <limits.h>
+#include <pthread.h>
 
 // pthread_key_create and pthread_key_delete need to qccess the same bitmap
 // so they are kept in the same file
@@ -8,12 +8,12 @@
 #define BITS_PER_ENTRY (sizeof(unsigned int) * CHAR_BIT)
 
 static unsigned int bitmap[PTHREAD_KEYS_MAX / BITS_PER_ENTRY];
-static void (*destructors[PTHREAD_KEYS_MAX])(void*);
+static void (*destructors[PTHREAD_KEYS_MAX])(void *);
 
 static int allocate_bit(void) {
-	for (size_t i=0; i<sizeof(bitmap)/sizeof(unsigned int); i++) {
+	for (size_t i = 0; i < sizeof(bitmap) / sizeof(unsigned int); i++) {
 		if (bitmap[i] == UINT_MAX) continue;
-		for (size_t j=0; j<BITS_PER_ENTRY; j++) {
+		for (size_t j = 0; j < BITS_PER_ENTRY; j++) {
 			if (bitmap[i] & (1 << j)) continue;
 			bitmap[i] |= 1 << j;
 			return j + i * BITS_PER_ENTRY;

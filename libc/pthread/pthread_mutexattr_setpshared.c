@@ -1,5 +1,5 @@
-#include <pthread.h>
 #include <errno.h>
+#include <pthread.h>
 
 int pthread_mutexattr_setpshared(pthread_mutexattr_t *mutexattr, int pshared) {
 	if (!mutexattr) return __set_errno(-EINVAL);

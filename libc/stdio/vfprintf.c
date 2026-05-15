@@ -1,14 +1,14 @@
-#include <stdio.h>
-#include <stdio-internal.h>
 #include <stdarg.h>
+#include <stdio-internal.h>
+#include <stdio.h>
 
 #ifndef PRINTF_MAX
 #define PRINTF_MAX 4096
 #endif
 
-int vfprintf(FILE *stream, const char *fmt, va_list args){
+int vfprintf(FILE *stream, const char *fmt, va_list args) {
 	char buf[PRINTF_MAX];
-	int size = vsnprintf(buf,PRINTF_MAX,fmt,args);
+	int size = vsnprintf(buf, PRINTF_MAX, fmt, args);
 
 	return __fileio_write(stream, buf, size);
 }

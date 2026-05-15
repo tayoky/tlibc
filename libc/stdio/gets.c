@@ -1,6 +1,6 @@
-#include <stdio.h>
 #include <limits.h>
+#include <stdio.h>
 
-char *gets(char *buffer){
-	return fgets(buffer,INT_MAX,stdin);
+char *gets(char *buffer) {
+	return fgets(buffer, INT_MAX, stdin);
 }

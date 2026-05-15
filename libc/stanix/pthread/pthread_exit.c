@@ -3,8 +3,8 @@
 #include <tlibc.h>
 #include <tlibcnoreturn.h>
 
-TLIBC_NORETURN void pthread_exit(void *retval){
+TLIBC_NORETURN void pthread_exit(void *retval) {
 	__free_uthread(__get_uthread());
-	__syscall1(SYS_thread_exit,(long)retval);
+	__syscall1(SYS_thread_exit, (long)retval);
 	__builtin_unreachable();
 }

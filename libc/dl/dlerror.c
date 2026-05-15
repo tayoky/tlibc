@@ -1,9 +1,9 @@
 #include <dlfcn.h>
 
-__attribute__((weak)) char *dlerror(void){
+__attribute__((weak)) char *dlerror(void) {
 #ifdef __DYNAMIC__
-    return "Dynamic linker is not loaded";
+	return "Dynamic linker is not loaded";
 #else
-    return "Executable is staticly linked";
+	return "Executable is staticly linked";
 #endif
 }

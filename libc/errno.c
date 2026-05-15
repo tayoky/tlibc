@@ -1,11 +1,11 @@
 #include <errno.h>
 #include <tlibc.h>
 
-int *__errno_location(void){
+int *__errno_location(void) {
 #ifdef __LIBK__
-    static int stub;
-    return &stub;
+	static int stub;
+	return &stub;
 #else
-    return &__get_uthread()->err;
+	return &__get_uthread()->err;
 #endif
 }

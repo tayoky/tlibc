@@ -1,5 +1,5 @@
-#include <pthread.h>
 #include <errno.h>
+#include <pthread.h>
 
 int pthread_mutex_destroy(pthread_mutex_t *mutex) {
 	if (!mutex) return __set_errno(-EINVAL);

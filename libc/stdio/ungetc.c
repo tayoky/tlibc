@@ -1,9 +1,9 @@
-#include <stdio.h>
 #include <stdio-internal.h>
+#include <stdio.h>
 
-int ungetc(int c,FILE *stream){
-	//TODO : move position indicator
-	if(stream->unget != EOF || c == EOF){
+int ungetc(int c, FILE *stream) {
+	// TODO : move position indicator
+	if (stream->unget != EOF || c == EOF) {
 		return EOF;
 	}
 	stream->eof = 0;

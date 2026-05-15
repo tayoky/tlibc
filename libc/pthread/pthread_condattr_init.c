@@ -1,5 +1,5 @@
-#include <pthread.h>
 #include <errno.h>
+#include <pthread.h>
 
 int pthread_condattr_init(pthread_condattr_t *condattr) {
 	if (!condattr) return __set_errno(-EINVAL);

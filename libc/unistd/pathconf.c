@@ -1,10 +1,10 @@
-#include <unistd.h>
-#include <limits.h>
 #include <errno.h>
+#include <limits.h>
+#include <unistd.h>
 
-long pathconf(const char *pathname, int varcode){
+long pathconf(const char *pathname, int varcode) {
 	(void)pathname;
-	switch(varcode){
+	switch (varcode) {
 	case _PC_PATH_MAX:
 		return PATH_MAX;
 	default:

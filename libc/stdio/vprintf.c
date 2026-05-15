@@ -1,6 +1,6 @@
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
 
-int vprintf(const char *fmt, va_list args){
-	return vfprintf(stdout,fmt,args);
+int vprintf(const char *fmt, va_list args) {
+	return vfprintf(stdout, fmt, args);
 }

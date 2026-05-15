@@ -1,7 +1,7 @@
-#include <stdlib.h>
 #include <signal.h>
+#include <stdlib.h>
 
-void abort(void){
+void abort(void) {
 	raise(SIGABRT);
 	exit(EXIT_FAILURE);
 }

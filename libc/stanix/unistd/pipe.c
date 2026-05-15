@@ -1,7 +1,7 @@
-#include <unistd.h>
-#include <syscall.h>
 #include <errno.h>
+#include <syscall.h>
+#include <unistd.h>
 
-int pipe(int pipefd[2]){
-	return __set_errno(__syscall1(SYS_pipe,(long)pipefd));
+int pipe(int pipefd[2]) {
+	return __set_errno(__syscall1(SYS_pipe, (long)pipefd));
 }

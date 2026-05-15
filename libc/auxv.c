@@ -1,7 +1,7 @@
 #include <sys/auxv.h>
-#include <stdlib.h>
-#include <errno.h>
 #include <elf.h>
+#include <errno.h>
+#include <stdlib.h>
 
 #ifdef __i386__
 #define Elf_Auxv Elf32_Auxv
@@ -13,7 +13,7 @@ extern char **environ;
 
 unsigned long getauxval(unsigned long type) {
 	long *auxv = (long *)environ;
-	
+
 	// jump over envp
 	while (*auxv) auxv++;
 	auxv++;

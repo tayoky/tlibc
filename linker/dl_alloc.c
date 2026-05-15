@@ -1,6 +1,6 @@
-#include <string.h>
-#include <stddef.h>
 #include <dlfcn.h>
+#include <stddef.h>
+#include <string.h>
 #include "linker.h"
 
 
@@ -13,7 +13,7 @@ void dl_setup_libc_alloc(void) {
 	// setup libc allocator
 	void *libc = dlopen("libc.so", 0);
 	_malloc = dlsym(libc, "malloc");
-	_free   = dlsym(libc, "free");
+	_free = dlsym(libc, "free");
 }
 
 void *dl_alloc(size_t size) {
@@ -32,7 +32,7 @@ void *dl_alloc(size_t size) {
 }
 
 void dl_free(void *ptr) {
-	if ((char*)ptr >= early_buf && (char*)ptr < early_buf + sizeof(early_buf)) return;
+	if ((char *)ptr >= early_buf && (char *)ptr < early_buf + sizeof(early_buf)) return;
 	if (_free) _free(ptr);
 }
 
@@ -43,8 +43,8 @@ char *dl_strdup(const char *str) {
 }
 
 char *dl_strndup(const char *str, size_t count) {
-	size_t len = strnlen(str,count);
+	size_t len = strnlen(str, count);
 	char *dup = dl_alloc(len + 1);
 	dup[len] = '\0';
-	return memcpy(dup,str,len);
+	return memcpy(dup, str, len);
 }

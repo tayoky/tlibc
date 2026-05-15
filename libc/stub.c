@@ -1,9 +1,10 @@
 #include <stdio.h>
 
-#define STUB(name) int name(){\
-    fprintf(stderr, "tlibc : STUB " #name " was called\n");\
-    return 0;\
-}
+#define STUB(name) \
+	int name() { \
+		fprintf(stderr, "tlibc : STUB " #name " was called\n"); \
+		return 0; \
+	}
 
 STUB(utime)
 STUB(clock)

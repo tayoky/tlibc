@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdio-internal.h>
+#include <stdio.h>
 
 int fputc(int lc, FILE *stream) {
 	unsigned char c = (unsigned char)lc;

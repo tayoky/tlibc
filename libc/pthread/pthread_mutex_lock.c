@@ -1,7 +1,7 @@
 #include <sys/futex.h>
-#include <unistd.h>
-#include <pthread.h>
 #include <errno.h>
+#include <pthread.h>
+#include <unistd.h>
 
 int pthread_mutex_lock(pthread_mutex_t *mutex) {
 	if (!mutex) return EINVAL;
@@ -24,6 +24,6 @@ int pthread_mutex_lock(pthread_mutex_t *mutex) {
 			// we are going to deadlock
 			// this is intended behaviour
 		}
-		futex((pid_t*)&mutex->lock, FUTEX_WAIT, expected); 
+		futex((pid_t *)&mutex->lock, FUTEX_WAIT, expected);
 	}
 }

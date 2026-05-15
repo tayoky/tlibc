@@ -1,7 +1,7 @@
-#include <elf.h>
-#include <string.h>
 #include <dlfcn.h>
+#include <elf.h>
 #include <stdio.h>
+#include <string.h>
 #include "linker.h"
 
 #define A rel->r_addend
@@ -37,10 +37,10 @@ int reloc(struct elf_object *object, Elf_Rela *rel) {
 			dl_error("cannot resolve symbol");
 			return -1;
 		} else {
-			keep_sym_obj:
+keep_sym_obj:
 			sym = obj_sym;
 			sym_val = obj_sym->st_value + object->addr;
-		} 
+		}
 	}
 
 	// calculate
@@ -51,7 +51,7 @@ int reloc(struct elf_object *object, Elf_Rela *rel) {
 	case R_X86_64_NONE:
 		return 0;
 	case R_X86_64_COPY:
-		memcpy((void*)P, (void*)S, sym->st_size);
+		memcpy((void *)P, (void *)S, sym->st_size);
 		return 0;
 	case R_X86_64_64:
 		size = sizeof(uint64_t);
@@ -121,6 +121,6 @@ int reloc(struct elf_object *object, Elf_Rela *rel) {
 	}
 
 	// actually apply
-	memcpy((void*)P, &result, size);
+	memcpy((void *)P, &result, size);
 	return 0;
 }

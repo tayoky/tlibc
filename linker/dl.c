@@ -1,14 +1,14 @@
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/mman.h>
 #include <sys/auxv.h>
-#include <limits.h>
-#include <fcntl.h>
-#include <errno.h>
+#include <sys/mman.h>
 #include <dlfcn.h>
 #include <elf.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "linker.h"
 
 // the dynamic linker of tlibc
@@ -93,7 +93,7 @@ void *dlopen(const char *filename, int flags) {
 	object = elf_load(filename, 1, -1);
 	if (!object) return NULL;
 
-	object->name      = dl_strdup(name);
+	object->name = dl_strdup(name);
 	object->ref_count = 1;
 	object->flags = flags;
 	cache_add(object);
@@ -126,19 +126,19 @@ static Elf_Sym *self_lookup(const char *name) {
 		.st_info = ELF_ST_INFO(STB_GLOBAL, STT_FUNC),
 	};
 	if (!strcmp(name, "dlopen")) {
-		sym.st_value = (uintptr_t)(void*)dlopen;
+		sym.st_value = (uintptr_t)(void *)dlopen;
 		return &sym;
 	}
 	if (!strcmp(name, "dlclose")) {
-		sym.st_value = (uintptr_t)(void*)dlclose;
+		sym.st_value = (uintptr_t)(void *)dlclose;
 		return &sym;
 	}
 	if (!strcmp(name, "dlsym")) {
-		sym.st_value = (uintptr_t)(void*)dlsym;
+		sym.st_value = (uintptr_t)(void *)dlsym;
 		return &sym;
 	}
 	if (!strcmp(name, "dlerror")) {
-		sym.st_value = (uintptr_t)(void*)dlerror;
+		sym.st_value = (uintptr_t)(void *)dlerror;
 		return &sym;
 	}
 	return NULL;
@@ -155,7 +155,7 @@ Elf_Sym *dl_lookup(struct elf_object *object, const char *name, int flags, struc
 		}
 		if (found_object) *found_object = object;
 	}
-	for (size_t i=0; i < object->depencies_count; i++) {
+	for (size_t i = 0; i < object->depencies_count; i++) {
 		struct elf_object *new_object;
 		Elf_Sym *new_sym = dl_lookup(object->depencies[i], name, flags & ~LOOKUP_DEPENCIES, &new_object);
 		if (!new_sym) continue;
@@ -173,13 +173,13 @@ void *dlsym(void *handle, const char *sym) {
 	if (handle == RTLD_DEFAULT) {
 		// first try the executable
 		Elf_Sym *ret = elf_lookup(program, sym);
-		if (ret) return (void*)(ret->st_value + program->addr);
+		if (ret) return (void *)(ret->st_value + program->addr);
 		// all library marked as global
 		struct elf_object *lib = cache_first;
 		while (lib) {
 			if (lib->flags & RTLD_GLOBAL) {
 				ret = elf_lookup(lib, sym);
-				if (ret) return (void*)(ret->st_value + lib->addr);
+				if (ret) return (void *)(ret->st_value + lib->addr);
 			}
 			lib = lib->next;
 		}
@@ -193,57 +193,57 @@ void *dlsym(void *handle, const char *sym) {
 	struct elf_object *object = handle;
 	struct elf_object *found_object;
 	Elf_Sym *ret = dl_lookup(object, sym, 0, &found_object);
-	return ret ? (void*)ret->st_value + found_object->addr : NULL;
+	return ret ? (void *)ret->st_value + found_object->addr : NULL;
 }
 
 static const char *auxv_name(long type) {
 	switch (type) {
 	case AT_NULL:
-	    return "AT_NULL";
+		return "AT_NULL";
 	case AT_IGNORE:
-	    return "AT_IGNORE";
+		return "AT_IGNORE";
 	case AT_EXECFD:
-	    return "AT_EXECFD";
+		return "AT_EXECFD";
 	case AT_PHDR:
-	    return "AT_PHDR";
+		return "AT_PHDR";
 	case AT_PHENT:
-	    return "AT_PHENT";
+		return "AT_PHENT";
 	case AT_PHNUM:
-	    return "AT_PHNUM";
+		return "AT_PHNUM";
 	case AT_PAGESZ:
-	    return "AT_PAGESZ";
+		return "AT_PAGESZ";
 	case AT_BASE:
-	    return "AT_BASE";
+		return "AT_BASE";
 	case AT_FLAGS:
-	    return "AT_FLAGS";
+		return "AT_FLAGS";
 	case AT_ENTRY:
-	    return "AT_ENTRY";
+		return "AT_ENTRY";
 	case AT_NOTELF:
-	    return "AT_NOTELF";
+		return "AT_NOTELF";
 	case AT_UID:
-	    return "AT_UID";
+		return "AT_UID";
 	case AT_EUID:
-	    return "AT_EUID";
+		return "AT_EUID";
 	case AT_GID:
-	    return "AT_GID";
+		return "AT_GID";
 	case AT_EGID:
-	    return "AT_EGID";
+		return "AT_EGID";
 	case AT_PLATFORM:
-	    return "AT_PLATFORM";
+		return "AT_PLATFORM";
 	case AT_HWCAP:
-	    return "AT_HWCAP";
+		return "AT_HWCAP";
 	case AT_CLKTCK:
-	    return "AT_CLKTCK";
+		return "AT_CLKTCK";
 	case AT_SECURE:
-	    return "AT_SECURE";
+		return "AT_SECURE";
 	case AT_BASE_PLATFORM:
-	    return "AT_BASE_PLATFORM";
+		return "AT_BASE_PLATFORM";
 	case AT_RANDOM:
-	    return "AT_RANDOM";
+		return "AT_RANDOM";
 	case AT_HWCAP2:
-	    return "AT_HWCAP2";
+		return "AT_HWCAP2";
 	case AT_EXECFN:
-	    return "AT_EXECFN";
+		return "AT_EXECFN";
 	default:
 		return "AT_???";
 	}
@@ -282,7 +282,7 @@ int main(int argc, char **argv, char **envp) {
 
 		if (getenv("LD_SHOW_AUXV")) {
 			long *auxv = (long *)envp;
-	
+
 			// jump over envp
 			while (*auxv) auxv++;
 			auxv++;
@@ -317,11 +317,11 @@ int main(int argc, char **argv, char **envp) {
 		envc++;
 	}
 
-	long *auxv_top = (long*)envp;
+	long *auxv_top = (long *)envp;
 	while (*auxv_top) auxv_top++;
 	auxv_top++;
 	while (*auxv_top) auxv_top++;
-	long *auxv = (long*)argv;
+	long *auxv = (long *)argv;
 	auxv--;
 
 	// align the size

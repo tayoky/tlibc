@@ -2,18 +2,18 @@
 #include <math.h>
 #include "internal.h"
 
-double ceil(double x) {
-	uintdbl_t i;
-	memcpy(&i, &x, sizeof(double));
-	int e = (i >> DBL_MANT_BITS) & DBL_EXP_MASK;
-	if (e == DBL_EXP_MASK) {
+float ceilf(float x) {
+	uintflt_t i;
+	memcpy(&i, &x, sizeof(float));
+	int e = (i >> FLT_MANT_BITS) & FLT_EXP_MASK;
+	if (e == FLT_EXP_MASK) {
 		// NAN or INFINITY
 		return x;
 	}
 
-	uintdbl_t sign = i & DBL_SIGN_MASK;
+	uintflt_t sign = i & FLT_SIGN_MASK;
 
-	int exp = e - DBL_EXP_HALF;
+	int exp = e - FLT_EXP_HALF;
 	if (exp < 0) {
 		// subnormal
 		if (sign) {
@@ -21,12 +21,12 @@ double ceil(double x) {
 		} else {
 			return i == 0 ? 0.0 : 1.0;
 		}
-	} else if (exp >= DBL_MANT_BITS) {
+	} else if (exp >= FLT_MANT_BITS) {
 		// we don't have any fractional bits
 		return x;
 	}
 
-	uintdbl_t fractional_mask = (1ULL << (DBL_MANT_BITS - exp)) - 1;
+	uintflt_t fractional_mask = (1ULL << (FLT_MANT_BITS - exp)) - 1;
 	if ((i & fractional_mask) == 0) {
 		return x;
 	}
@@ -34,6 +34,6 @@ double ceil(double x) {
 	if (!sign) {
 		i += fractional_mask + 1;
 	}
-	memcpy(&x, &i, sizeof(double));
+	memcpy(&x, &i, sizeof(float));
 	return x;
 }

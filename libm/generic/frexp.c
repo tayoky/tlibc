@@ -17,10 +17,10 @@ double frexp(double x, int *exp) {
 			return x;
 		} else {
 			// subnormal
-			x *= 1.8014398509481984e+16; // 2 ^ 54
+			x *= (double)(1L << (DBL_MANT_DIG + 1));
 			memcpy(&i, &x, sizeof(double));
 			e = (i >> DBL_MANT_BITS) & DBL_EXP_MASK;
-			*exp = e - DBL_EXP_HALF - 54;
+			*exp = e - DBL_EXP_HALF - DBL_MANT_DIG - 1;
 		}
 	} else {
 		// normal

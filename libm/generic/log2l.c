@@ -2,7 +2,7 @@
 #include <errno.h>
 #include "internal.h"
 
-static const float c[9] = {
+static const long double c[9] = {
 	 1.4426950408889634, // 1/ln(2)
 	-0.7213475204444817,
 	 0.4808983469629871,
@@ -14,7 +14,7 @@ static const float c[9] = {
 	 0.1603052267555543,
 };
 
-float log2f(float x) {
+long double log2l(long double x) {
 	if (isinf(x) || isnan(x)) {
 		return x;
 	}
@@ -28,21 +28,21 @@ float log2f(float x) {
 		}
 	}
 	int exp;
-	float m = frexpf(x, &exp);
+	long double m = frexpl(x, &exp);
 
 	// get closer to 0
-	float z = m - 1.0;
+	long double z = m - 1.0;
 
 	// fast path, power of 2
-	if (z == -0.5f) {
-		return (float)exp - 1;
+	if (z == -0.5) {
+		return (long double)exp - 1;
 	}
 
 	// 9 degree minimax polyminal
-	float log2_m = c[8];
+	long double log2_m = c[8];
 	for (int i=7; i>=0; i--) {
 		log2_m = log2_m * z + c[i];
 	}
 	log2_m *= z;
-	return (float)exp + log2_m;
+	return (long double)exp + log2_m;
 }

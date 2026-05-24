@@ -32,6 +32,11 @@ double log2(double x) {
 
 	// get closer to 0
 	double z = m - 1.0;
+	
+	// fast path, power of 2
+	if (z == -0.5) {
+		return (double)exp - 1;
+	}
 
 	// 9 degree minimax polyminal
 	double log2_m = c[8];

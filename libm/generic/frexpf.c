@@ -17,10 +17,10 @@ float frexpf(float x, int *exp) {
 			return x;
 		} else {
 			// subnormal
-			x *= 3.3554432e+07f;
+			x *= (float)(1L << (FLT_MANT_DIG + 1));
 			memcpy(&i, &x, sizeof(float));
 			e = (i >> FLT_MANT_BITS) & FLT_EXP_MASK;
-			*exp = e - FLT_EXP_HALF - 25;
+			*exp = e - FLT_EXP_HALF - FLT_MANT_DIG - 1;
 		}
 	} else {
 		// normal

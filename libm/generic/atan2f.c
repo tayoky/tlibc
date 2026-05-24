@@ -1,7 +1,7 @@
 #include <math.h>
 #include "internal.h"
 
-long double atan2l(long double y, long double x) {
+float atan2f(float y, float x) {
 	if (isnan(x) || isnan(y)) return NAN;
 
 	if (x == 0) {
@@ -27,7 +27,7 @@ long double atan2l(long double y, long double x) {
 		}
 	}
 
-	long double base = fabsl(y) > fabsl(x) ? M_PI_2 - atanl(x / y) : atanl(y / x);
+	float base = fabsf(y) > fabsf(x) ? M_PI_2 - atanf(x / y) : atanf(y / x);
 	
 	if (x > 0.0) {
 		return base;

@@ -71,6 +71,7 @@ ffunc2(fmin)
 ffunc2(fmax)
 ffunc2(fmod)
 
+ffunc(trunc)
 ffunc(floor)
 ffunc(ceil)
 ffunc(round)

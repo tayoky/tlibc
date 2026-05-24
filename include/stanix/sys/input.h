@@ -72,9 +72,9 @@ struct input_request {
 // key event flags
 #define IE_KEY_PRESS 0x01
 #define IE_KEY_RELEASE 0x02
-#define IE_KEY_HOLD 0x03
-#define IE_KEY_GRAPH 0x04  // printable key
-#define IE_KEY_GRPAH IE_KEY_GRAPH  //conserved 
+#define IE_KEY_HOLD 0x04
+#define IE_KEY_GRAPH 0x08  // printable key
+#define IE_KEY_GRPAH IE_KEY_GRAPH  //conserved for compatibility with old programs
 
 //ioctl
 #define I_INPUT_GET_CONTROL  1001

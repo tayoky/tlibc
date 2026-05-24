@@ -1,32 +1,32 @@
 #include <math.h>
 
-#define TAN_PI_8  0.41421356237309504
-#define TAN_3PI_8 2.414213562373095
+#define TAN_PI_8  0.41421356237309504f
+#define TAN_3PI_8 2.414213562373095f
 
-static const double c[5] = {
-	 0.3333333333333333,
-	-0.1999999999999995,
-	 0.1428571428570304,
-	-0.1111111111003425,
-	 0.0909090902647464,
+static const float c[5] = {
+	 0.3333333333333333f,
+	-0.1999999999999995f,
+	 0.1428571428570304f,
+	-0.1111111111003425f,
+	 0.0909090902647464f,
 };
 
-static double atan_core(double z) {
-	double z2 = z * z;
-	double z3 = z2 * z;
+static float atan_core(float z) {
+	float z2 = z * z;
+	float z3 = z2 * z;
 
 	// 9 degrees polyminal
-	double ret = c[4];
+	float ret = c[4];
 	for (int i = 3; i >= 0; i--) {
 		ret = ret * z2 + c[i];
 	}
 	return z - (z3 * ret);
 }
 
-double atan(double x) {
+float atanf(float x) {
 	if (isnan(x)) return x;
 
-	double sign = 1.0;
+	float sign = 1.0;
 	if (x < 0.0) {
 		x = -x;
 		sign = -1.0;
@@ -37,10 +37,10 @@ double atan(double x) {
 	if (x < TAN_PI_8) {
 		return atan_core(x) * sign;
 	} else if (x < TAN_3PI_8) {
-		double t = (x - 1.0)/(x + 1.0);
+		float t = (x - 1.0)/(x + 1.0);
 		return (M_PI_4 + atan_core(t)) * sign;
 	} else {
-		double t = 1.0 / x;
+		float t = 1.0 / x;
 		return (M_PI_2 - atan_core(t)) * sign;
 	}
 }

@@ -2,8 +2,8 @@
 #include <errno.h>
 #include "internal.h"
 
-const double c[9] = {
-	1.4426950408889634, // 1/ln(2)
+static const double c[9] = {
+	 1.4426950408889634, // 1/ln(2)
 	-0.7213475204444817,
 	 0.4808983469629871,
 	-0.3606737602222409,

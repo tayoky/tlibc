@@ -1,7 +1,7 @@
 #include <math.h>
 #include "internal.h"
 
-long double acosl(long double x) {
-	long double r = asin(x);
+float acosf(float x) {
+	float r = asinf(x);
 	return isnan(r) ? r : M_PI_2 - r;
 }

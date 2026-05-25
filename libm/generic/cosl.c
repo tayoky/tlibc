@@ -1,7 +1,7 @@
 #include <math.h>
 
 // constants taken from FreeBSD
-static const double c[] = {
+static const long double c[] = {
 	 4.16666666666666019037e-02,
 	-1.38888888888741095749e-03,
 	 2.48015872894767294178e-05,
@@ -10,12 +10,12 @@ static const double c[] = {
 	-1.13596475577381996161e-11,
 };
 
-static double cos_core(double x) {
-	double x2 = x * x;
-	double x4 = x2 * x2;
+static long double cos_core(long double x) {
+	long double x2 = x * x;
+	long double x4 = x2 * x2;
 
 	// minimax polyminal using Horner's Method
-	double res = c[5];
+	long double res = c[5];
 	for (int i=4; i>=0; i--) {
 		res = res * x2 + c[i];
 	}
@@ -24,7 +24,7 @@ static double cos_core(double x) {
 }
 
 // constants taken from FreeBSD
-static const double s[] = {
+static const long double s[] = {
 	-1.66666666666666324348e-01,
 	 8.33333333332248946124e-03,
 	-1.98412698298579493134e-04,
@@ -33,23 +33,23 @@ static const double s[] = {
 	 1.58969099521155010221e-10,
 };
 
-static double sin_core(double x) {
-	double x2 = x * x;
-	double x3 = x2 * x;
+static long double sin_core(long double x) {
+	long double x2 = x * x;
+	long double x3 = x2 * x;
 
 	// minimax polyminal using Horner's Method
-	double res = s[5];
+	long double res = s[5];
 	for (int i=4; i>=0; i--) {
 		res = res * x2 + s[i];
 	}
 	return x + x3 * res;
 }
 
-double cos(double x) {
+long double cosl(long double x) {
 	if (isnan(x)) return x;
 	if (isinf(x)) return NAN;
-	x = fmod(x, 2.0 * M_PI);
-	x = fabs(x);
+	x = fmodl(x, 2.0 * M_PI);
+	x = fabsl(x);
 
 	if (x <= M_PI_4) {
 		return cos_core(x);
@@ -64,17 +64,17 @@ double cos(double x) {
 	}
 }
 
-double sin(double x) {
+long double sinl(long double x) {
 	if (isnan(x)) return x;
 	if (isinf(x)) return NAN;
 
-	double sign = 1.0;
+	long double sign = 1.0;
 	if (x < 0) {
 		x = -x;
 		sign = -1.0;
 	}
 
-	x = fmod(x, 2.0 * M_PI);
+	x = fmodl(x, 2.0 * M_PI);
 
 	if (x <= M_PI_4) {
 		return sin_core(x) * sign;

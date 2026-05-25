@@ -8,6 +8,15 @@
 typedef int (*xscanf_getc)(void *);
 typedef void (*xscanf_unget)(int, void *);
 
+#define LEN_NONE  0
+#define LEN_HH    1
+#define LEN_H     2
+#define LEN_L     3
+#define LEN_LL    4
+#define LEN_J     5
+#define LEN_Z     6
+#define LEN_T     7
+#define LEN_BIG_L 8
 static int vxscanf(xscanf_getc getc, xscanf_unget unget, void *arg, const char *fmt, va_list args) {
 	int n = 0;
 
@@ -37,38 +46,38 @@ static int vxscanf(xscanf_getc getc, xscanf_unget unget, void *arg, const char *
 				fmt++;
 				if (*fmt == 'h') {
 					fmt++;
-					width = sizeof(char);
+					width = LEN_HH;
 				} else {
-					width = sizeof(short);
+					width = LEN_H;
 				}
 				break;
 			case 'l':
 				fmt++;
 				if (*fmt == 'l') {
 					fmt++;
-					width = sizeof(long long);
+					width = LEN_LL;
 				} else {
-					width = sizeof(long);
+					width = LEN_L;
 				}
 				break;
 			case 'z':
 				fmt++;
-				width = sizeof(size_t);
+				width = LEN_Z;
 				break;
 			case 'j':
 				fmt++;
-				width = sizeof(uintmax_t);
+				width = LEN_J;
 				break;
 			case 't':
 				fmt++;
-				width = sizeof(ptrdiff_t);
+				width = LEN_T;
 				break;
 			case 'L':
 				fmt++;
-				width = sizeof(long double);
+				width = LEN_BIG_L;
 				break;
 			default:
-				width = sizeof(int);
+				width = LEN_NONE;
 				break;
 			}
 
@@ -143,18 +152,26 @@ integer:
 					d = getc(arg);
 				}
 				unget(d, arg);
-				if (width == sizeof(char)) {
+				switch (width) {
+				case LEN_HH:
 					*va_arg(args, char *) = (char)integer * sign;
-				} else if (width == sizeof(short)) {
+					break;
+				case LEN_H:
 					*va_arg(args, short *) = (short)integer * sign;
-				} else if (width == sizeof(int)) {
+					break;
+				case LEN_NONE:
 					*va_arg(args, int *) = (int)integer * sign;
-				} else if (width == sizeof(long)) {
+					break;
+				case LEN_L:
 					*va_arg(args, long *) = (long)integer * sign;
-				} else if (width == sizeof(long long)) {
+					break;
+				case LEN_LL:
+				case LEN_BIG_L:
 					*va_arg(args, long long *) = (long long)integer * sign;
-				} else {
+					break;
+				default:
 					*va_arg(args, int *) = (int)integer * sign;
+					break;
 				}
 				n++;
 				break;
@@ -168,6 +185,52 @@ integer:
 			case 'X':
 				base = 16;
 				goto integer;
+			case 'e':
+			case 'f':
+			case 'g':
+			case 'a':
+				d = getc(arg);
+				double value = 0.0;
+				double pow   = 1.0;
+				sign = 1;
+				if (d == '+') {
+					d = getc(arg);
+				} else if (d == '-') {
+					d = getc(arg);
+					sign = -1;
+				}
+
+				while (isdigit(d)) {
+					value *= 10;
+					value += d - '0';
+					d = getc(arg);
+				}
+				if (d == '.') {
+					d = getc(arg);
+				}
+				while (isdigit(d)) {
+					pow *= 10;
+					value *= 10;
+					value += d - '0';
+					d = getc(arg);
+				}
+				unget(d, arg);
+				value /= pow;
+				value *= sign;
+				switch (width) {
+				case LEN_NONE:
+				default:
+					*va_arg(args, float *) = value;
+					break;
+				case LEN_L:
+					*va_arg(args, double *) = value;
+					break;
+				case LEN_LL:
+				case LEN_BIG_L:
+					*va_arg(args, long double *) = value;
+					break;
+				}
+				break;
 			default:
 				// unknow, so fail ... i guess ???
 				return n;

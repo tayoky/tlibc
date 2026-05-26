@@ -5,26 +5,25 @@ double atan2(double y, double x) {
 	if (isnan(x) || isnan(y)) return NAN;
 
 	if (x == 0) {
-		if (y > 0) return M_PI_2;
-		if (y < 0) return -M_PI_2;
-		return 0;
+		if (y == 0) return 0;
+		return copysign(M_PI_2, y);
+	} else if (y == 0) {
+		return copysign(x > 0 ? 0 : M_PI, y);
 	}
 
 	if (isinf(x)) {
 		if (isinf(y)) {
 			// diagonals
 			if (x > 0) {
-				return y > 0 ? M_PI_4 : -M_PI_4;
+				return copysign(M_PI_4, y);
 			} else {
-				return y > 0 ? 3.0 * M_PI_4 : -3.0 * M_PI_4;
+				return copysign(-3.0 * M_PI_4, y);
 			}
 		} else {
-			return x > 0 ? 0.0 : M_PI;
+			return copysign(x > 0 ? 0.0 : M_PI, y);
 		}
-	} else {
-		if (isinf(y)) {
-			return y > 0 ? M_PI_2 : -M_PI_2;
-		}
+	} else if (isinf(y)) {
+		return copysign(M_PI_2, y);
 	}
 
 	double base = fabs(y) > fabs(x) ? M_PI_2 - atan(x / y) : atan(y / x);

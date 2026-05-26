@@ -5,26 +5,25 @@ long double atan2l(long double y, long double x) {
 	if (isnan(x) || isnan(y)) return NAN;
 
 	if (x == 0) {
-		if (y > 0) return M_PI_2;
-		if (y < 0) return -M_PI_2;
-		return 0;
+		if (y == 0) return 0;
+		return copysignl(M_PI_2, y);
+	} else if (y == 0) {
+		return copysignl(x > 0 ? 0 : M_PI, y);
 	}
 
 	if (isinf(x)) {
 		if (isinf(y)) {
 			// diagonals
 			if (x > 0) {
-				return y > 0 ? M_PI_4 : -M_PI_4;
+				return copysignl(M_PI_4, y);
 			} else {
-				return y > 0 ? 3.0 * M_PI_4 : -3.0 * M_PI_4;
+				return copysignl(-3.0 * M_PI_4, y);
 			}
 		} else {
-			return x > 0 ? 0.0 : M_PI;
+			return copysignl(x > 0 ? 0.0 : M_PI, y);
 		}
-	} else {
-		if (isinf(y)) {
-			return y > 0 ? M_PI_2 : -M_PI_2;
-		}
+	} else if (isinf(y)) {
+		return copysignl(M_PI_2, y);
 	}
 
 	long double base = fabsl(y) > fabsl(x) ? M_PI_2 - atanl(x / y) : atanl(y / x);

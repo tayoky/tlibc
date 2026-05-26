@@ -70,6 +70,7 @@ ffunc(tanh)
 ffunc2(fmin)
 ffunc2(fmax)
 ffunc2(fmod)
+ffunc2(copysign)
 
 ffunc(trunc)
 ffunc(floor)

@@ -1,154 +1,277 @@
 #include <sys/mman.h>
-#include <errno.h>
-#include <limits.h>
+#include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include <limits.h>
 
-static char *brk_ptr = (char *)0xFF0000000;
+struct bin;
 
-typedef struct heap_segment_struct {
-	uint64_t magic;
-	uint64_t lenght;
-	struct heap_segment_struct *next;
-	struct heap_segment_struct *prev;
-} heap_segment;
+struct node {
+	struct node *next;
+};
 
-typedef struct {
-	uintptr_t start;
-	uintptr_t lenght;
-	heap_segment *first_seg;
-	int initalized;
-} heap_info;
+struct slab {
+	struct slab *next;
+	struct slab *prev;
+	struct node *free;
+	struct bin *bin;
+	size_t allocated_count;
+	int state;
+};
 
-heap_info heap;
+#define SLAB_NULL    0
+#define SLAB_FREE    1
+#define SLAB_PARTIAL 2
+#define SLAB_FULL    3
 
-#define PAGE_ALIGN_UP(x)         (((x) + PAGE_SIZE - 1) / PAGE_SIZE * PAGE_SIZE)
-#define HEAP_SEG_MAGIC_FREE      0x1308
-#define HEAP_SEG_MAGIC_ALLOCATED 0x0505
+struct bin {
+	size_t size;
+	struct slab *full;
+	struct slab *partial;
+	struct slab *free;
+};
 
+struct big_alloc {
+	size_t size;
+	// we need to keep the slab ptr last
+	// to fake a NULL  slab ptr
+	struct slab *slab_ptr;
+};
 
-static void init_heap(void) {
-	// get the heap start and initial size
-	heap.start = (uintptr_t)brk_ptr;
-	mmap(brk_ptr, PAGE_SIZE, PROT_WRITE | PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0);
-	brk_ptr += PAGE_SIZE;
-	heap.lenght = PAGE_SIZE;
+#define PAGE_ALIGN_UP(x) ((((x) + PAGE_SIZE - 1) / PAGE_SIZE) * PAGE_SIZE)
 
-	// init the first seg
-	heap.first_seg = (heap_segment *)heap.start;
-	heap.first_seg->magic = HEAP_SEG_MAGIC_FREE;
-	heap.first_seg->lenght = heap.lenght - sizeof(heap_segment);
-	heap.first_seg->prev = NULL;
-	heap.first_seg->next = NULL;
+#define BIN_SIZES_COUNT 8
+#define SLAB_SIZE 8192
+#define BIN(n) {.size = n, .full = NULL, .partial = NULL, .free = NULL}
+static struct bin bins[BIN_SIZES_COUNT] = {
+	BIN(16),
+	BIN(32),
+	BIN(64),
+	BIN(96),
+	BIN(128),
+	BIN(256),
+	BIN(512),
+	BIN(1024),
+};
+
+static struct bin *get_bin(size_t size) {
+	for (size_t i=0; i<BIN_SIZES_COUNT; i++) {
+		if (size <= bins[i].size) {
+			return &bins[i];
+		}
+	}
+	return NULL;
 }
 
-void *malloc(size_t amount) {
-	if (!amount) {
-		return NULL;
+static struct slab *get_slab(void *ptr) {
+	struct slab **slab_ptr = ptr;
+	slab_ptr--;
+	return *slab_ptr;
+}
+
+static void *slab_allocate(struct slab *slab) {
+	if (!slab || !slab->free) return NULL;
+	slab->allocated_count++;
+	struct node *node = slab->free;
+	slab->free = node->next;
+
+	// we need to store the slab ptr before the node
+	struct slab **slab_ptr = (struct slab **)node;
+	slab_ptr--;
+	*slab_ptr = slab;
+	return node;
+}
+
+static void slab_free(struct slab *slab, void *ptr) {
+	slab->allocated_count--;
+	struct node *node = ptr;
+	node->next = slab->free;
+	slab->free = node;
+}
+
+static size_t align_size(size_t size) {
+	if (size % 16) {
+		size += 16 - (size % 16);
 	}
-	if (!heap.initalized) init_heap();
+	return size;
+}
 
-	// align amount
-	amount = (amount + 15) & ~15;
-	heap_segment *current_seg = heap.first_seg;
+static struct slab *slab_new(struct bin *bin) {
+	struct slab *slab = mmap(NULL, SLAB_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
+	if (slab == MAP_FAILED) return NULL;
+	memset(slab, 0, sizeof(struct slab));
+	slab->bin = bin;
+	
+	// we need to make space between each element of the slab
+	// to put the slab pointer
+	// note that we reserve space for the pointer but it is set in slab_allocate
+	for (uintptr_t addr=align_size(sizeof(struct slab)+sizeof(struct slab*)); addr+bin->size<=SLAB_SIZE; addr += align_size(bin->size + sizeof(struct slab *))) {
+		struct node *node = (struct node *)(((char*)slab) + addr);
+		node->next = slab->free;
+		slab->free = node;
+	}
+	
+	return slab;
+}
 
-	while (current_seg->lenght < amount || current_seg->magic != HEAP_SEG_MAGIC_FREE) {
-		if (current_seg->next == NULL) {
-			// no more segment need to make heap bigger
-			// if last is free make it bigger else create a new seg from scratch
-			if (current_seg->magic == HEAP_SEG_MAGIC_FREE) {
-				mmap(brk_ptr, PAGE_ALIGN_UP(amount - current_seg->lenght + sizeof(heap_segment) + 8), PROT_WRITE | PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0);
-				brk_ptr += PAGE_ALIGN_UP(amount - current_seg->lenght + sizeof(heap_segment) + 8);
-				current_seg->lenght += PAGE_ALIGN_UP(amount - current_seg->lenght + sizeof(heap_segment) + 8);
-			} else {
-				mmap(brk_ptr, PAGE_ALIGN_UP(amount + sizeof(heap_segment) * 2 + 8), PROT_WRITE | PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0);
-				brk_ptr += PAGE_ALIGN_UP(amount + sizeof(heap_segment) * 2 + 8);
-				heap_segment *new_seg = (heap_segment *)((uintptr_t)current_seg + current_seg->lenght + sizeof(heap_segment));
-				new_seg->lenght = PAGE_ALIGN_UP(amount + sizeof(heap_segment) * 2 + 8) - sizeof(heap_segment);
-				new_seg->magic = HEAP_SEG_MAGIC_FREE;
-				new_seg->next = NULL;
-				new_seg->prev = current_seg;
-				current_seg->next = new_seg;
-				current_seg = current_seg->next;
-			}
-			break;
+static void slab_remove_from(struct slab *slab, struct slab **list) {
+	if (slab->prev) {
+		slab->prev->next = slab->next;
+	} else {
+		*list = slab->next;
+	}
+	if (slab->next) {
+		slab->next->prev = slab->prev;
+	}
+}
+
+static void slab_add_to(struct slab *slab, struct slab **list) {
+	slab->prev = NULL;
+	slab->next = *list;
+	if (*list) {
+		(*list)->prev = slab;
+	}
+	*list = slab;
+}
+
+static void slab_move(struct bin *bin, struct slab *slab, int state) {
+	switch (slab->state) {
+	case SLAB_FREE:
+		slab_remove_from(slab, &bin->free);
+		break;
+	case SLAB_PARTIAL:
+		slab_remove_from(slab, &bin->partial);
+		break;
+	case SLAB_FULL:
+		slab_remove_from(slab, &bin->full);
+		break;
+	}
+	slab->state = state;
+	switch (slab->state) {
+	case SLAB_FREE:
+		slab_add_to(slab, &bin->free);
+		break;
+	case SLAB_PARTIAL:
+		slab_add_to(slab, &bin->partial);
+		break;
+	case SLAB_FULL:
+		slab_add_to(slab, &bin->full);
+		break;
+	}
+}
+
+static void *bin_allocate(struct bin *bin) {
+	void *ptr = slab_allocate(bin->partial);
+	if (ptr) {
+		if (!bin->partial->free) {
+			// it's full now
+			slab_move(bin, bin->partial, SLAB_FULL);
 		}
-		current_seg = current_seg->next;
+		return ptr;
+	}
+	ptr = slab_allocate(bin->free);
+	if (ptr) {
+		// it's not free anymore
+		slab_move(bin, bin->free, SLAB_PARTIAL);
+		return ptr;
 	}
 
-	// we find a good segment
+	// we need to allocate a new slab
+	struct slab *slab = slab_new(bin);
+	if (!slab) return NULL;
+	slab_move(bin, slab, SLAB_PARTIAL);
+	return slab_allocate(slab);
+}
 
-	// if big enougth cut it
-	if (current_seg->lenght >= amount + sizeof(heap_segment) + 8) {
-		// big enougth
-		heap_segment *new_seg = (heap_segment *)((uint64_t)current_seg + amount + sizeof(heap_segment));
-		new_seg->lenght = current_seg->lenght - (sizeof(heap_segment) + amount);
-		current_seg->lenght = amount;
-		new_seg->magic = HEAP_SEG_MAGIC_FREE;
-
-		if (current_seg->next) {
-			current_seg->next->prev = new_seg;
-		}
-		new_seg->next = current_seg->next;
-		new_seg->prev = current_seg;
-		current_seg->next = new_seg;
+static void bin_free(struct slab *slab, void *ptr) {
+	struct bin *bin = slab->bin;
+	slab_free(slab, ptr);
+	if (slab->state == SLAB_FULL) {
+		// it's not full anymore
+		slab_move(bin, slab, SLAB_PARTIAL);
 	}
+	if (slab->allocated_count == 0) {
+		// it's free now
+		// TODO : use madvice to set as free
+		slab_move(bin, slab, SLAB_FREE);
+	}
+}
 
-	current_seg->magic = HEAP_SEG_MAGIC_ALLOCATED;
-	return (void *)((uintptr_t)current_seg + sizeof(heap_segment));
+static struct big_alloc *get_big(void *ptr) {
+	struct big_alloc *alloc = ptr;
+	alloc--;
+	return alloc;
+}
+
+static void *big_allocate(size_t size) {
+	size_t alloc_size = PAGE_ALIGN_UP(size + sizeof(struct big_alloc));
+	struct big_alloc *alloc = mmap(NULL, alloc_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
+	if (alloc == MAP_FAILED) return NULL;
+
+	// allocations have a NULL slab ptr
+	alloc->slab_ptr = NULL;
+	alloc->size = alloc_size - sizeof(struct big_alloc);
+	return alloc + 1;
+}
+
+static void big_free(void *ptr) {
+	struct big_alloc *alloc = get_big(ptr);
+	munmap(alloc, alloc->size + sizeof(struct big_alloc));
+}
+
+void *malloc(size_t size) {
+	if (size == 0) return NULL;
+	struct bin *bin = get_bin(size);
+	if (bin) {
+		return bin_allocate(bin);
+	} else {
+		return big_allocate(size);
+	}
 }
 
 void free(void *ptr) {
 	if (!ptr) return;
-
-	heap_segment *current_seg = (heap_segment *)((uintptr_t)ptr - sizeof(heap_segment));
-	if (current_seg->magic != HEAP_SEG_MAGIC_ALLOCATED) return;
-
-	current_seg->magic = HEAP_SEG_MAGIC_FREE;
-
-	if (current_seg->next && current_seg->next->magic == HEAP_SEG_MAGIC_FREE) {
-		// merge with next
-		current_seg->lenght += current_seg->next->lenght + sizeof(heap_segment);
-
-		if (current_seg->next->next) {
-			current_seg->next->next->prev = current_seg;
-		}
-		current_seg->next = current_seg->next->next;
-	}
-
-	if (current_seg->prev && current_seg->prev->magic == HEAP_SEG_MAGIC_FREE) {
-		// merge with prev
-		current_seg->prev->lenght += current_seg->lenght + sizeof(heap_segment);
-
-		if (current_seg->next) {
-			current_seg->next->prev = current_seg->prev;
-		}
-		current_seg->prev->next = current_seg->next;
+	struct slab *slab = get_slab(ptr);
+	if (slab) {
+		bin_free(slab, ptr);
+	} else {
+		big_free(ptr);
 	}
 }
 
-void *realloc(void *ptr, size_t new_size) {
-	if (!ptr) {
-		return malloc(new_size);
-	}
-	if (!new_size) {
+void *realloc(void *ptr, size_t newsize) {
+	if (!ptr) return malloc(newsize);
+	if (newsize == 0) {
 		free(ptr);
 		return NULL;
 	}
-	void *new_buf = malloc(new_size);
-	if (!new_buf) {
-		return NULL;
-	}
 
-	size_t old_size = ((heap_segment *)((uintptr_t)ptr - sizeof(heap_segment)))->lenght;
-
-	if (new_size > old_size) {
-		memcpy(new_buf, ptr, old_size);
+	struct slab *slab = get_slab(ptr);
+	if (slab) {
+		struct bin *bin = slab->bin;
+		if (bin->size >= newsize) {
+			// we could decrease size
+			// but who care
+			return ptr;
+		}
+		void *new_ptr = malloc(newsize);
+		if (!new_ptr) return NULL;
+		memcpy(new_ptr, ptr, bin->size);
+		slab_free(slab, ptr);
+		return new_ptr;
 	} else {
-		memcpy(new_buf, ptr, new_size);
+		// big alloc
+		struct big_alloc *alloc = get_big(ptr);
+		if (alloc->size >= newsize) {
+			// we could decrease size
+			// but who care
+			return ptr;
+		}
+
+		void *new_ptr = malloc(newsize);
+		if (!new_ptr) return NULL;
+		memcpy(new_ptr, ptr, alloc->size);
+		big_free(ptr);
+		return new_ptr;
 	}
-	free(ptr);
-	return new_buf;
 }

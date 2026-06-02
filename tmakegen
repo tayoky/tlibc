@@ -34,7 +34,7 @@ M_SRC = $(M_ARCH_SRC) $(filter-out $(M_ARCH_SRC:libm/$(ARCH)/%.s=libm/generic/%.
 DYNFLAGS = -D__DYNAMIC__=1'>> "$MAKEFILE"
 
 # libk target
-K_DEPS="errno.c string/memset.c string/memcpy.c string/memchr.c string/memcmp.c string/strcat.c string/strlen.c  string/strnlen.c string/strcpy.c string/strncpy.c string/strcmp.c string/strncmp.c string/strncasecmp.c ctype/ctype.c stdio/vsnprintf.c stdio/snprintf.c stdio/vsprintf.c stdio/sprintf.c stdlib/strto.c"
+K_DEPS="errno.c string/memset.c string/memcpy.c string/memchr.c string/memcmp.c string/strcat.c string/strlen.c  string/strnlen.c string/strcpy.c string/strncpy.c string/strcmp.c string/strncmp.c string/strchr.c string/strstr.c string/strncasecmp.c ctype/ctype.c stdio/vsnprintf.c stdio/snprintf.c stdio/vsprintf.c stdio/sprintf.c stdlib/strto.c"
 K_SRC=""
 for I in $K_DEPS ; do
 	K_SRC="$K_SRC libc/$I"

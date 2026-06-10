@@ -15,6 +15,7 @@ CFLAGS += -Wall \
 	-std=gnu99 \
 	-fno-stack-protector \
 	-fno-stack-check \
+	-fno-omit-frame-pointer \
 	-nostdlib \
 	-ffreestanding \
 	-I include \

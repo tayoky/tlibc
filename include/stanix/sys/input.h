@@ -4,7 +4,7 @@
 #include <sys/time.h>
 
 struct input_event {
-    struct timeval timestamp;
+    struct timespec timestamp;
     unsigned long ie_class;
     unsigned long ie_subclass;
     unsigned long ie_type;

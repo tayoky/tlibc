@@ -25,5 +25,6 @@ typedef int clockid_t;
 #define CLOCK_MONOTONIC 1
 
 int gettimeofday(struct timeval *tv, struct timezone *tz);
+int utimes(const char *filename, const struct timeval times[2]);
 
 #endif

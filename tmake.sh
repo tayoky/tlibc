@@ -1,6 +1,6 @@
 # source this in your tmakegen
 
-TMAKE_VERSION="v0.1.6"
+TMAKE_VERSION="v0.1.8"
 
 tmake_init () {
 	MAKEFILE="$(realpath ./Makefile)"
@@ -44,7 +44,10 @@ all :
 install :
 
 .PHONY : uninstall
-uninstall :" > "$MAKEFILE"
+uninstall :
+
+.PHONY : clean
+clean :" > "$MAKEFILE"
 }
 
 tmake_fini () {
@@ -58,6 +61,7 @@ targets :
 	@echo \"install   : install every component\"
 	@echo \"uninstall : uninstall every component\"
 	@echo \"clean     : clean every component\"
+	@echo \"distclean : clean every component and delete build dir\"
 $(for TARG in $TARGETS ; do
 	echo "	@echo \"====== $TARG targets ======\"
 	@echo \"all-$TARG       : build $TARG\"
@@ -70,8 +74,8 @@ Makefile : $SCRIPT $(realpath --relative-to="$DIR" "$TMAKE")
 	@echo \"GEN Makefile\"
 	\$(Q)./$SCRIPT
 
-.PHONY : clean
-clean :
+.PHONY : distclean
+distclean :
 	@echo \"CLEAN \$(BUILDDIR)\"
 	\$(Q)rm -fr \"\$(BUILDDIR)\""
 
@@ -169,6 +173,13 @@ tmake_add_compile_rules () {
 	@echo \"CC \$<\"
 	\$(Q)\$(CC) $TARGET_CFLAGS -o \$@ -c \$<"
 	fi
+	if test "$HAVE_GEN_C" = "yes" ; then
+		echo "
+\$(BUILDDIR)/$1/%.c.o : \$(BUILDDIR)/$1/%.c
+	@mkdir -p \"\$(@D)\"
+	@echo \"CC \$<\"
+	\$(Q)\$(CC) $TARGET_CFLAGS -o \$@ -c \$<"
+	fi
 	if test "$HAVE_CXX" = "yes" ; then
 		echo "
 \$(BUILDDIR)/$1/%.c.o : %.cxx
@@ -205,6 +216,7 @@ tmake_add_target () {
 	FILES="$2"
 	PREF="$3"
 	HAVE_C="no"
+	HAVE_GEN_C="no"
 	HAVE_CXX="no"
 	HAVE_S="no"
 	TARGET_CFLAGS="\$(CFLAGS)"
@@ -259,6 +271,7 @@ uninstall-$TARGET_TARGET :
 	echo "$TO_REMOVE")
 
 .PHONY : clean-$TARGET_TARGET
+clean : clean-$TARGET_TARGET
 clean-$TARGET_TARGET :
 	@echo \"CLEAN \$(BUILDDIR)/$TARGET_TARGET\"
 	\$(Q)rm -fr \"\$(BUILDDIR)/$TARGET_TARGET\""

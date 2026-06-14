@@ -27,7 +27,11 @@ float powf(float n, float p) {
 
 
 double pow(double n, double p) {
-	// TODO : standalone pow
-	(void)p;
-	return n;
+	if (isnan(n)) return n;
+	if (isnan(p)) return p;
+
+	// TODO : make this faster
+	if (p == 1.0) return n;
+	if (n == 1.0 || p == 0.0) return 1.0;
+	return exp(log(n) * p);
 }

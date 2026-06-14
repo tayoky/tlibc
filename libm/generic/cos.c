@@ -88,3 +88,23 @@ double sin(double x) {
 		return -sin_core(2.0 * M_PI - x) * sign;
 	}
 }
+
+double tan(double x) {
+	if (isnan(x)) return x;
+	if (isinf(x)) return NAN;
+
+	x = fmod(x, 2.0 * M_PI);
+	x = fabs(x);
+
+	if (x <= M_PI_4) {
+		return cos_core(x);
+	} else if (x <= 3.0 * M_PI_4) {
+		return sin_core(M_PI_2 - x);
+	} else if (x <= 5.0 * M_PI_4) {
+		return -cos_core(x - M_PI);
+	} else if (x <= 7.0 * M_PI_4) {
+		return -sin_core(3.0 * M_PI_2 - x);
+	} else {
+		return cos_core(2.0 * M_PI - x);
+	}
+}

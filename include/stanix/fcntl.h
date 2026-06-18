@@ -17,11 +17,14 @@
 #define O_CLOEXEC	0x0000800 //set close_on_exec
 #define O_NOFOLLOW	0x0001000 //don't follow links
 
-#define F_DUPFD 0
-#define F_GETFD 1
-#define F_SETFD 2
-#define F_GETFL 3
-#define F_SETFL 4
+#define F_DUPFD  0
+#define F_GETFD  1
+#define F_SETFD  2
+#define F_GETFL  3
+#define F_SETFL  4
+#define F_SETLK  5 // acquire/release lock
+#define F_SETLKW 6
+#define F_GETLK  7 // get lock status
 
 #define FD_CLOEXEC  0x10
 
@@ -30,10 +33,21 @@
 #define W_OK 0x2
 #define X_OK 0x1
 
+struct flock {
+	short l_type;
+	short l_whence;
+	off_t l_start;
+	off_t l_len;
+	pid_t l_pid;
+};
 
-int open(const char *pathname, int flags, ... /* mode_t mode */ );
+#define F_RDLCK 0
+#define F_WRLCK 1
+#define F_UNLCK 3
+
+int open(const char *pathname, int flags, ... /* mode_t mode */);
 int creat(const char *pathname, mode_t mode);
-int fcntl(int fd, int op, ... /* arg */ );
+int fcntl(int fd, int op, ... /* arg */);
 
 // some stanix specific stuff
 

@@ -4,8 +4,7 @@
 #define _TLIBC_STDINT_H
 
 // TCC don't provide stdint
-// and GCC seem to provide a broken one
-#if !defined(__TINYC__) && !defined(__GNUC__) && defined(__has_include_next)
+#if !defined(__TINYC__) && defined(__has_include_next)
 #if __has_include_next(<stdint.h>)
 #define HAVE_COMPILER_STDINT
 #endif
@@ -13,7 +12,6 @@
 
 #ifdef HAVE_COMPILER_STDINT
 #include_next <stdint.h>
-#error include next
 #else
 #include <stddef.h>
 

@@ -1,24 +1,15 @@
-#include <limits.h>
 #include <stdlib.h>
 #include <tlibcnoreturn.h>
 #include <unistd.h>
 
-static void (*atexit_funcs[ATEXIT_MAX])(void);
-static int atexit_count = 0;
+int __cxa_atexit(void (*func)(void *), void *arg, void *d);
+void __cxa_finalize(void *d);
 
 int atexit(void (*func)(void)){
-	if(atexit_count >= 64){
-		return -1;
-	}
-	atexit_funcs[atexit_count] = func;
-	atexit_count++;
-	return 0;
+	return __cxa_atexit((void*)func, NULL, NULL); 
 }
 
-
 TLIBC_NORETURN void exit(int status) {
-	for (int i = atexit_count - 1; i >= 0; i--) {
-		atexit_funcs[i]();
-	}
+	__cxa_finalize(NULL);
 	_exit(status);
 }

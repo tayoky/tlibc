@@ -71,7 +71,7 @@ tmake_add_static_library "libc" $C_SRC HAVE_C=yes HAVE_S=yes
 tmake_add_shared_library "libc" $C_SRC CFLAGS="\$(DYNFLAGS)" LDFLAGS="-Wl,-soname,libc.so" DEPENDENCIES="ld-tlibc" HAVE_C=yes HAVE_S=yes
 
 # libm target
-tmake_add_library "libm" "\$(M_SRC)" LDFLAGS="-Wl,-soname,libm.so" DEPENDENCIES="libc" HAVE_C=yes HAVE_S=yes
+tmake_add_library "libm" "\$(M_SRC)" LDFLAGS="-Wl,-soname,libm.so,-lgcc_s" DEPENDENCIES="libc" HAVE_C=yes HAVE_S=yes
 
 # stub libs (libdl and libpthread)
 tmake_add_static_library "libdl" stub/dl.c CFLAGS="-fno-PIC"

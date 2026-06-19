@@ -6,9 +6,9 @@ typedef struct reg {
 	void *d;
 } reg_t;
 
-static reg_t *regs;
-size_t reg_count = 0;
-size_t reg_capacity = 0;
+static reg_t *regs = NULL;
+static size_t reg_count = 0;
+static size_t reg_capacity = 0;
 
 int __cxa_atexit(void (*func)(void *), void *arg, void *d) {
 	if (reg_count == reg_capacity) {

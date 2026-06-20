@@ -21,7 +21,7 @@ long sysconf(int name) {
 		return 4096;
 	default:
 		if (name <= 250) {
-			fprintf("tlibc : unimplemented sysconf for %d\n", name);
+			fprintf(stderr, "tlibc : unimplemented sysconf for %d\n", name);
 		}
 		return __set_errno(-EINVAL);
 	}

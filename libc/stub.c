@@ -30,3 +30,8 @@ STUB(pthread_detach)
 STUB(pthread_cancel)
 
 STUB(open_memstream)
+
+STUB(openlog)
+STUB(closelog)
+STUB(vsyslog)
+STUB(setlogmask)

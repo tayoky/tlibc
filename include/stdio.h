@@ -48,6 +48,7 @@ FILE *fopen(const char *path, const char *mode);
 FILE *freopen(const char *pathname, const char *mode, FILE *stream);
 FILE *fdopen(int handle, const char *type);
 FILE *tmpfile(void);
+FILE *open_memstream(char **ptr, size_t *sizeloc);
 int fclose(FILE *stream);
 size_t fread(void *ptr, size_t size, size_t n, FILE *stream);
 size_t fwrite(const void *ptr, size_t size, size_t n, FILE *stream);

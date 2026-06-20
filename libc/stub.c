@@ -1,4 +1,9 @@
-#include <stdio.h>
+// we cannot include stdio.h
+// cause we might stub stdio functions
+typedef struct _FILE FILE;
+extern FILE *stderr;
+int fprintf(FILE *stream, const char *fmt, ...);
+
 
 #define STUB(name) \
 	int name() { \
@@ -23,3 +28,5 @@ STUB(pthread_cond_timedwait)
 STUB(pthread_cond_wait)
 STUB(pthread_detach)
 STUB(pthread_cancel)
+
+STUB(open_memstream)

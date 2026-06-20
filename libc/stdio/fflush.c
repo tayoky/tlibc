@@ -1,5 +1,6 @@
 #include <stdio-internal.h>
 #include <stdio.h>
+#include <errno.h>
 #include <unistd.h>
 
 extern FILE *__streams;
@@ -18,8 +19,15 @@ int fflush(FILE *stream) {
 	}
 	stream->unget = EOF;
 	if (stream->buftype == _IONBF || stream->usedsize == 0) return 0;
-	ssize_t w = write(stream->fd, stream->buf, stream->usedsize);
-	if (w < 0) return -1;
-	stream->usedsize = 0;
+	char *buf = stream->buf;
+	while (stream->usedsize > 0) {
+		ssize_t w = write(stream->fd, buf, stream->usedsize);
+		if (w < 0) {
+			stream->error = errno;
+			return -1;
+		}
+		stream->usedsize -= w;
+		buf += w;
+	}
 	return 0;
 }

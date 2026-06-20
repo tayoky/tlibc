@@ -40,16 +40,13 @@ ssize_t __fileio_write(FILE *stream, const void *buf, size_t count) {
 
 	// not enough place ? fflush
 	if (stream->bufsize - stream->usedsize < count) {
-		if (fflush(stream) < 0) {
-			stream->error = errno;
-			return -1;
-		}
+		if (fflush(stream) < 0) return -1;
 	}
 	memcpy(&stream->buf[stream->usedsize], buf, count);
 	stream->usedsize += count;
 
 	if (stream->buftype == _IOLBF && memchr(buf, '\n', count)) {
-		fflush(stream);
+		if (fflush(stream) < 0) return -1;
 	}
 
 	return count;

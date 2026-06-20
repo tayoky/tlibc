@@ -1,6 +1,7 @@
 #ifndef _LIMITS_H
 #define _LIMITS_H
 
+#include <sys/limits.h>
 
 //intergers limits
 
@@ -65,15 +66,35 @@
 
 #define SSIZE_MIN (-SSIZE_MAX -1)
 
+// OS specific fallback values
+#ifndef PATH_MAX
 #define PATH_MAX 256
+#endif
+
+#ifndef LINE_MAX
 #define LINE_MAX 1024
+#endif
+
+#ifndef ARG_MAX
+#define ARG_MAX 4096
+#endif
+
+#ifndef CHILD_MAX
+#define CHILD_MAX 25
+#endif
+
+#ifndef SYMLOOP_MAX
+#define SYMLOOP_MAX 8 //os specific
+#endif
+
+#ifndef OPEN_MAX
+#define OPEN_MAX 20
+#endif
+
 #define ATEXIT_MAX 63
 #define PAGESIZE 4096
 #define PAGE_SIZE PAGESIZE
-
 #define MB_CUR_MAX 4
-#define SYMLOOP_MAX 8 //os specific
-
 #define PTHREAD_KEYS_MAX 128
 
 #endif

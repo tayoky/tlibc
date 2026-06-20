@@ -46,18 +46,18 @@
 #define SCNx32		"x"
 
 // int64
-#define PRId64		"lld"
-#define PRIu64		"llu"
-#define PRIo64		"llo"
-#define PRIi64		"lli"
-#define PRIx64		"llx"
-#define PRIX64		"llX"
+#define PRId64		"ld"
+#define PRIu64		"lu"
+#define PRIo64		"lo"
+#define PRIi64		"li"
+#define PRIx64		"lx"
+#define PRIX64		"lX"
 
-#define SCNd64		"lld"
-#define SCNu64		"llu"
-#define SCNo64		"llo"
-#define SCNi64		"lli"
-#define SCNx64		"llx"
+#define SCNd64		"ld"
+#define SCNu64		"lu"
+#define SCNo64		"lo"
+#define SCNi64		"li"
+#define SCNx64		"lx"
 
 // least8
 #define PRIdLEAST8	PRId8

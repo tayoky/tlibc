@@ -7,6 +7,7 @@
 	}
 
 STUB(ftw)
+STUB(flock)
 STUB(utime)
 STUB(clock)
 STUB(alarm)

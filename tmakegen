@@ -108,7 +108,7 @@ clean-headers :
 # headers target
 set +f
 H_SRC=""
-for I in include/*.h ; do 
+for I in include/*.h include/sys/*.h ; do 
 	H_SRC="$H_SRC \$(BUILDDIR)/headers/${I##"include/"}"
 done
 H_SRC="$H_SRC \$(patsubst include/\$(TARGET)/%,\$(BUILDDIR)/headers/%,\$(wildcard include/\$(TARGET)/*.h include/\$(TARGET)/*/))"

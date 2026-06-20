@@ -6,6 +6,7 @@
 		return 0; \
 	}
 
+STUB(ftw)
 STUB(utime)
 STUB(clock)
 STUB(alarm)

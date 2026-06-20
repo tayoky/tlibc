@@ -59,6 +59,9 @@ ffunc(fabs)
 ffunc(cos)
 ffunc(sin)
 ffunc(tan)
+void sincosf(float x, float *sin, float *cos);
+void sincos(double x, double *sin, double *cos);
+void sincosl(long double x, long double *sin, long double *cos);
 ffunc(acos)
 ffunc(asin)
 ffunc(atan)

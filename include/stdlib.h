@@ -1,6 +1,7 @@
 #ifndef _STDLIB_H
 #define _STDLIB_H
 
+#include <alloca.h>
 #include <tlibcnoreturn.h>
 #include <stddef.h>
 #include <limits.h>

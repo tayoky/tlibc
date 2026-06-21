@@ -28,6 +28,8 @@ STUB(pthread_cond_timedwait)
 STUB(pthread_cond_wait)
 STUB(pthread_detach)
 STUB(pthread_cancel)
+STUB(pthread_rwlock_timedwrlock)
+STUB(pthread_rwlock_timedrdlock)
 STUB(pthread_setname_np)
 STUB(pthread_getname_np)
 

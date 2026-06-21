@@ -71,7 +71,7 @@ typedef struct __pthread_rwlockattr {
 
 typedef struct __pthread_rwlock {
 	pthread_rwlockattr_t attr;
-	TLIBC_ATOMIC_INT lock;
+	TLIBC_ATOMIC_LONG lock;
 	int initalized;
 } pthread_rwlock_t;
 
@@ -147,6 +147,14 @@ int pthread_mutexattr_settype(pthread_mutexattr_t *mutexattr, int type);
 
 int pthread_rwlock_init(pthread_rwlock_t *restrict rwlock, const pthread_rwlockattr_t *restrict attr);
 int pthread_rwlock_destroy(pthread_rwlock_t *rwlock);
+
+int pthread_rwlock_rdlock(pthread_rwlock_t *rwlock);
+int pthread_rwlock_wrlock(pthread_rwlock_t *rwlock);
+int pthread_rwlock_timedrdlock(pthread_rwlock_t *restrict rwlock, const struct timespec *restrict timeout);
+int pthread_rwlock_timedwrlock(pthread_rwlock_t *restrict rwlock, const struct timespec *restrict timeout);
+int pthread_rwlock_tryrdlock(pthread_rwlock_t *rwlock);
+int pthread_rwlock_trywrlock(pthread_rwlock_t *rwlock);
+int pthread_rwlock_unlock(pthread_rwlock_t *rwlock);
 
 int pthread_rwlockattr_init(pthread_rwlockattr_t *attr);
 int pthread_rwlockattr_destroy(pthread_rwlockattr_t *attr);

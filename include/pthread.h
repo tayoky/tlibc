@@ -66,11 +66,12 @@ typedef struct __pthread_mutex {
 }
 
 typedef struct __pthread_rwlockattr {
-	int stub;
+	int pshared;
 } pthread_rwlockattr_t;
 
 typedef struct __pthread_rwlock {
 	pthread_rwlockattr_t attr;
+	TLIBC_ATOMIC_INT lock;
 	int initalized;
 } pthread_rwlock_t;
 
@@ -143,6 +144,12 @@ int pthread_mutexattr_settype(pthread_mutexattr_t *mutexattr, int type);
 
 int pthread_rwlock_init(pthread_rwlock_t *restrict rwlock, const pthread_rwlockattr_t *restrict attr); 
 int pthread_rwlock_destroy(pthread_rwlock_t *rwlock);
+
+int pthread_rwlockattr_init(pthread_rwlockattr_t *attr);
+int pthread_rwlockattr_destroy(pthread_rwlockattr_t *attr);
+int pthread_rwlockattr_setpshared(pthread_rwlockattr_t *attr, int pshared);
+int pthread_rwlockattr_getpshared(const pthread_rwlockattr_t *restrict attr, int *restrict pshared);
+		
 
 int pthread_key_create(pthread_key_t *key, void (*)(void *));
 int pthread_key_delete(pthread_key_t key);

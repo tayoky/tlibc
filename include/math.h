@@ -93,6 +93,7 @@ ffunc(log2)
 ffunc(log10)
 
 ffunc(exp)
+ffunc(exp2)
 
 float ldexpf(float a, int exp);
 double ldexp(double a, int exp);

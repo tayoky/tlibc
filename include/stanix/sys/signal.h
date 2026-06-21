@@ -73,8 +73,8 @@ typedef struct {
 #define	SIG_UNBLOCK	2 //unblock specified signal set
 #define	SIG_SETMASK	3 //set specified signal set
 
-//TODO : change value when kernel get support for it
-#define SA_RESTART 0
+#define SA_RESTART 0x1
+#define SA_SIGINFO 0x2
 
 typedef void (*sighandler_t)(int);
 typedef int sig_atomic_t;

@@ -11,18 +11,13 @@ typedef double double_t;
 
 // on GCC we can use builtins
 #define fpclassify(x) __builtin_fpclassify(FP_NAN, FP_INFINITE, FP_NORMAL, FP_SUBNORMAL, FP_ZERO, x)
-#define isfinite(x) __builtin_isfinite(x)
-#define isinf(x) __builtin_isinf_sign(x)
-#define isnan(x) __builtin_isnan(x)
-#define isnormal(x)
-
 #define FP_NAN       0
 #define FP_INFINITE  1
 #define FP_NORMAL    2
 #define FP_SUBNORMAL 3
 #define FP_ZERO      4
 
-//builtin are only faster on GCC
+// builtin are only faster on GCC
 #if defined(__GNUC__) && !defined(__clang__)
 #define signbit(x) __builtin_signbit(x)
 #define isgreater(x,y) __builtin_isgreater(x,y)
@@ -30,6 +25,10 @@ typedef double double_t;
 #define isless(x,y) __builtin_isless(x,y)
 #define islessequal(x,y) __builtin_islessequal(x,y)
 #define islessgreater(x,y) __builtin_islessgreater(x,y)
+#define isfinite(x) __builtin_isfinite(x)
+#define isinf(x) __builtin_isinf_sign(x)
+#define isnan(x) __builtin_isnan(x)
+#define isnormal(x) __builtin_isnormal(x)
 #else
 #define signbit(x) (x < 0)
 #define func(x,y,op) (isunordered(x,y) ? NAN : (op))
@@ -38,6 +37,10 @@ typedef double double_t;
 #define isless(x,y) func(x,y,x < y)
 #define islessequal(x,y) func(x,y,x <= y)
 #define islessgreater(x,y) func(x,y,x != y)
+#define isfinite(x) (fpclassify(x) != FP_INFINITE)
+#define isinf(x)    (fpclassify(x) == FP_INFINITE)
+#define isnan(x)    (fpclassify(x) == FP_NAN)
+#define isnormal(x) (fpclassify(x) == FP_NORMAL)
 #undef func
 #endif
 

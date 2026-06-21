@@ -18,11 +18,11 @@
 #endif
 
 typedef struct __pthread_attr {
-    void *stack;
-    size_t stack_size;
-    size_t guard_size;
-    int joinable_state;
-    int policy;
+	void *stack;
+	size_t stack_size;
+	size_t guard_size;
+	int joinable_state;
+	int policy;
 } pthread_attr_t;
 
 typedef struct __pthread_condattr {
@@ -84,12 +84,13 @@ typedef pid_t pthread_t;
 typedef unsigned int pthread_key_t;
 
 // TODO : implement these
-typedef void *pthread_barrier_t;
+typedef TLIBC_ATOMIC_LONG pthread_barrier_t;
+#define PTHREAD_BARRIER_SERIAL_THREAD 1
 
 #define PTHREAD_PROCESS_PRIVATE 0
 #define PTHREAD_PROCESS_SHARED  1
 
-int pthread_create(pthread_t *thread,const pthread_attr_t *attr,void *(*start_routine)(void *),void *arg);
+int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine)(void *), void *arg);
 int pthread_join(pthread_t thread, void **arg);
 TLIBC_NORETURN void pthread_exit(void *retval);
 int pthread_equal(pthread_t t1, pthread_t t2);
@@ -97,15 +98,17 @@ pthread_t pthread_self(void);
 int pthread_once(pthread_once_t *once_control, void (*init_routine)(void));
 int pthread_detach(pthread_t thread);
 int pthread_cancel(pthread_t thread);
+int pthread_setname_np(pthread_t thread, const char *name);
+int pthread_getname_np(pthread_t thread, char *name, size_t size);
 
 int pthread_attr_init(pthread_attr_t *attr);
 int pthread_attr_destroy(pthread_attr_t *attr);
 int pthread_attr_setstacksize(pthread_attr_t *attr, size_t stacksize);
-int pthread_attr_getstacksize(const pthread_attr_t *restrict attr,size_t *restrict stacksize);
-int pthread_attr_setstack(pthread_attr_t *attr,void *stackaddr,size_t stacksize);
-int pthread_attr_getstack(const pthread_attr_t *restrict attr,void **restrict stackaddr,size_t *restrict stacksize);
+int pthread_attr_getstacksize(const pthread_attr_t *restrict attr, size_t *restrict stacksize);
+int pthread_attr_setstack(pthread_attr_t *attr, void *stackaddr, size_t stacksize);
+int pthread_attr_getstack(const pthread_attr_t *restrict attr, void **restrict stackaddr, size_t *restrict stacksize);
 int pthread_attr_setguardsize(pthread_attr_t *attr, size_t guardsize);
-int pthread_attr_getguardsize(const pthread_attr_t *restrict attr,size_t *restrict guardsize);
+int pthread_attr_getguardsize(const pthread_attr_t *restrict attr, size_t *restrict guardsize);
 
 
 int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr);
@@ -142,14 +145,13 @@ int pthread_mutexattr_setpshared(pthread_mutexattr_t *mutexattr, int pshared);
 int pthread_mutexattr_gettype(const pthread_mutexattr_t *restrict mutexattr, int *restrict type);
 int pthread_mutexattr_settype(pthread_mutexattr_t *mutexattr, int type);
 
-int pthread_rwlock_init(pthread_rwlock_t *restrict rwlock, const pthread_rwlockattr_t *restrict attr); 
+int pthread_rwlock_init(pthread_rwlock_t *restrict rwlock, const pthread_rwlockattr_t *restrict attr);
 int pthread_rwlock_destroy(pthread_rwlock_t *rwlock);
 
 int pthread_rwlockattr_init(pthread_rwlockattr_t *attr);
 int pthread_rwlockattr_destroy(pthread_rwlockattr_t *attr);
 int pthread_rwlockattr_setpshared(pthread_rwlockattr_t *attr, int pshared);
 int pthread_rwlockattr_getpshared(const pthread_rwlockattr_t *restrict attr, int *restrict pshared);
-		
 
 int pthread_key_create(pthread_key_t *key, void (*)(void *));
 int pthread_key_delete(pthread_key_t key);

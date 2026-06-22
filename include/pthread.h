@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <stddef.h>
+#include <signal.h>
 #include <tlibcnoreturn.h>
 #include <sched.h>
 

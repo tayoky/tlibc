@@ -74,3 +74,7 @@ long int telldir(DIR *dir) {
 void rewinddir(DIR *dir) {
 	return seekdir(dir, 0);
 }
+
+int dirfd(DIR *dir) {
+	return dir->fd;
+}

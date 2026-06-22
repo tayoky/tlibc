@@ -21,14 +21,12 @@ typedef struct _DIR DIR;
 #define DT_BLK      6
 #define DT_LNK      7
 
-
-//WTF !!!! there are no raw readdir syscall ????
-
 DIR *opendir(const char *pathname);
 int closedir(DIR *dir);
 struct dirent *readdir(DIR *dir);
 void seekdir(DIR *dir,long int offset);
 long int telldir(DIR *dir);
 void rewinddir(DIR *dir);
+int dirfd(DIR *dir);
 
 #endif

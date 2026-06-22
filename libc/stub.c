@@ -12,8 +12,10 @@ int fprintf(FILE *stream, const char *fmt, ...);
 	}
 
 STUB(ftw)
+STUB(sync)
 STUB(flock)
 STUB(utime)
+STUB(fstatat)
 STUB(clock)
 STUB(alarm)
 STUB(popen)

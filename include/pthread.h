@@ -26,6 +26,18 @@ typedef struct __pthread_attr {
 	int policy;
 } pthread_attr_t;
 
+typedef struct __pthread_barrierattr {
+	int pshared;
+} pthread_barrierattr_t;
+
+typedef struct __pthread_barrier {
+	pthread_barrierattr_t attr;
+	TLIBC_ATOMIC_LONG lock;
+	int initalized;
+	unsigned int count;
+} pthread_barrier_t;
+#define PTHREAD_BARRIER_SERIAL_THREAD 1
+
 typedef struct __pthread_condattr {
 	int pshared;
 	clockid_t clock_id;
@@ -84,10 +96,6 @@ typedef pid_t pthread_t;
 
 typedef unsigned int pthread_key_t;
 
-// TODO : implement these
-typedef TLIBC_ATOMIC_LONG pthread_barrier_t;
-#define PTHREAD_BARRIER_SERIAL_THREAD 1
-
 #define PTHREAD_PROCESS_PRIVATE 0
 #define PTHREAD_PROCESS_SHARED  1
 
@@ -111,6 +119,14 @@ int pthread_attr_getstack(const pthread_attr_t *restrict attr, void **restrict s
 int pthread_attr_setguardsize(pthread_attr_t *attr, size_t guardsize);
 int pthread_attr_getguardsize(const pthread_attr_t *restrict attr, size_t *restrict guardsize);
 
+int pthread_barrier_init(pthread_barrier_t *restrict barrier, const pthread_barrierattr_t *restrict attr, unsigned int count);
+int pthread_barrier_destroy(pthread_barrier_t *barrier);
+int pthread_barrier_wait(pthread_barrier_t *barrier);
+
+int pthread_barrierattr_init(pthread_barrierattr_t *barrierattr);
+int pthread_barrierattr_destroy(pthread_barrierattr_t *barrierattr);
+int pthread_barrierattr_getpshared(const pthread_barrierattr_t *restrict barrierattr, int *restrict pshared);
+int pthread_barrierattr_setpshared(pthread_barrierattr_t *barrierattr, int pshared);
 
 int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr);
 int pthread_cond_destroy(pthread_cond_t *cond);

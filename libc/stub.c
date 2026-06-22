@@ -7,7 +7,7 @@ int fprintf(FILE *stream, const char *fmt, ...);
 
 #define STUB(name) \
 	int name() { \
-		fprintf(stderr, "tlibc : STUB " #name " was called\n"); \
+		fprintf(stderr, "tlibc : " #name " stub was called\n"); \
 		return 0; \
 	}
 
@@ -42,3 +42,5 @@ STUB(openlog)
 STUB(closelog)
 STUB(vsyslog)
 STUB(setlogmask)
+
+STUB(__tls_get_addr)

@@ -6,7 +6,7 @@ int fprintf(FILE *stream, const char *fmt, ...);
 
 
 #define STUB(name) \
-	int name() { \
+	__attribute__((weak)) int name() { \
 		fprintf(stderr, "tlibc : " #name " stub was called\n"); \
 		return 0; \
 	}

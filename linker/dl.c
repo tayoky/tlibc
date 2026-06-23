@@ -35,6 +35,17 @@ static struct elf_object *cache_find(const char *name) {
 	return NULL;
 }
 
+struct elf_object *cache_find_id(size_t id) {
+	struct elf_object *cur = cache_first;
+	while (cur) {
+		if (cur->id == id) {
+			return cur;
+		}
+		cur = cur->next;
+	}
+	return NULL;
+}
+
 static void cache_add(struct elf_object *object) {
 	object->prev = cache_last;
 	object->next = NULL;
@@ -139,6 +150,10 @@ static Elf_Sym *self_lookup(const char *name) {
 	}
 	if (!strcmp(name, "dlerror")) {
 		sym.st_value = (uintptr_t)(void *)dlerror;
+		return &sym;
+	}
+	if (!strcmp(name, "__tls_get_addr")) {
+		sym.st_value = (uintptr_t)(void *)__tls_get_addr;
 		return &sym;
 	}
 	return NULL;

@@ -9,6 +9,8 @@
 struct __uthread {
     struct __uthread *self;
     void *keys[PTHREAD_KEYS_MAX];
+    void **dtv;
+    size_t dtv_size;
     int err;
 };
 

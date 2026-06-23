@@ -13,6 +13,7 @@ int reloc(struct elf_object *object, Elf_Rela *rel) {
 	size_t sym_index = ELF_R_SYM(rel->r_info);
 	Elf_Sym *sym = NULL;
 	uintptr_t sym_val = 0;
+	struct elf_object *found_object = object;
 	if (sym_index != 0) {
 		if (sym_index >= object->symbols_count) {
 			dl_error("invalid symbol index");
@@ -22,7 +23,6 @@ int reloc(struct elf_object *object, Elf_Rela *rel) {
 		// must link
 		const char *name = get_str(object, obj_sym->st_name);
 		if (!name) return -1;
-		struct elf_object *found_object;
 		Elf_Sym *found_sym = dl_lookup(object, name, LOOKUP_DEPENCIES, &found_object);
 
 		if (found_sym) {
@@ -93,7 +93,11 @@ keep_sym_obj:
 		break;
 	case R_X86_64_DTPMOD64:
 		size = sizeof(unsigned long);
-		result = object->id;
+		result = found_object->id;
+		break;
+	case R_X86_64_DTPOFF64:
+		size = sizeof(unsigned long);
+		result = (sym ? sym->st_value : 0) + A;
 		break;
 	case R_X86_64_PC64:
 		size = sizeof(uint64_t);

@@ -331,7 +331,7 @@ static void call_destructors(struct elf_object *object) {
 struct elf_object *elf_load(const char *path, int is_lib, int fd) {
 	struct elf_object *object = dl_alloc(sizeof(struct elf_object));
 	memset(object, 0, sizeof(struct elf_object));
-	static size_t id = 0;
+	static size_t id = 1;
 	object->id = id++;
 
 	int file;
@@ -381,10 +381,20 @@ struct elf_object *elf_load(const char *path, int is_lib, int fd) {
 	// map segments first
 	for (size_t i = 0; i < object->phdrs_count; i++) {
 		Elf_Phdr *pheader = &object->phdrs[i];
-		if (pheader->p_type == PT_DYNAMIC) object->dynamics = (void *)(pheader->p_vaddr + object->addr);
-		if (pheader->p_type != PT_LOAD) continue;
-		if (map_segment(object, file, pheader) < 0) {
-			goto close;
+		switch ((pheader->p_type)) {
+		case PT_DYNAMIC:
+			object->dynamics = (void *)(pheader->p_vaddr + object->addr);
+			break;
+		case PT_LOAD:
+			if (map_segment(object, file, pheader) < 0) {
+				goto close;
+			}
+			break;
+		case PT_TLS:
+			object->tls_size   = pheader->p_memsz;
+			object->tls_filesz = pheader->p_filesz;
+			object->tls        = (void *)(pheader->p_vaddr + object->addr);
+			break;
 		}
 	}
 

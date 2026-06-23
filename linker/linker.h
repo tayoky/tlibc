@@ -3,6 +3,7 @@
 
 #include <limits.h>
 #include <stdint.h>
+#include <stddef.h>
 #include <elf.h>
 
 #ifdef BITS32
@@ -61,12 +62,15 @@ struct elf_object {
 	Elf_Dyn *dynamics;
 	uint32_t *hash;
 	struct elf_object **depencies;
+	void *tls;
 	size_t phdrs_count;
 	size_t strtab_size;
 	size_t symbols_count;
 	size_t hash_size;
 	size_t depencies_count;
 	size_t id;
+	size_t tls_filesz;
+	size_t tls_size;
 	int flags;
 };
 
@@ -88,6 +92,7 @@ Elf_Sym *dl_lookup(struct elf_object *object, const char *sym, int flags, struct
 void elf_unload(struct elf_object *object);
 Elf_Sym *elf_lookup(struct elf_object *object, const char *name);
 void abi_enter(void *entry, long *auxv, size_t auxv_size);
+struct elf_object *cache_find_id(size_t id);
 int open_lib(const char *path);
 const char *get_str(struct elf_object *object, size_t offset);
 int reloc(struct elf_object *object, Elf_Rela *rel);

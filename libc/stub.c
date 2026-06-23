@@ -22,7 +22,6 @@ STUB(popen)
 STUB(pclose)
 STUB(sched_yield)
 
-STUB(pthread_barrier_wait)
 STUB(pthread_cond_init)
 STUB(pthread_cond_destroy)
 STUB(pthread_cond_broadcast)

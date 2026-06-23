@@ -12,6 +12,9 @@ int pthread_barrier_init(pthread_barrier_t *restrict barrier, const pthread_barr
 		pthread_barrierattr_init(&barrier->attr);
 	}
 	barrier->count = count;
+	barrier->in  = 0;
+	barrier->out = 0;
+	barrier->current = 0;
 
 	return 0;
 }

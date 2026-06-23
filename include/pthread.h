@@ -10,12 +10,16 @@
 
 #if defined(__STDC_NO_ATOMICS__) || defined(__cplusplus)
 // stdatomic in c++ is kind of broken
-#define TLIBC_ATOMIC_INT  volatile int
-#define TLIBC_ATOMIC_LONG volatile long
+#define TLIBC_ATOMIC_INT   volatile int
+#define TLIBC_ATOMIC_LONG  volatile long
+#define TLIBC_ATOMIC_UINT  volatile unsigned int
+#define TLIBC_ATOMIC_ULONG volatile unsigned long
 #else
 #include <stdatomic.h>
-#define TLIBC_ATOMIC_INT  atomic_int
-#define TLIBC_ATOMIC_LONG atomic_long
+#define TLIBC_ATOMIC_INT   atomic_int
+#define TLIBC_ATOMIC_LONG  atomic_long
+#define TLIBC_ATOMIC_UINT  atomic_uint
+#define TLIBC_ATOMIC_ULONG atomic_ulong
 #endif
 
 typedef struct __pthread_attr {
@@ -32,7 +36,9 @@ typedef struct __pthread_barrierattr {
 
 typedef struct __pthread_barrier {
 	pthread_barrierattr_t attr;
-	TLIBC_ATOMIC_LONG lock;
+	TLIBC_ATOMIC_ULONG in;
+	TLIBC_ATOMIC_ULONG out;
+	TLIBC_ATOMIC_ULONG current;
 	int initalized;
 	unsigned int count;
 } pthread_barrier_t;

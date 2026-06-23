@@ -2,7 +2,7 @@
 #include <errno.h>
 #include "internal.h"
 
-static const double c[9] = {
+static const long double c[9] = {
 	 0.4342944819032518,
 	-0.2171472409516261,
 	 0.1447648272911295,
@@ -17,7 +17,7 @@ static const double c[9] = {
 // log10(2)
 #define LOG10_2 0.3010299956639812
 
-double log10(double x) {
+long double log10l(long double x) {
 	if (isinf(x) || isnan(x)) {
 		return x;
 	}
@@ -35,16 +35,16 @@ double log10(double x) {
 		return 0;
 	}
 	int exp;
-	double m = frexp(x, &exp);
+	long double m = frexp(x, &exp);
 
 	// get closer to 0
-	double z = m - 1.0;
+	long double z = m - 1.0;
 
 	// 9 degree minimax polyminal
-	double log_m = c[8];
+	long double log_m = c[8];
 	for (int i=7; i>=0; i--) {
 		log_m = log_m * z + c[i];
 	}
 	log_m *= z;
-	return log_m + (double)exp * LOG10_2;
+	return log_m + (long double)exp * LOG10_2;
 }

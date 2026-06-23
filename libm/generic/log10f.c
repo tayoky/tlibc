@@ -2,22 +2,22 @@
 #include <errno.h>
 #include "internal.h"
 
-static const double c[9] = {
-	 0.4342944819032518,
-	-0.2171472409516261,
-	 0.1447648272911295,
-	-0.1085736205727025,
-	 0.0868589020959030,
-	-0.0723824584281313,
-	 0.0620413028236166,
-	-0.0542385617260027,
-	 0.0486111309867086,
+static const float c[9] = {
+	 0.4342944819032518f,
+	-0.2171472409516261f,
+	 0.1447648272911295f,
+	-0.1085736205727025f,
+	 0.0868589020959030f,
+	-0.0723824584281313f,
+	 0.0620413028236166f,
+	-0.0542385617260027f,
+	 0.0486111309867086f,
 };
 
 // log10(2)
-#define LOG10_2 0.3010299956639812
+#define LOG10_2 0.3010299956639812f
 
-double log10(double x) {
+float log10f(float x) {
 	if (isinf(x) || isnan(x)) {
 		return x;
 	}
@@ -35,16 +35,16 @@ double log10(double x) {
 		return 0;
 	}
 	int exp;
-	double m = frexp(x, &exp);
+	float m = frexp(x, &exp);
 
 	// get closer to 0
-	double z = m - 1.0;
+	float z = m - 1.0;
 
 	// 9 degree minimax polyminal
-	double log_m = c[8];
+	float log_m = c[8];
 	for (int i=7; i>=0; i--) {
 		log_m = log_m * z + c[i];
 	}
 	log_m *= z;
-	return log_m + (double)exp * LOG10_2;
+	return log_m + (float)exp * LOG10_2;
 }

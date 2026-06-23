@@ -331,6 +331,8 @@ static void call_destructors(struct elf_object *object) {
 struct elf_object *elf_load(const char *path, int is_lib, int fd) {
 	struct elf_object *object = dl_alloc(sizeof(struct elf_object));
 	memset(object, 0, sizeof(struct elf_object));
+	static size_t id = 0;
+	object->id = id++;
 
 	int file;
 	if (fd < 0) {

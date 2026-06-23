@@ -91,6 +91,10 @@ keep_sym_obj:
 		size = sizeof(uint8_t);
 		result = S + A - P;
 		break;
+	case R_X86_64_DTPMOD64:
+		size = sizeof(unsigned long);
+		result = object->id;
+		break;
 	case R_X86_64_PC64:
 		size = sizeof(uint64_t);
 		result = S + A - P;

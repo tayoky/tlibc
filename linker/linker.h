@@ -66,8 +66,15 @@ struct elf_object {
 	size_t symbols_count;
 	size_t hash_size;
 	size_t depencies_count;
+	size_t id;
 	int flags;
 };
+
+struct tls_index {
+	unsigned long ti_module;
+	unsigned long ti_offset;
+};
+void *__tls_get_addr(struct tls_index *ti);
 
 void dl_setup_libc_alloc(void);
 void *dl_alloc(size_t size);

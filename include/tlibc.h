@@ -1,6 +1,7 @@
 #ifndef _TLIBC_H
 #define _TLIBC_H
 
+#include <stddef.h>
 #include <limits.h>
 
 //this is reserved for internal use

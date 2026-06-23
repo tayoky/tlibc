@@ -51,8 +51,10 @@ typedef struct __pthread_condattr {
 
 typedef struct __pthread_cond {
 	pthread_condattr_t attr;
+	TLIBC_ATOMIC_ULONG seq;
+	int initalized;
 } pthread_cond_t;
-#define PTHREAD_COND_INITIALIZER {{0, CLOCK_MONOTONIC}}
+#define PTHREAD_COND_INITIALIZER {{0, CLOCK_MONOTONIC}, 0, 1}
 
 typedef struct __pthread_mutexattr {
 	int pshared;

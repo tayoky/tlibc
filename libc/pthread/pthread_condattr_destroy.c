@@ -2,7 +2,6 @@
 #include <pthread.h>
 
 int pthread_condattr_destroy(pthread_condattr_t *condattr) {
-	if (!condattr) return __set_errno(-EINVAL);
-	(void)condattr;
+	if (!condattr) return EINVAL;
 	return 0;
 }

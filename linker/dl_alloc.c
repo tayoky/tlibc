@@ -11,7 +11,7 @@ static size_t early_ptr = 0;
 
 void dl_setup_libc_alloc(void) {
 	// setup libc allocator
-	void *libc = dlopen("libc.so", 0);
+	void *libc = dlopen("libc.so", RTLD_NOW);
 	_malloc = dlsym(libc, "malloc");
 	_free = dlsym(libc, "free");
 }

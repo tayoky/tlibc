@@ -19,6 +19,10 @@ long sysconf(int name) {
 		return LINE_MAX;
 	case _SC_GETPW_R_SIZE_MAX:
 		return 4096;
+	case _SC_NPROCESSORS_CONF:
+		return 1;
+	case _SC_NPROCESSORS_ONLN:
+		return 1;
 	default:
 		if (name <= 250) {
 			fprintf(stderr, "tlibc : unimplemented sysconf for %d\n", name);

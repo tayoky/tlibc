@@ -315,16 +315,16 @@ static void call_destructors(struct elf_object *object) {
 	Elf_Dyn *dyn_fini = find_dynamic(object, DT_FINI);
 	Elf_Dyn *dyn_fini_array = find_dynamic(object, DT_FINI_ARRAY);
 	Elf_Dyn *dyn_fini_arraysz = find_dynamic(object, DT_FINI_ARRAYSZ);
-	if (dyn_fini) {
-		func_t fini = (void *)(dyn_fini->d_un.d_ptr + object->addr);
-		fini();
-	}
 	if (dyn_fini_array && dyn_fini_arraysz) {
 		func_t *fini_array = (void *)(dyn_fini_array->d_un.d_ptr + object->addr);
 		size_t count = dyn_fini_arraysz->d_un.d_val / sizeof(func_t);
 		for (size_t i = 0; i < count; i++) {
 			fini_array[i]();
 		}
+	}
+	if (dyn_fini) {
+		func_t fini = (void *)(dyn_fini->d_un.d_ptr + object->addr);
+		fini();
 	}
 }
 

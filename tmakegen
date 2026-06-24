@@ -56,7 +56,7 @@ for I in $DL_DEPS ; do
 	DL_SRC="$DL_SRC libc/$I"
 done
 
-tmake_add_shared_library "ld-tlibc" $DL_SRC CFLAGS="\$(DYNFLAGS) -D__DL_TLIBC__=1 -fPIC -mgeneral-regs-only -fvisibility=hidden" LDFLAGS="-static-libgcc -Wl,--no-dynamic-linker,-z,now,-soname,ld-tlibc.so,-Bsymbolic,-e,_start"
+tmake_add_shared_library "ld-tlibc" $DL_SRC CFLAGS="\$(DYNFLAGS) -D__DL_TLIBC__=1 -fPIC -mgeneral-regs-only -fvisibility=hidden" LDFLAGS="-static-libgcc -Wl,--no-dynamic-linker,-z,now,-Bsymbolic,-e,_start"
 
 # libc target
 C_SRC_DIR="ctype libgen time stdlib string wchar stdio unistd locale pwd pthread dl"
@@ -68,10 +68,10 @@ done
 
 set -f
 tmake_add_static_library "libc" $C_SRC HAVE_C=yes HAVE_S=yes
-tmake_add_shared_library "libc" $C_SRC CFLAGS="\$(DYNFLAGS)" LDFLAGS="-Wl,-soname,libc.so" DEPENDENCIES="ld-tlibc" HAVE_C=yes HAVE_S=yes
+tmake_add_shared_library "libc" $C_SRC CFLAGS="\$(DYNFLAGS)" DEPENDENCIES="ld-tlibc" HAVE_C=yes HAVE_S=yes
 
 # libm target
-tmake_add_library "libm" "\$(M_SRC)" LDFLAGS="-Wl,-soname,libm.so,-lgcc_s" DEPENDENCIES="libc" HAVE_C=yes HAVE_S=yes
+tmake_add_library "libm" "\$(M_SRC)" LDFLAGS="-Wl,-lgcc_s" DEPENDENCIES="libc" HAVE_C=yes HAVE_S=yes
 
 # stub libs (libdl and libpthread)
 tmake_add_static_library "libdl" stub/dl.c CFLAGS="-fno-PIC"

@@ -1,6 +1,6 @@
 # source this in your tmakegen
 
-TMAKE_VERSION="v0.2.0"
+TMAKE_VERSION="v0.2.1"
 
 tmake_init () {
 	MAKEFILE="$(realpath ./Makefile)"
@@ -356,7 +356,7 @@ LINK_$TARG = $LIB"
 $LIB : $ALL_DEPENDENCIES
 	@mkdir -p \"\$(@D)\"
 	@echo \"CCLD $TARG.so\"
-	\$(Q)\$(CC) -shared $TARGET_CFLAGS $TARGET_LDFLAGS -o \$@ \$^
+	\$(Q)\$(CC) -shared $TARGET_CFLAGS -Wl,-soname,$(basename "$TARG.so") $TARGET_LDFLAGS -o \$@ \$^
 
 .PHONY : all-$TARG
 all-$TARG : all-$LIB_TARG

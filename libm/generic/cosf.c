@@ -47,43 +47,9 @@ static float sin_core(float x) {
 
 
 float cosf(float x) {
-	if (isnan(x)) return x;
-	if (isinf(x)) return NAN;
-
-	x = fmodf(x + M_PI, 2.0f * M_PI);
-	if (x < 0) x += 2.0f * M_PI;
-	x -= M_PI;
-
-	if (x < -3.0f * M_PI_4) {
-		return -cos_core(M_PI + x);
-	} else if (x < -M_PI_4) {
-		return -sin_core(-M_PI_2 - x);
-	} else if (x <= M_PI_4) {
-		return cos_core(x);
-	} else if (x <= 3.0f * M_PI_4) {
-		return -sin_core(M_PI_2 - x);
-	} else {
-		return -cos_core(M_PI - x);
-	}
+	return cos(x);
 }
 
 float sinf(float x) {
-	if (isnan(x)) return x;
-	if (isinf(x)) return NAN;
-
-	x = fmodf(x + M_PI, 2.0f * M_PI);
-	if (x < 0) x += 2.0f * M_PI;
-	x -= M_PI;
-
-	if (x < -3.0f * M_PI_4) {
-		return -cos_core(M_PI + x);
-	} else if (x < -M_PI_4) {
-		return -sin_core(-M_PI_2 - x);
-	} else if (x <= M_PI_4) {
-		return sin_core(x);
-	} else if (x <= 3.0f * M_PI_4) {
-		return cos_core(M_PI_2 - x);
-	} else {
-		return sin_core(M_PI - x);
-	}
+	return sin(x);
 }

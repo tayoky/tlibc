@@ -1,90 +1,77 @@
 #include <math.h>
 
-// constants taken from FreeBSD
-static const double c[] = {
-	 4.16666666666666019037e-02,
-	-1.38888888888741095749e-03,
-	 2.48015872894767294178e-05,
-	-2.75573143513906633035e-07,
-	 2.08757232129817482790e-09,
-	-1.13596475577381996161e-11,
-};
-
 static double cos_core(double x) {
-	double x2 = x * x;
-	double x4 = x2 * x2;
-
-	// minimax polyminal using Horner's Method
-	double res = c[5];
-	for (int i = 4; i >= 0; i--) {
-		res = res * x2 + c[i];
-	}
-	res *= x4;
-	return 1.0 - x2 / 2.0 + res;
+    double x2 = x * x;
+    return 1
+        - x2 * (0.5
+        - x2 * (4.1666666666666664e-2
+        - x2 * (1.3888888888888889e-3
+        - x2 * (2.48015873015873e-5))));
 }
 
-// constants taken from FreeBSD
-static const double s[] = {
-	-1.66666666666666324348e-01,
-	 8.33333333332248946124e-03,
-	-1.98412698298579493134e-04,
-	 2.75573137070700676789e-06,
-	-2.50507602534068634195e-08,
-	 1.58969099521155010221e-10,
-};
-
 static double sin_core(double x) {
-	double x2 = x * x;
-	double x3 = x2 * x;
+    double x2 = x * x;
+    return x * (1
+        - x2 * (1.6666666666666666e-1
+        - x2 * (1.9841269841269841e-3
+        - x2 * (2.755731922398589e-5
+        - x2 * (2.505210838544172e-7)))));
+}
 
-	// minimax polyminal using Horner's Method
-	double res = s[5];
-	for (int i = 4; i >= 0; i--) {
-		res = res * x2 + s[i];
-	}
-	return x + x3 * res;
+static double rem2pi(double x, int *q) {
+    // 2/π precomputed constant
+    const double inv_pi_2 = 2.0 / M_PI;
+
+    // reduce to quadrant index
+    long k = (long)(x * inv_pi_2);
+
+    double r = x - k * M_PI_2;
+
+    // fix rounding issues
+    if (r > M_PI_2) {
+        r -= M_PI_2;
+        k++;
+    } else if (r < 0) {
+        r += M_PI_2;
+        k--;
+    }
+
+    *q = k & 3;
+    return r;
 }
 
 double cos(double x) {
 	if (isnan(x)) return x;
 	if (isinf(x)) return NAN;
 
-	x = fmod(x, 2.0 * M_PI);
-	if (x < 0) x += 2.0 * M_PI;
 
-	if (x <= M_PI_4) {
-		return cos_core(x);
-	} else if (x <= 3.0 * M_PI_4) {
-		return sin_core(M_PI_2 - x);
-	} else if (x <= 5.0 * M_PI_4) {
-		return -cos_core(M_PI - x);
-	} else if (x <= 7.0 * M_PI_4) {
-		return -sin_core(3.0 * M_PI_2 - x);
-	} else {
-		return cos_core(2.0 * M_PI - x);
-	}
+    int q;
+    double r = rem2pi(x, &q);
+
+    switch (q) {
+        case 0: return cos_core(r);
+        case 1: return -sin_core(r);
+        case 2: return -cos_core(r);
+        default:return sin_core(r);
+    }
 }
 
 double sin(double x) {
 	if (isnan(x)) return x;
 	if (isinf(x)) return NAN;
 
-	x = fmod(x, 2.0 * M_PI);
-	if (x <= -M_PI) x += 2.0 * M_PI;
-	if (x > M_PI) x -= 2.0 * M_PI;
+	int q;
+	double r = rem2pi(x, &q);
 
-	if (x < 0) x += 2.0 * M_PI;
-
-	if (x <= M_PI_4) {
-		return sin_core(x);
-	} else if (x <= 3.0 * M_PI_4) {
-		return cos_core(M_PI_2 - x);
-	} else if (x <= 5.0 * M_PI_4) {
-		return -sin_core(x - M_PI);
-	} else if (x <= 7.0 * M_PI_4) {
-		return cos_core(x - 3.0 * M_PI_2);
-	} else {
-		return -sin_core(2.0 * M_PI - x);
+	switch (q) {
+	case 0:
+		return sin_core(r);
+	case 1:
+		return cos_core(r);
+	case 2:
+		return -sin_core(r);
+	default:
+		return -cos_core(r);
 	}
 }
 

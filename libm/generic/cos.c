@@ -16,11 +16,11 @@ static double cos_core(double x) {
 
 	// minimax polyminal using Horner's Method
 	double res = c[5];
-	for (int i=4; i>=0; i--) {
+	for (int i = 4; i >= 0; i--) {
 		res = res * x2 + c[i];
 	}
 	res *= x4;
-	return 1.0 - x2/2.0 + res;
+	return 1.0 - x2 / 2.0 + res;
 }
 
 // constants taken from FreeBSD
@@ -39,7 +39,7 @@ static double sin_core(double x) {
 
 	// minimax polyminal using Horner's Method
 	double res = s[5];
-	for (int i=4; i>=0; i--) {
+	for (int i = 4; i >= 0; i--) {
 		res = res * x2 + s[i];
 	}
 	return x + x3 * res;
@@ -48,15 +48,16 @@ static double sin_core(double x) {
 double cos(double x) {
 	if (isnan(x)) return x;
 	if (isinf(x)) return NAN;
+
 	x = fmod(x, 2.0 * M_PI);
-	x = fabs(x);
+	if (x < 0) x += 2.0 * M_PI;
 
 	if (x <= M_PI_4) {
 		return cos_core(x);
 	} else if (x <= 3.0 * M_PI_4) {
 		return sin_core(M_PI_2 - x);
 	} else if (x <= 5.0 * M_PI_4) {
-		return -cos_core(x - M_PI);
+		return -cos_core(M_PI - x);
 	} else if (x <= 7.0 * M_PI_4) {
 		return -sin_core(3.0 * M_PI_2 - x);
 	} else {
@@ -68,24 +69,22 @@ double sin(double x) {
 	if (isnan(x)) return x;
 	if (isinf(x)) return NAN;
 
-	double sign = 1.0;
-	if (x < 0) {
-		x = -x;
-		sign = -1.0;
-	}
-
 	x = fmod(x, 2.0 * M_PI);
+	if (x <= -M_PI) x += 2.0 * M_PI;
+	if (x > M_PI) x -= 2.0 * M_PI;
+
+	if (x < 0) x += 2.0 * M_PI;
 
 	if (x <= M_PI_4) {
-		return sin_core(x) * sign;
+		return sin_core(x);
 	} else if (x <= 3.0 * M_PI_4) {
-		return cos_core(M_PI_2 - x) * sign;
+		return cos_core(M_PI_2 - x);
 	} else if (x <= 5.0 * M_PI_4) {
-		return -sin_core(x - M_PI) * sign;
+		return -sin_core(x - M_PI);
 	} else if (x <= 7.0 * M_PI_4) {
-		return -cos_core(3.0 * M_PI_2 - x) * sign;
+		return cos_core(x - 3.0 * M_PI_2);
 	} else {
-		return -sin_core(2.0 * M_PI - x) * sign;
+		return -sin_core(2.0 * M_PI - x);
 	}
 }
 

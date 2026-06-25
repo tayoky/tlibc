@@ -19,8 +19,8 @@
 #define LDBL_EXP_MASK __mask(ULM,sizeof(long double)*CHAR_BIT-LDBL_MANT_DIG)
 
 // TODO : figure out these
-#define FLT_EXP_HALF  0x7eUL
-#define DBL_EXP_HALF  0x3feUL
+#define FLT_EXP_HALF  0x7fUL
+#define DBL_EXP_HALF  0x3ffUL
 #define LDBL_EXP_HALF 0x0
 #define FLT_SIGN_BIT  31
 #define DBL_SIGN_BIT  63

@@ -14,8 +14,8 @@ static int allocate_bit(void) {
 	for (size_t i = 0; i < sizeof(bitmap) / sizeof(unsigned int); i++) {
 		if (bitmap[i] == UINT_MAX) continue;
 		for (size_t j = 0; j < BITS_PER_ENTRY; j++) {
-			if (bitmap[i] & (1 << j)) continue;
-			bitmap[i] |= 1 << j;
+			if (bitmap[i] & (1U << j)) continue;
+			bitmap[i] |= 1U << j;
 			return j + i * BITS_PER_ENTRY;
 		}
 	}
@@ -23,7 +23,7 @@ static int allocate_bit(void) {
 }
 
 static void free_bit(int bit) {
-	bitmap[bit / BITS_PER_ENTRY] &= ~(1 << bit % BITS_PER_ENTRY);
+	bitmap[bit / BITS_PER_ENTRY] &= ~(1U << bit % BITS_PER_ENTRY);
 }
 
 int pthread_key_create(pthread_key_t *key, void (*destructor)(void *)) {

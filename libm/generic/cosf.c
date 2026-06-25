@@ -1,55 +1,73 @@
 #include <math.h>
 
-// constants taken from FreeBSD
-static const float c[] = {
-	4.16666666666666019037e-02f,
-	-1.38888888888741095749e-03f,
-	2.48015872894767294178e-05f,
-	-2.75573143513906633035e-07f,
-	2.08757232129817482790e-09f,
-	-1.13596475577381996161e-11f,
-};
-
 static float cos_core(float x) {
 	float x2 = x * x;
-	float x4 = x2 * x2;
-
-	// minimax polyminal using Horner's Method
-	float res = c[5];
-	for (int i = 4; i >= 0; i--) {
-		res = res * x2 + c[i];
-	}
-	res *= x4;
-	return 1.0 - x2 / 2.0 + res;
+	return 1 - x2 * (0.5f - x2 * (4.1666666666666664e-2f - x2 * (1.3888888888888889e-3f - x2 * (2.48015873015873e-5f))));
 }
-
-// constants taken from FreeBSD
-static const float s[] = {
-	-1.66666666666666324348e-01f,
-	8.33333333332248946124e-03f,
-	-1.98412698298579493134e-04f,
-	2.75573137070700676789e-06f,
-	-2.50507602534068634195e-08f,
-	1.58969099521155010221e-10f,
-};
 
 static float sin_core(float x) {
 	float x2 = x * x;
-	float x3 = x2 * x;
-
-	// minimax polyminal using Horner's Method
-	float res = s[5];
-	for (int i = 4; i >= 0; i--) {
-		res = res * x2 + s[i];
-	}
-	return x + x3 * res;
+	return x * (1 - x2 * (1.6666666666666666e-1f - x2 * (1.9841269841269841e-3f - x2 * (2.755731922398589e-5f - x2 * (2.505210838544172e-7f)))));
 }
 
+static float rem2pi(float x, int *q) {
+	// reduce to quadrant index
+	long k = (long)(x * M_2_PI);
+
+	float r = x - k * M_PI_2;
+
+	// fix rounding issues
+	if (r > M_PI_2) {
+		r -= M_PI_2;
+		k++;
+	} else if (r < 0) {
+		r += M_PI_2;
+		k--;
+	}
+
+	*q = k & 3;
+	return r;
+}
 
 float cosf(float x) {
-	return cos(x);
+	if (isnan(x)) return x;
+	if (isinf(x)) return NAN;
+
+
+	int q;
+	float r = rem2pi(x, &q);
+
+	switch (q) {
+	case 0:
+		return cos_core(r);
+	case 1:
+		return -sin_core(r);
+	case 2:
+		return -cos_core(r);
+	default:
+		return sin_core(r);
+	}
 }
 
 float sinf(float x) {
-	return sin(x);
+	if (isnan(x)) return x;
+	if (isinf(x)) return NAN;
+
+	int q;
+	float r = rem2pi(x, &q);
+
+	switch (q) {
+	case 0:
+		return sin_core(r);
+	case 1:
+		return cos_core(r);
+	case 2:
+		return -sin_core(r);
+	default:
+		return -cos_core(r);
+	}
+}
+
+float tanf(float x) {
+	return sinf(x) / cosf(x);
 }

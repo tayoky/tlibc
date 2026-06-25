@@ -394,6 +394,7 @@ struct elf_object *elf_load(const char *path, int is_lib, int fd) {
 			object->tls_size   = pheader->p_memsz;
 			object->tls_filesz = pheader->p_filesz;
 			object->tls        = (void *)(pheader->p_vaddr + object->addr);
+			if (dl_debug) fprintf(stderr, "ld-tlibc.so found PT_TLS of size %zu filesz %zu at %p\n", object->tls_size, object->tls_filesz, object->tls);
 			break;
 		}
 	}

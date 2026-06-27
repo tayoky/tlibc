@@ -28,7 +28,11 @@ typedef struct __pthread_attr {
 	size_t guard_size;
 	int joinable_state;
 	int policy;
+	int detachstate;
 } pthread_attr_t;
+
+#define PTHREAD_CREATE_JOINABLE 0
+#define PTHREAD_CREATE_DETACHED 1
 
 typedef struct __pthread_barrierattr {
 	int pshared;
@@ -117,6 +121,8 @@ int pthread_detach(pthread_t thread);
 int pthread_cancel(pthread_t thread);
 int pthread_setname_np(pthread_t thread, const char *name);
 int pthread_getname_np(pthread_t thread, char *name, size_t size);
+int pthread_getschedparam(pthread_t thread, int *restrict policy, struct sched_param *restrict param);
+int pthread_setschedparam(pthread_t thread, int policy, const struct sched_param *param);
 
 int pthread_attr_init(pthread_attr_t *attr);
 int pthread_attr_destroy(pthread_attr_t *attr);
@@ -126,6 +132,8 @@ int pthread_attr_setstack(pthread_attr_t *attr, void *stackaddr, size_t stacksiz
 int pthread_attr_getstack(const pthread_attr_t *restrict attr, void **restrict stackaddr, size_t *restrict stacksize);
 int pthread_attr_setguardsize(pthread_attr_t *attr, size_t guardsize);
 int pthread_attr_getguardsize(const pthread_attr_t *restrict attr, size_t *restrict guardsize);
+int pthread_attr_setdetachstate(pthread_attr_t *attr, int detachstate);
+int pthread_attr_getdetachstate(const pthread_attr_t *restrict attr, int *restrict detachstate);
 
 int pthread_barrier_init(pthread_barrier_t *restrict barrier, const pthread_barrierattr_t *restrict attr, unsigned int count);
 int pthread_barrier_destroy(pthread_barrier_t *barrier);

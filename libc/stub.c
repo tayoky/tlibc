@@ -21,6 +21,8 @@ STUB(alarm)
 STUB(popen)
 STUB(pclose)
 STUB(sched_yield)
+STUB(sched_get_priority_max)
+STUB(sched_get_priority_min)
 
 STUB(pthread_cond_timedwait)
 STUB(pthread_detach)
@@ -29,6 +31,8 @@ STUB(pthread_rwlock_timedwrlock)
 STUB(pthread_rwlock_timedrdlock)
 STUB(pthread_setname_np)
 STUB(pthread_getname_np)
+STUB(pthread_getschedparam)
+STUB(pthread_setschedparam)
 
 STUB(open_memstream)
 

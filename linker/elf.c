@@ -185,6 +185,7 @@ static int handle_dynamics(struct elf_object *object) {
 	Elf_Sym *environ_sym = elf_lookup(object, "environ");
 	if (environ_sym && environ_sym->st_shndx != SHN_UNDEF) {
 		char ***environ_ptr = (void *)(environ_sym->st_value + object->addr);
+		if (dl_debug) fprintf(stderr, "ld-tlibc.so : set environ at %p to %p\n", environ_ptr, environ);
 		*environ_ptr = environ;
 	}
 
@@ -272,9 +273,6 @@ static int apply_relocs(struct elf_object *object) {
 		rel_ent = dyn_relent->d_un.d_val;
 		table = (void *)(dyn_rel->d_un.d_ptr + object->addr);
 		break;
-	}
-	if (!plt_table) {
-		return -1;
 	}
 
 	// dynamic relocs

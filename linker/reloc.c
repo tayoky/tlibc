@@ -26,7 +26,7 @@ int reloc(struct elf_object *object, Elf_Rela *rel) {
 		Elf_Sym *found_sym = dl_lookup(object, name, LOOKUP_DEPENCIES, &found_object);
 
 		if (found_sym) {
-			if (ELF_ST_BIND(found_sym->st_info) == STB_WEAK && ELF_ST_BIND(obj_sym->st_info) == STB_GLOBAL) {
+			if (ELF_ST_BIND(found_sym->st_info) == STB_WEAK && (ELF_ST_BIND(obj_sym->st_info) == STB_GLOBAL && obj_sym->st_shndx != SHN_UNDEF)) {
 				// cannot override global with weak
 				goto keep_sym_obj;
 			} else {

@@ -69,6 +69,7 @@ char *realpath(const char *path, char *resolved_path);
 
 int putenv(char *str);
 char *getenv(const char *name);
+int setenv(const char *name, const char *value, int overwrite);
 int unsetenv(const char *name);
 extern char **environ;
 

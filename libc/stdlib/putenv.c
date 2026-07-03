@@ -17,7 +17,7 @@ int putenv(char *str) {
 	int key = 0;
 	while (environ[key]) {
 		// is it the good key ?
-		if (strlen(environ[key]) > name_len && !memcmp(environ[key], str, name_len)) {
+		if (strncmp(environ[key], str, name_len) == 0 && environ[key][name_len] == '=') {
 			break;
 		}
 		key++;

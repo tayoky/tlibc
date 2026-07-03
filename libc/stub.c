@@ -12,6 +12,7 @@ int fprintf(FILE *stream, const char *fmt, ...);
 	}
 
 STUB(ftw)
+STUB(setenv)
 STUB(sync)
 STUB(flock)
 STUB(utime)

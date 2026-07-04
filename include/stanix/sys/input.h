@@ -131,6 +131,9 @@ struct input_request {
 #define INPUT_KEY_VOLUME_DOWN  17000090
 #define INPUT_KEY_LAST         17000090
 
+#define INPUT_KEY_LCTRL INPUT_KEY_LCRTL
+#define INPUT_KEY_RCTRL INPUT_KEY_RCRTL
+
 #define INPUT_KEY_SPACE ' '
 
 #endif

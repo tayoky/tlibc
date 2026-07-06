@@ -7,7 +7,7 @@ static double cos_core(double x) {
 
 static double sin_core(double x) {
 	double x2 = x * x;
-	return x * (1 - x2 * (1.6666666666666666e-1 - x2 * (1.9841269841269841e-3 - x2 * (2.755731922398589e-5 - x2 * (2.505210838544172e-7)))));
+	return x * (1.0 - x2 * (1.6666666666666666e-1 - x2 * (8.3333333333333333e-3 - x2 * (1.9841269841269841e-4 - x2 * (2.7557319223985893e-6)))));		
 }
 
 static double rem2pi(double x, int *q) {

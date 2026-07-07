@@ -90,6 +90,7 @@ ifunc(long, lrint)
 ifunc(long long, llrint)
 
 ffunc(sqrt)
+ffunc(erf)
 
 ffunc(log)
 ffunc(log2)

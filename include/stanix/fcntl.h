@@ -28,6 +28,8 @@
 
 #define FD_CLOEXEC  0x10
 
+#define AT_FDCWD -42
+
 #define F_OK 0x8
 #define R_OK 0x4
 #define W_OK 0x2

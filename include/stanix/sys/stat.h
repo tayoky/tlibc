@@ -59,10 +59,13 @@ struct stat {
 #define S_ISLNK(m)  ((m & S_IFMT) == S_IFLNK) //Test for a symbolic link. 
 #define S_ISSOCK(m) ((m & S_IFMT) == S_IFSOCK) //Test for a socket. 
 
+#define AT_SYMLINK_NOFOLLOW 1
+
 // functions
 int stat(const char *pathname,struct stat *st);
 int fstat(int fd,struct stat *st);
 int lstat(const char *pathname,struct stat *st);
+int fstatat(int fd, const char *restrict path, struct stat *restrict st, int flags);
 int chmod(const char *pathname, mode_t mode);
 int fchmod(int fd, mode_t mode);
 int lchmod(const char *pathname,mode_t mode);

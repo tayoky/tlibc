@@ -54,8 +54,14 @@ typedef struct {
     long quot;
     long rem;
 } ldiv_t;
+
+typedef struct {
+    long long quot;
+    long long rem;
+} lldiv_t;
 div_t div(int number, int denom);
-ldiv_t ldiv(long int number, long int denom);
+ldiv_t ldiv(long number, long denom);
+lldiv_t lldiv(long long number, long long denom);
 int abs(int);
 long labs(long);
 long long llabs(long long);

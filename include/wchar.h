@@ -37,11 +37,17 @@ int fputws(const wchar_t *ws,FILE *stream);
 
 wchar_t *wcscat(wchar_t *dest,const wchar_t *src);
 int wcscmp(const wchar_t *ws1,const wchar_t *ws2);
+int wcscoll(const wchar_t *ws1,const wchar_t *ws2);
 wchar_t *wcschr(const wchar_t *ws,wchar_t wc);
 wchar_t *wcsstr(const wchar_t *ws1,const wchar_t *ws2);
 wchar_t *wcscpy(wchar_t *dest,const wchar_t *src);
 size_t wcslen(const wchar_t *ws);
 wchar_t *wcspbrk(const wchar_t *wcs,const wchar_t *search);
+
+// for compatibility with some weird programs
+static inline int wscoll(const wchar_t *ws1, const wchar_t *ws2) {
+	return wcscoll(ws1, ws2);
+}
 
 wchar_t *wmemchr(const wchar_t *,wchar_t,size_t);
 int wmemcmp(const wchar_t *,const wchar_t *,size_t);

@@ -81,6 +81,17 @@ static inline long __syscall3(long n,long a1,long a2,long a3) {
 	return ret; 
 }
 
+static inline long __syscall4(long n,long a1,long a2,long a3, long a4) {
+	register long ret asm("r0");
+	register long num asm("r8") = n;
+	register long r0 asm("r0")  = a1;
+	register long r1 asm("r1")  = a2;
+	register long r2 asm("r2")  = a3;
+	register long r3 asm("r3")  = a4;
+	asm("svc 0" : "=r"(ret) : "r"(num), "r"(r0), "r"(r1), "r"(r2), "r"(r3) : "memory");
+	return ret; 
+}
+
 static inline long __syscall5(long n,long a1,long a2,long a3,long a4,long a5){
 	register long ret asm("r0");
 	register long num asm("r8") = n;

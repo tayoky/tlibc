@@ -3,13 +3,13 @@
 #include "internal.h"
 
 static const float P[] = {
-	 0.16666666666666666f,
-	-0.01249999999757921f,
+	 0.1666666716f,
+	-3.1417034566e-02f,
 };
 
 static const float Q[] = {
 	 1.0f,
-	-0.2142857141014798f,
+	-3.2676747441e-01f,
 };
 
 // i found this online

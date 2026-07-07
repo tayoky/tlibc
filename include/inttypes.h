@@ -209,4 +209,7 @@ typedef struct {
 intmax_t imaxabs(intmax_t j);
 imaxdiv_t imaxdiv(intmax_t numer, intmax_t denom);
 
+intmax_t strtoimax(const char *nptr, char **endptr, int base);
+uintmax_t strtoumax(const char *nptr, char **endptr, int base);
+
 #endif

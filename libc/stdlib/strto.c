@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 static int char2digit(char c) {
 	if (c >= '0' && c <= '9') return c - '0';
@@ -217,7 +218,12 @@ static int char2digit(char c) {
 		return (type)integer / (type)pow; \
 	}
 
-strto(long, strtol, LONG_MAX, LONG_MIN) strto(long long, strtoll, LLONG_MAX, LLONG_MIN) strtou(unsigned long, strtoul, ULONG_MAX) strtou(unsigned long long, strtoull, ULLONG_MAX)
+strto(long, strtol, LONG_MAX, LONG_MIN)
+strto(long long, strtoll, LLONG_MAX, LLONG_MIN)
+strto(intmax_t, strtoimax, LLONG_MAX, LLONG_MIN)
+strtou(unsigned long, strtoul, ULONG_MAX)
+strtou(unsigned long long, strtoull, ULLONG_MAX)
+strtou(uintmax_t, strtoumax, ULLONG_MAX)
 #ifndef __LIBK__
 	strtd(float, strtof) strtd(double, strtod) strtd(long double, strtold)
 #endif

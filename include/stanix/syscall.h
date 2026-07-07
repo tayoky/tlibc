@@ -202,5 +202,11 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_shutdown      88
 #define SYS_futex         89
 #define SYS_fdname        90
+#define SYS_fexecve       91
+#define SYS_fchdir        92
+#define SYS_openat        93
+#define SYS_fstatat       94
+#define SYS_fchownat      95
+#define SYS_fchmodat      96
 
 #endif

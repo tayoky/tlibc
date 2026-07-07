@@ -76,7 +76,7 @@ int execvpe(const char *file, char *const argv[], char *const envp[]);
 
 char *getcwd(char *buf, size_t size);
 int chdir(const char *path);
-
+int fchdir(int fd);
 
 int isatty(int fd);
 

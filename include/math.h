@@ -72,6 +72,7 @@ ffunc2(atan2)
 ffunc(cosh)
 ffunc(sinh)
 ffunc(tanh)
+ffunc2(hypot)
 
 ffunc2(fmin)
 ffunc2(fmax)

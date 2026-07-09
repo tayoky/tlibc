@@ -102,13 +102,21 @@ ffunc(log10)
 ffunc(exp)
 ffunc(exp2)
 
-float ldexpf(float a, int exp);
-double ldexp(double a, int exp);
-long double ldexpl(long double a, int exp);
+float ldexpf(float x, int exp);
+double ldexp(double x, int exp);
+long double ldexpl(long double x, int exp);
 
-double frexp(double num, int *exp);
-float frexpf(float num, int *exp);
-long double frexpl(long double num, int *exp);
+double frexp(double x, int *exp);
+float frexpf(float x, int *exp);
+long double frexpl(long double x, int *exp);
+
+float scalbnf(float x, int exp);
+double scalbn(double x, int exp);
+long double scalbnl(long double x, int exp);
+
+float scalblnf(float x, long exp);
+double scalbln(double x, long exp);
+long double scalblnl(long double x, long exp);
 
 double modf(double x, double *iptr);
 float modff(float value, float *iptr);

@@ -6,8 +6,8 @@
 
 static void *(*_malloc)(size_t size) = NULL;
 static void (*_free)(void *ptr) = NULL;
-static char early_buf[8112];
 static size_t early_ptr = 0;
+static char early_buf[16224];
 
 void dl_setup_libc_alloc(void) {
 	// setup libc allocator

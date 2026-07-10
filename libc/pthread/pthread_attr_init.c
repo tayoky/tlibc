@@ -6,6 +6,6 @@ int pthread_attr_init(pthread_attr_t *attr) {
 	attr->stack_size = 64 * 1024;
 	attr->stack = NULL;
 	attr->guard_size = PAGE_SIZE;
-	attr->detachstate = PTHREAD_CREATE_JOINABLE;
+	attr->detach_state = PTHREAD_CREATE_JOINABLE;
 	return 0;
 }

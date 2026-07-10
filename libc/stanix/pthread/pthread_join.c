@@ -1,6 +1,18 @@
 #include <pthread.h>
+#include <sys/mman.h>
+#include <tlibc.h>
+#include <errno.h>
 #include <sched.h>
 
 int pthread_join(pthread_t thread, void **arg) {
-	return stanix_join_thread(thread, arg);
+	if (thread->detach_state != PTHREAD_CREATE_JOINABLE) {
+		return EINVAL;
+	}
+	int ret = stanix_join_thread(thread->tid, arg);
+	if (ret != 0) return ret;
+	if (thread->stack_is_allocated) {
+		munmap(thread->stack, thread->stack_size);
+	}
+	__free_uthread(thread);
+	return 0;
 }

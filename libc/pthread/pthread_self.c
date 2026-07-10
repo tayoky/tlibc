@@ -1,6 +1,6 @@
 #include <pthread.h>
-#include <unistd.h>
+#include <tlibc.h>
 
 pthread_t pthread_self(void) {
-	return gettid();
+	return __get_uthread();
 }

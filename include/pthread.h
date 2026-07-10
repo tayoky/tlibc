@@ -28,7 +28,7 @@ typedef struct __pthread_attr {
 	size_t guard_size;
 	int joinable_state;
 	int policy;
-	int detachstate;
+	int detach_state;
 } pthread_attr_t;
 
 #define PTHREAD_CREATE_JOINABLE 0
@@ -104,7 +104,9 @@ typedef TLIBC_ATOMIC_INT pthread_once_t;
 #define PTHREAD_ONCE_INIT 0
 
 typedef TLIBC_ATOMIC_INT pthread_spinlock_t;
-typedef pid_t pthread_t;
+
+struct __uthread;
+typedef struct __uthread *pthread_t;
 
 typedef unsigned int pthread_key_t;
 

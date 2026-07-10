@@ -1,6 +1,7 @@
 #ifndef _TLIBC_H
 #define _TLIBC_H
 
+#include <sys/types.h>
 #include <stddef.h>
 #include <limits.h>
 
@@ -12,7 +13,12 @@ struct __uthread {
     void *keys[PTHREAD_KEYS_MAX];
     void **dtv;
     size_t dtv_size;
+    void *stack;
+    size_t stack_size;
+    pid_t tid;
+    int stack_is_allocated;
     int err;
+    int detach_state;
 };
 
 typedef int (*main_t)(int argc, char **argv, char **envp);

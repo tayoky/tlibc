@@ -105,9 +105,6 @@ typedef TLIBC_ATOMIC_INT pthread_once_t;
 
 typedef TLIBC_ATOMIC_INT pthread_spinlock_t;
 
-struct __uthread;
-typedef struct __uthread *pthread_t;
-
 typedef unsigned int pthread_key_t;
 
 #define PTHREAD_PROCESS_PRIVATE 0

@@ -15,6 +15,7 @@ struct __uthread {
     size_t dtv_size;
     void *stack;
     size_t stack_size;
+    void *retval;
     pid_t tid;
     int stack_is_allocated;
     int err;

@@ -1,5 +1,4 @@
 #include <errno.h>
-#include <info.h> //get info on the current OS
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -93,9 +92,8 @@ int execvpe(const char *file, char *const argv[], char *const envp[]) {
 
 	size_t path_count = 1;
 
-	// the separator is : on linux but ; on stanix
 	for (size_t i = 0; path[i]; i++) {
-		if (path[i] == PATH_SEPARATOR) {
+		if (path[i] == ':') {
 			path_count++;
 			path[i] = '\0';
 		}

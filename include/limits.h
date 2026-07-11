@@ -1,7 +1,7 @@
 #ifndef _LIMITS_H
 #define _LIMITS_H
 
-#include <sys/limits.h>
+#include <abi/limits.h>
 
 //intergers limits
 

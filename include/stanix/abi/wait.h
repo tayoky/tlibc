@@ -1,7 +1,7 @@
-#ifndef _SYS_WAIT_H
-#define _SYS_WAIT_H
+#ifndef _ABI_WAIT_H
+#define _ABI_WAIT_H
 
-#include <sys/types.h>
+// Stanix wait ABI
 
 #define WNOHANG 0x01
 
@@ -13,8 +13,5 @@
 #define WEXITSTATUS(status) (status & 0xFFFF)
 #define WTERMSIG WEXITSTATUS
 #define WSTOPSIG WEXITSTATUS
-
-pid_t waitpid(pid_t pid, int *status, int options);
-pid_t wait(int *status);
 
 #endif

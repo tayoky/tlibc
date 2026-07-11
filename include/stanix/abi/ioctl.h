@@ -1,7 +1,7 @@
-#ifndef _IOCTL_H
-#define _IOCTL_H
+#ifndef _ABI_IOCTL_H
+#define _ABI_IOCTL_H
 
-#include <sys/types.h>
+// Stanix ioctl ABI
 
 struct winsize {
 	unsigned short	ws_row;	   //rows, in characters
@@ -23,7 +23,5 @@ struct winsize {
 
 #define I_EJECT 501 //eject a device
 #define I_MODEL 502 //get the model of a device (reserve 256 char)
-
-int ioctl(int fd,unsigned long op,void *arg);
 
 #endif

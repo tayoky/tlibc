@@ -23,8 +23,8 @@ struct __uthread *__new_uthread(void) {
 		return NULL;
 	}
 
-	uthread->self = uthread;
 	memset(uthread, 0, sizeof(struct __uthread));
+	uthread->self = uthread;
 
 	return uthread;
 }

@@ -1,5 +1,5 @@
 #include <pthread.h>
-#include <syscall.h>
+#include <sysdeps.h>
 #include <tlibc.h>
 #include <tlibcnoreturn.h>
 
@@ -15,6 +15,9 @@ TLIBC_NORETURN void pthread_exit(void *retval) {
 		// TODO : free stack
 		__free_uthread(__get_uthread());
 	}
-	__syscall0(SYS_thread_exit);
-	__builtin_unreachable();
+	if (!sys_thread_exit) {
+		// FIXME : what do we do
+		for (;;);
+	}
+	sys_thread_exit();
 }

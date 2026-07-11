@@ -13,10 +13,4 @@ struct sched_param {
 #define SCHED_RR    1
 #define SCHED_FIFO  2
 
-#ifdef __TLIBC__
-int sys_new_thread(void (*fn)(void*), void *stack, int flags, void *arg, pid_t *child_tid);
-int sys_join_thread(pid_t tid, void **arg);
-int sys_set_tls(void *tls);
-#endif
-
 #endif

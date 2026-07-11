@@ -1,9 +1,10 @@
 #include <sys/mman.h>
 #include <pthread.h>
-#include <sched.h>
+#include <sysdeps.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <unistd.h>
 #include <tlibc.h>
 
@@ -26,6 +27,9 @@ static int __pthread_creator(void *arg) {
 }
 
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine)(void *), void *arg) {
+	if (!sys_new_thread) {
+		return ENOSYS;
+	}
 	struct pthread_args *args = malloc(sizeof(struct pthread_args));
 	args->arg = arg;
 	args->start_routine = start_routine;
@@ -39,7 +43,7 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_
 	struct __uthread *uthread = __new_uthread();
 	if (!uthread) {
 		free(args);
-		return -1;
+		return errno;
 	}
 	args->uthread = uthread;
 
@@ -47,7 +51,7 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_
 	if (stack == MAP_FAILED) {
 		__free_uthread(uthread);
 		free(args);
-		return -1;
+		return errno;
 	}
 
 	if (thread) *thread = uthread;

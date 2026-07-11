@@ -1,8 +1,8 @@
 #include <locale.h>
-#include <sched.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sysdeps.h>
 #include <tlibc.h>
 
 #ifndef __DYNAMIC__

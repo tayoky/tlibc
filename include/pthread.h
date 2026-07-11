@@ -126,6 +126,22 @@ int pthread_getname_np(pthread_t thread, char *name, size_t size);
 int pthread_getschedparam(pthread_t thread, int *restrict policy, struct sched_param *restrict param);
 int pthread_setschedparam(pthread_t thread, int policy, const struct sched_param *param);
 
+struct __pthread_cleanup {
+#ifdef __TLIBC__
+	struct __pthread_cleanup *next;
+	void (*routine)(void *);
+	void *arg;
+#else
+	void *data[4];
+#endif
+};
+
+void __pthread_cleanup_push(struct __pthread_cleanup *cleanup, void (*routine)(void *), void *arg);
+void __pthread_cleanup_pop(int execute);
+#define pthread_cleanup_push(routine, arg) do { struct __pthread_cleanup __cleanup_buffer; \
+	__pthread_cleanup_push(&__cleanup_buffer, (routine), (arg))
+#define pthread_cleanup_pop(execute) __pthread_cleanup_pop(execute); } while (0)
+
 int pthread_attr_init(pthread_attr_t *attr);
 int pthread_attr_destroy(pthread_attr_t *attr);
 int pthread_attr_setstacksize(pthread_attr_t *attr, size_t stacksize);

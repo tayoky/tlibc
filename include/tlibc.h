@@ -2,6 +2,7 @@
 #define _TLIBC_H
 
 #include <sys/types.h>
+#include <pthread.h>
 #include <stddef.h>
 #include <limits.h>
 
@@ -16,6 +17,7 @@ struct __uthread {
     void *stack;
     size_t stack_size;
     void *retval;
+    struct __pthread_cleanup *cleanups;
     pid_t tid;
     int stack_is_allocated;
     int err;

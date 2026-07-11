@@ -20,6 +20,7 @@ struct __uthread {
     int stack_is_allocated;
     int err;
     int detach_state;
+    int cancel;
 };
 
 typedef int (*main_t)(int argc, char **argv, char **envp);

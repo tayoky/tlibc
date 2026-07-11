@@ -24,8 +24,7 @@ struct __uthread *__new_uthread(void) {
 	}
 
 	uthread->self = uthread;
-	uthread->err = 0;
-	memset(uthread->keys, 0, sizeof(uthread->keys));
+	memset(uthread, 0, sizeof(struct __uthread));
 
 	return uthread;
 }

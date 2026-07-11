@@ -110,6 +110,8 @@ typedef unsigned int pthread_key_t;
 #define PTHREAD_PROCESS_PRIVATE 0
 #define PTHREAD_PROCESS_SHARED  1
 
+#define PTHREAD_CANCELED ((void*)-1)
+
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine)(void *), void *arg);
 int pthread_join(pthread_t thread, void **arg);
 TLIBC_NORETURN void pthread_exit(void *retval);
@@ -118,6 +120,7 @@ pthread_t pthread_self(void);
 int pthread_once(pthread_once_t *once_control, void (*init_routine)(void));
 int pthread_detach(pthread_t thread);
 int pthread_cancel(pthread_t thread);
+void pthread_testcancel(void);
 int pthread_setname_np(pthread_t thread, const char *name);
 int pthread_getname_np(pthread_t thread, char *name, size_t size);
 int pthread_getschedparam(pthread_t thread, int *restrict policy, struct sched_param *restrict param);

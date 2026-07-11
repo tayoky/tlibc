@@ -51,7 +51,7 @@ DL_DEPS="tlibc.c auxv.c cxa.c pthread/uthread.c \$(ARCH)/__get_uthread.s errno.c
 	stdio/puts.c stdio/putchar.c stdio/fputs.c stdio/fputc.c stdio/stdio.c stdio/vfprintf.c stdio/fprintf.c \
 	stdlib/exit.c stdlib/environ.c stdlib/getenv.c"
 
-DL_SRC="$(echo linker/*.c) linker/abi/\$(ARCH)-\$(TARGET).s crt/\$(ARCH)/crt0-\$(TARGET).s \$(shell find libc/\$(TARGET) -name "*.c")"
+DL_SRC="$(echo linker/*.c) linker/abi/\$(ARCH)-\$(TARGET).s crt/\$(ARCH)/crt0-\$(TARGET).s \$(shell find libc/\$(TARGET) -name \"*.c\")"
 for I in $DL_DEPS ; do
 	DL_SRC="$DL_SRC libc/$I"
 done

@@ -36,7 +36,7 @@ void __init_tlibc(long *stack, main_t main) {
 
 #if !defined(__DYNAMIC__) || defined(__DL_TLIBC__) // dynamic linker aready prepare uthread
 	// setup a uthread for the main thread
-	__set_tls(__new_uthread());
+	sys_set_tls(__new_uthread());
 #endif
 #ifdef __DL_TLIBC__
 	// the dynamic linker cannot use static stdio

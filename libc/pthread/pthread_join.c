@@ -8,7 +8,7 @@ int pthread_join(pthread_t thread, void **arg) {
 	if (thread->detach_state != PTHREAD_CREATE_JOINABLE) {
 		return EINVAL;
 	}
-	int ret = stanix_join_thread(thread->tid, NULL);
+	int ret = sys_join_thread(thread->tid, NULL);
 	if (ret < 0) return errno;
 	if (arg) *arg = thread->retval;
 	if (thread->stack_is_allocated) {

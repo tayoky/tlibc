@@ -1,5 +1,7 @@
-#ifndef _SYS_UN_H
-#define _SYS_UN_H
+#ifndef _ABI_UN_H
+#define _ABI_UN_H
+
+// Stanix unix socket ABI
 
 #include <sys/socket.h>
 

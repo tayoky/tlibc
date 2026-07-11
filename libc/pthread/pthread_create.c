@@ -7,9 +7,6 @@
 #include <unistd.h>
 #include <tlibc.h>
 
-// do not compile this for dynamic linker
-#ifndef __DL_TLIBC__
-
 struct pthread_args {
 	void *arg;
 	void *(*start_routine)(void *);
@@ -22,7 +19,7 @@ static int __pthread_creator(void *arg) {
 	free(_args);
 
 	args.uthread->tid = gettid();
-	stanix_set_tls(args.uthread);
+	sys_set_tls(args.uthread);
 
 	pthread_exit(args.start_routine(args.arg));
 	return 0;
@@ -65,6 +62,5 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_
 	stack_top &= ~0xf;
 	stack_top -= 8;
 
-	return stanix_new_thread((void *)__pthread_creator, (void *)stack_top, 0, args, &uthread->tid);
+	return sys_new_thread((void *)__pthread_creator, (void *)stack_top, 0, args, &uthread->tid);
 }
-#endif

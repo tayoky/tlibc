@@ -1,5 +1,7 @@
-#ifndef _UCONTEXT
-#define _UCONTEXT
+#ifndef _ABI_UCONTEXT_H
+#define _ABI_UCONTEXT_H
+
+// Stanix ucontext ABI
 
 #include <sys/signal.h>
 #include <stdint.h>
@@ -11,6 +13,5 @@ typedef struct __ucontext {
     stack_t     uc_stack;
     mcontext_t  uc_mcontext;
 } ucontext_t;
-
 
 #endif

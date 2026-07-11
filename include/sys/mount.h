@@ -3,8 +3,7 @@
 
 int mount(const char *source,const char *target,const char *filesystemtype,unsigned long mountflags,const void *data);
 
-
-int unmount(const char *dir, int flags);
+int umount2(const char *target, int flags);
 int umount(const char *target);
 
 #endif

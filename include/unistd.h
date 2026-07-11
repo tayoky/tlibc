@@ -1,7 +1,6 @@
 #ifndef _UNISTD_H
 #define _UNISTD_H
 
-#include <sys/type.h>
 #include <sys/types.h>
 #include <tlibcnoreturn.h>
 #include <fcntl.h>

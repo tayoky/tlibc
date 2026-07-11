@@ -1,7 +1,9 @@
-#ifndef _SYS_TIME_H
-#define _SYS_TIME_H
+#ifndef _ABI_TIME_H
+#define _ABI_TIME_H
 
-#include <sys/type.h>
+// Stanix time ABI
+
+#include <sys/types.h>
 
 struct timeval {
 	time_t      tv_sec;  //seconds
@@ -23,8 +25,5 @@ typedef int clockid_t;
 
 #define CLOCK_REALTIME  0
 #define CLOCK_MONOTONIC 1
-
-int gettimeofday(struct timeval *tv, struct timezone *tz);
-int utimes(const char *filename, const struct timeval times[2]);
 
 #endif

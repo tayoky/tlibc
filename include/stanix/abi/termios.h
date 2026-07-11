@@ -1,7 +1,5 @@
-#ifndef SYS_TERMIOS
-#define SYS_TERMIOS
-
-#include <sys/types.h>
+#ifndef _ABI_TERMIOS_H
+#define _ABI_TERMIOS_H
 
 typedef char cc_t;
 typedef int speed_t;
@@ -86,8 +84,7 @@ struct termios {
 #define TCSADRAIN 1
 #define TCSAFLUSH 2
 
-
-//baudrate in 2025 :(
+// baudrates
 #define B0        0
 #define B50       1
 #define B75       2
@@ -116,20 +113,5 @@ struct termios {
 #define B1500000  25
 #define B2000000  26
 
-#define TCIOFLUSH 0
-#define TCIFLUSH  1
-#define TCOFLUSH  2
-
-int tcgetattr(int fd,struct termios *termios_p);
-int tcsetattr(int fd,int optional_actions,const struct termios *termios_p);
-pid_t tcgetprgp(int fd);
-int tcsetpgrp(int fd,pid_t pgrp);
-void cfmakeraw(struct termios *termios_p);
-int tcflush(int fd, int queue_selector);
-speed_t cfgetispeed(const struct termios *termios_p);
-speed_t cfgetospeed(const struct termios *termios_p);
-int cfsetispeed(struct termios *termios_p, speed_t speed);
-int cfsetospeed(struct termios *termios_p, speed_t speed);
-int cfsetspeed(struct termios *termios_p, speed_t speed);
 
 #endif

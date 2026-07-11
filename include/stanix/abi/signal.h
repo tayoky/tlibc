@@ -1,5 +1,9 @@
-#ifndef _SYS_SIGNAL_H
-#define _SYS_SIGNAL_H
+#ifndef _ABI_SIGNAL_H
+#define _ABI_SIGNAL_H
+
+// Stanix signal ABI
+
+#include <sys/types.h>
 
 #define _NSIG 33 //counting 0 (mask is 1-32)
 #define NSIG _NSIG
@@ -45,7 +49,22 @@
 //we use int so it work both on 64bit and 32bit system
 typedef unsigned int sigset_t;
 
-#include <sys/siginfo.h>
+union sigval {
+	int	sival_int;	    //integer value
+	void	*sival_ptr;	//pointer value
+};
+
+typedef struct {
+	int si_signo;          //signal number
+	int si_code;           //signal code
+	int si_errno;          //error value
+	pid_t si_pid;          //sending process pid
+	uid_t si_uid;          //real user id of the sending process
+	void *si_addr;         //faulting address (signal specific)
+	int si_status;         //exit status
+	long si_band;          //unused
+	union sigval si_value; //signal value/argument
+} siginfo_t;
 
 struct	sigaction {
 	union {		/* signal handler */
@@ -78,19 +97,5 @@ typedef struct {
 
 typedef void (*sighandler_t)(int);
 typedef int sig_atomic_t;
-
-int sigaddset(sigset_t *sigset, int signum);
-int sigdelset(sigset_t *sigset, int signum);
-int sigemptyset(sigset_t *sigset);
-int sigfillset(sigset_t *sigset);
-int sigismember(const sigset_t *set, int signum);
-int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
-int sigpending(sigset_t *set);
-int sigsuspend(const sigset_t *mask);
-int sigwait(const sigset_t *set, int *sig);
-int kill(pid_t pid, int sig);
-int raise(int sig);
-int sigaction(int signum, const struct sigaction *act,struct sigaction * oldact);
-sighandler_t signal(int signum, sighandler_t handler);
 
 #endif

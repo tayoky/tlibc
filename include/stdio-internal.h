@@ -1,7 +1,7 @@
 #ifndef _STDIO_INTERNAL_H
 #define _STDIO_INTERNAL_H
 
-#include <sys/type.h>
+#include <sys/types.h>
 #include <stdio.h>
 
 struct _FILE{

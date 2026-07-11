@@ -108,17 +108,23 @@ clean-headers :
 # headers target
 set +f
 H_SRC=""
-for I in include/*.h include/sys/*.h ; do 
+for I in include/*.h include/sys/ ; do 
 	H_SRC="$H_SRC \$(BUILDDIR)/headers/${I##"include/"}"
 done
+
 H_SRC="$H_SRC \$(patsubst include/\$(TARGET)/%,\$(BUILDDIR)/headers/%,\$(wildcard include/\$(TARGET)/*.h include/\$(TARGET)/*/))"
 
 set -f
-tmake_add_data "headers" "include" $H_SRC
+tmake_add_data "headers" "include" $H_SRC 
 
-# src inside directories
+# make sure to add dependencies on headers inside directories
+set +f
+H_DEPS=""
+for I in include/sys/*.h ; do 
+	H_DEPS="$H_DEPS \$(BUILDDIR)/headers/${I##"include/"}"
+done
 echo "
-install-headers : \$(patsubst include/\$(TARGET)/%,\$(BUILDDIR)/headers/%,\$(wildcard include/\$(TARGET)/*/*.h)) \$(BUILDDIR)/headers/sys/cdefs.h" >> "$MAKEFILE"
+install-headers : \$(patsubst include/\$(TARGET)/%,\$(BUILDDIR)/headers/%,\$(wildcard include/\$(TARGET)/*/*.h))$H_DEPS \$(BUILDDIR)/headers/sys/cdefs.h" >> "$MAKEFILE"
 
 CRTS_SRC="crt/\$(ARCH)/crti.o crt/\$(ARCH)/crtn.o crt/\$(ARCH)/crt0-\$(TARGET).o"
 CRTS="\$(BUILDDIR)/crts/crti.o \$(BUILDDIR)/crts/crtn.o \$(BUILDDIR)/crts/crt0.o"

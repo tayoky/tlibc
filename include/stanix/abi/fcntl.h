@@ -1,7 +1,8 @@
-#ifndef _FCNTL_H
-#define _FCNTL_H
+#ifndef _ABI_FCNTL_H
+#define _ABI_FCNTL_H
 
-#include <sys/type.h>
+// Stanix fcntl ABI
+
 #include <sys/types.h>
 
 #define O_RDONLY	0x0000000 //open for read only
@@ -29,6 +30,7 @@
 #define FD_CLOEXEC  0x10
 
 #define AT_FDCWD -42
+#define AT_SYMLINK_NOFOLLOW 1
 
 #define F_OK 0x8
 #define R_OK 0x4
@@ -46,14 +48,5 @@ struct flock {
 #define F_RDLCK 0
 #define F_WRLCK 1
 #define F_UNLCK 3
-
-int open(const char *pathname, int flags, ... /* mode_t mode */);
-int creat(const char *pathname, mode_t mode);
-int fcntl(int fd, int op, ... /* arg */);
-
-// some stanix specific stuff
-
-int fdname_r(int fd, char *buf, size_t size);
-char *fdname(int fd);
 
 #endif

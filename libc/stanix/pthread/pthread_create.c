@@ -65,6 +65,6 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_
 	stack_top &= ~0xf;
 	stack_top -= 8;
 
-	return stanix_new_thread((void *)__pthread_creator, (void *)stack_top, 0, args, NULL);
+	return stanix_new_thread((void *)__pthread_creator, (void *)stack_top, 0, args, &uthread->tid);
 }
 #endif

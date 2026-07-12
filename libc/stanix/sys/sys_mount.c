@@ -1,4 +1,5 @@
 #include <sys/mount.h>
+#include <sysdeps.h>
 #include <errno.h>
 #include <syscall.h>
 

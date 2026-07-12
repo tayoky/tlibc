@@ -57,5 +57,6 @@ int fchown(int fd, uid_t owner, gid_t group);
 int lchown(const char *pathname, uid_t owner, gid_t group);
 mode_t umask(mode_t mask);
 int mkdir(const char *pathname, mode_t mode);
+int mknod(const char *pathname, mode_t mode, dev_t dev);
 
 #endif

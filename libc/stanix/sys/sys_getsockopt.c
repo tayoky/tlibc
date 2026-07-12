@@ -1,7 +1,8 @@
 #include <sys/socket.h>
+#include <sysdeps.h>
 #include <errno.h>
 #include <syscall.h>
 
-int getsockopt(int socket, int level, int option_name, void *option_value, socklen_t *option_len) {
+int sys_getsockopt(int socket, int level, int option_name, void *option_value, socklen_t *option_len) {
 	return __set_errno(__syscall5(SYS_getsockopt, socket, level, option_name, (long)option_value, (long)option_len));
 }

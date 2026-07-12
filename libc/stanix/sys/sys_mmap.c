@@ -1,12 +1,13 @@
 #include <sys/mman.h>
+#include <sysdeps.h>
 #include <errno.h>
 #include <syscall.h>
 
-void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset) {
+void *sys_mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset) {
 	void *ret = (void *)__syscall6(SYS_mmap, (long)addr, length, prot, flags, fd, offset);
 	if (ret > (void *)0xFFFFF00000000000) {
 		errno = -(long)ret;
-		return map_failed;
+		return MAP_FAILED;
 	}
 
 	return ret;

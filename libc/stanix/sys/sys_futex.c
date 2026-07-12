@@ -1,4 +1,5 @@
 #include <sys/futex.h>
+#include <sysdeps.h>
 #include <errno.h>
 #include <syscall.h>
 

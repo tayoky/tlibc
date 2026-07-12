@@ -60,8 +60,6 @@ int execve(const char *pathname, char *const argv[], char *const envp[]);
 
 pid_t fork(void);
 
-int mkdir(const char *pathname, mode_t mode);
-
 //not syscall exec
 
 int execl(const char *pathname, const char *arg, ... /*, (char *) NULL */);

@@ -25,12 +25,15 @@ SYSDEP int sys_set_tls(void *tls);
 
 SYSDEP int sys_open(const char *pathname, int flags, mode_t mode);
 SYSDEP int sys_openat(int dirfd, const char *pathname, int flags, mode_t mode);
+SYSDEP int sys_close(int fd);
 SYSDEP int sys_fcntl(int fd, int op, va_list args);
+SYSDEP int sys_isatty(int fd);
 SYSDEP int sys_poll(struct pollfd *fds, nfds_t nfds, int timeout);
 SYSDEP int sys_link(const char *oldpath, const char *newpath);
 SYSDEP int sys_unlink(const char *pathname);
 SYSDEP int sys_rename(const char *oldpath, const char *newpath);
 SYSDEP int sys_openpty(int *amaster, int *aslave, char *name, const struct termios *termp, const struct winsize *winp);
+SYSDEP int sys_ttyname_r(int fd, char *buf, size_t size);
 
 
 #endif

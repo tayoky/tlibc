@@ -1,6 +1,7 @@
 #ifndef _SYSDEPS_H
 #define _SYSDEPS_H
 
+#include <abi/futex.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <tlibcnoreturn.h>
@@ -21,11 +22,14 @@ struct termios;
 struct dirent;
 struct stat;
 
+typedef TLIBC_FUTEX_TYPE futex_val_t;
+typedef _Atomic(TLIBC_FUTEX_TYPE) futex_atomic_t;
+
 SYSDEP int sys_new_thread(void (*fn)(void*), void *stack, int flags, void *arg, pid_t *child_tid);
 SYSDEP TLIBC_NORETURN void sys_thread_exit(void);
 SYSDEP int sys_join_thread(pid_t tid, void **arg);
-SYSDEP int sys_futex_wait(int *addr, int val);
-SYSDEP int sys_futex_wake(int *addr, int count);
+SYSDEP int sys_futex_wait(futex_atomic_t *addr, futex_val_t val);
+SYSDEP int sys_futex_wake(futex_atomic_t *addr, int count);
 SYSDEP int sys_set_tls(void *tls);
 
 SYSDEP int sys_stat(const char *pathname, struct stat *st);

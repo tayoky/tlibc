@@ -1,6 +1,7 @@
 #ifndef _PTHREAD_H
 #define _PTHREAD_H
 
+#include <abi/futex.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <stddef.h>
@@ -14,12 +15,14 @@
 #define TLIBC_ATOMIC_LONG  volatile long
 #define TLIBC_ATOMIC_UINT  volatile unsigned int
 #define TLIBC_ATOMIC_ULONG volatile unsigned long
+#define TLIBC_ATOMIC_FUTEX volatile TLIBC_FUTEX_TYPE
 #else
 #include <stdatomic.h>
 #define TLIBC_ATOMIC_INT   atomic_int
 #define TLIBC_ATOMIC_LONG  atomic_long
 #define TLIBC_ATOMIC_UINT  atomic_uint
 #define TLIBC_ATOMIC_ULONG atomic_ulong
+#define TLIBC_ATOMIC_FUTEX _Atomic(TLIBC_FUTEX_TYPE)
 #endif
 
 typedef struct __pthread_attr {
@@ -40,9 +43,9 @@ typedef struct __pthread_barrierattr {
 
 typedef struct __pthread_barrier {
 	pthread_barrierattr_t attr;
-	TLIBC_ATOMIC_ULONG in;
-	TLIBC_ATOMIC_ULONG out;
-	TLIBC_ATOMIC_ULONG current;
+	TLIBC_ATOMIC_FUTEX in;
+	TLIBC_ATOMIC_FUTEX out;
+	TLIBC_ATOMIC_FUTEX current;
 	int initalized;
 	unsigned int count;
 } pthread_barrier_t;
@@ -55,7 +58,7 @@ typedef struct __pthread_condattr {
 
 typedef struct __pthread_cond {
 	pthread_condattr_t attr;
-	TLIBC_ATOMIC_ULONG seq;
+	TLIBC_ATOMIC_FUTEX seq;
 	int initalized;
 } pthread_cond_t;
 #define PTHREAD_COND_INITIALIZER {{0, CLOCK_MONOTONIC}, 0, 1}
@@ -78,7 +81,7 @@ typedef struct __pthread_mutexattr {
 typedef struct __pthread_mutex {
 	pthread_mutexattr_t attr;
 	size_t lock_count;
-	TLIBC_ATOMIC_LONG lock;
+	TLIBC_ATOMIC_FUTEX lock;
 } pthread_mutex_t;
 #define PTHREAD_MUTEX_INITIALIZER {\
 	.attr = {\
@@ -96,7 +99,7 @@ typedef struct __pthread_rwlockattr {
 
 typedef struct __pthread_rwlock {
 	pthread_rwlockattr_t attr;
-	TLIBC_ATOMIC_LONG lock;
+	TLIBC_ATOMIC_FUTEX lock;
 	int initalized;
 } pthread_rwlock_t;
 

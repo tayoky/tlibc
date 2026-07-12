@@ -1,7 +1,7 @@
 #ifndef _ABI_TERMIOS_H
 #define _ABI_TERMIOS_H
 
-// Stanix termios ABI
+// Stub termios ABI
 
 typedef char cc_t;
 typedef int speed_t;
@@ -114,6 +114,5 @@ struct termios {
 #define B1152000  24
 #define B1500000  25
 #define B2000000  26
-
 
 #endif

@@ -275,10 +275,3 @@ void *realloc(void *ptr, size_t newsize) {
 		return new_ptr;
 	}
 }
-
-// TODO : guarantee alignement
-int posix_memalign(void **memptr, size_t alignment, size_t size) {
-	(void)alignment;
-	*memptr = malloc(size);
-	return 0;
-}

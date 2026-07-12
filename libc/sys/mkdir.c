@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <sysdeps.h>
 
-int sys_mkdir(const char *pathname, mode_t mode) {
+int mkdir(const char *pathname, mode_t mode) {
 	if (sys_mkdir) {
 		return sys_mkdir(pathname, mode);
 	} else if (sys_mknod) {

@@ -2,7 +2,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdlib.h>
-#include <syscall.h>
+#include <sysdeps.h>
 #include <unistd.h>
 
 struct _DIR {
@@ -41,10 +41,8 @@ struct dirent *readdir(DIR *dir) {
 		return NULL;
 	}
 
-	// stupid POSIX api ...
-	// there are no function for the raw readdir syscall
 	int old_errno = errno;
-	if (__set_errno(__syscall3(SYS_readdir, dir->fd, (long)&dir->ret, (long)dir->offset)) < 0) {
+	if (CALL_SYSDEP(sys_readdir, (dir->fd, &dir->ret, dir->offset)) < 0) {
 		// hitting end (no more entry) should not trigger an errno
 		if (errno == ENOENT) errno = old_errno;
 		return NULL;

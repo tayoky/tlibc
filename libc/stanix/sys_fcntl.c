@@ -5,7 +5,7 @@
 
 int sys_fcntl(int fd, int op, va_list args) {
 	int arg = 0;
-	if (op == F_SETFD || op == F_DUPFD) {
+	if (op == F_SETFD || op == F_SETFL || op == F_DUPFD) {
 		arg = va_arg(args, int);
 	}
 

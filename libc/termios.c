@@ -4,16 +4,41 @@
 #include <unistd.h>
 
 int tcgetattr(int fd, struct termios *termios_p) {
+#ifdef TIOCGETA
 	return ioctl(fd, TIOCGETA, termios_p);
+#elif defined(TCGETS)
+	return ioctl(fd, TCGETS, termios_p);
+#else
+	return __set_errno(-ENOSYS);
+#endif
 }
+
 int tcsetattr(int fd, int optional_actions, const struct termios *termios_p) {
 	switch (optional_actions) {
 	case TCSANOW:
-		return ioctl(fd, TIOCSETA, (void *)termios_p);
+#ifdef TIOCSETA
+		return ioctl(fd, TIOCSETA, (void*)termios_p);
+#elif defined(TCSETS)
+		return ioctl(fd, TCSETS, (void*)termios_p);
+#else
+		return __set_errno(-ENOSYS);
+#endif
 	case TCSAFLUSH:
-		return ioctl(fd, TIOCSETAF, (void *)termios_p);
+#ifdef TIOCSETAF
+		return ioctl(fd, TIOCSETAF, (void*)termios_p);
+#elif defined(TCSETSF)
+		return ioctl(fd, TCSETSF, (void*)termios_p);
+#else
+		return __set_errno(-ENOSYS);
+#endif
 	case TCSADRAIN:
-		return ioctl(fd, TIOCSETAW, (void *)termios_p);
+#ifdef TIOCSETAW
+		return ioctl(fd, TIOCSETAW, (void*)termios_p);
+#elif defined(TCSETSW)
+		return ioctl(fd, TCSETSW, (void*)termios_p);
+#else
+		return __set_errno(-ENOSYS);
+#endif
 	default:
 		return __set_errno(-EINVAL);
 		break;
@@ -22,11 +47,19 @@ int tcsetattr(int fd, int optional_actions, const struct termios *termios_p) {
 
 pid_t tcgetprgp(int fd) {
 	pid_t pgrp;
+#ifdef TIOCGPGRP
 	return ioctl(fd, TIOCGPGRP, &pgrp) < 0 ? -1 : pgrp;
+#else
+	return __set_errno(-ENOSYS);
+#endif
 }
 
 int tcsetpgrp(int fd, pid_t pgrp) {
+#ifdef TIOCSPGRP
 	return ioctl(fd, TIOCSPGRP, &pgrp);
+#else
+	return __set_errno(-ENOSYS);
+#endif
 }
 
 void cfmakeraw(struct termios *termios_p) {

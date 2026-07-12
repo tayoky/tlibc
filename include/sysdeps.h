@@ -40,6 +40,7 @@ SYSDEP int sys_lchown(const char *pathname, uid_t owner, gid_t group);
 SYSDEP int sys_fchown(int fd, uid_t owner, gid_t group);
 SYSDEP int sys_link(const char *oldpath, const char *newpath);
 SYSDEP int sys_unlink(const char *pathname);
+SYSDEP int sys_rmdir(const char *pathname);
 SYSDEP int sys_rename(const char *oldpath, const char *newpath);
 SYSDEP int sys_mkdir(const char *pathname, mode_t mode);
 SYSDEP int sys_mknod(const char *pathname, mode_t mode, dev_t dev);
@@ -74,6 +75,7 @@ SYSDEP void *sys_mmap(void *addr, size_t length, int prot, int flags, int fd, of
 SYSDEP int sys_munmap(void *addr, size_t length);
 SYSDEP int sys_mprotect(void *addr, size_t size, int prot);
 SYSDEP pid_t sys_waitpid(pid_t pid, int *status, int options);
+SYSDEP TLIBC_NORETURN void sys_exit(int status);
 
 
 #endif

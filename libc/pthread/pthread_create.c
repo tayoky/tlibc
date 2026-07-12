@@ -27,7 +27,7 @@ static int __pthread_creator(void *arg) {
 }
 
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine)(void *), void *arg) {
-	if (!sys_new_thread) {
+	if (!sys_new_thread || !sys_set_tls) {
 		return ENOSYS;
 	}
 	struct pthread_args *args = malloc(sizeof(struct pthread_args));

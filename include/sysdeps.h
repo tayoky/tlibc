@@ -97,4 +97,14 @@ SYSDEP int sys_sigpending(sigset_t *set);
 SYSDEP int sys_sigsuspend(const sigset_t *mask);
 SYSDEP int sys_sigwait(const sigset_t *set, int *sig);
 
+// user management
+SYSDEP uid_t sys_getuid(void);
+SYSDEP uid_t sys_geteuid(void);
+SYSDEP gid_t sys_getgid(void);
+SYSDEP gid_t sys_getegid(void);
+SYSDEP int sys_setuid(uid_t uid);
+SYSDEP int sys_seteuid(uid_t uid);
+SYSDEP int sys_setgid(gid_t gid);
+SYSDEP int sys_setegid(gid_t gid);
+
 #endif

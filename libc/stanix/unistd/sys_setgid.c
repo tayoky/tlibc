@@ -1,7 +1,6 @@
-#include <errno.h>
 #include <syscall.h>
-#include <unistd.h>
+#include <sysdeps.h>
 
-int setgid(gid_t gid) {
+int sys_setgid(gid_t gid) {
 	return __set_errno(__syscall1(SYS_setgid, gid));
 }

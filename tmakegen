@@ -32,6 +32,8 @@ endif
 M_ARCH_SRC = $(wildcard libm/$(ARCH)/*.s)
 M_SRC = $(M_ARCH_SRC) $(filter-out $(M_ARCH_SRC:libm/$(ARCH)/%.s=libm/generic/%.c),$(wildcard libm/generic/*.c))
 
+SYSDEPS = $(wildcard sysdeps/$(TARGET)/*.[cs] sysdeps/$(TARGET)/*/*.[cs] sysdeps/$(TARGET)/$(ARCH)/*.[cs] libc/$(ARCH)/*.[cs])
+
 DYNFLAGS = -D__DYNAMIC__=1'>> "$MAKEFILE"
 
 # libk target
@@ -54,7 +56,7 @@ DL_DEPS="tlibc.c auxv.c cxa.c pthread/uthread.c \$(ARCH)/__get_uthread.s fcntl/o
 	stdio/puts.c stdio/putchar.c stdio/fputs.c stdio/fputc.c stdio/stdio.c stdio/vfprintf.c stdio/fprintf.c \
 	stdlib/exit.c stdlib/environ.c stdlib/getenv.c"
 
-DL_SRC="$(echo linker/*.c) linker/abi/\$(ARCH)-\$(TARGET).s crt/\$(ARCH)/crt0-\$(TARGET).s \$(shell find sysdeps/\$(TARGET) -name \"*.c\")"
+DL_SRC="$(echo linker/*.c) linker/abi/\$(ARCH)-\$(TARGET).s crt/\$(ARCH)/crt0-\$(TARGET).s \$(SYSDEPS)"
 for I in $DL_DEPS ; do
 	DL_SRC="$DL_SRC libc/$I"
 done
@@ -63,7 +65,7 @@ tmake_add_shared_library "ld-tlibc" $DL_SRC CFLAGS="\$(DYNFLAGS) -D__DL_TLIBC__=
 
 # libc target
 C_SRC_DIR="ctype libgen time stdlib string wchar stdio unistd locale pwd pthread dl fcntl sys signal"
-C_SRC="\$(wildcard sysdeps/\$(TARGET)/*.[cs] sysdeps/\$(TARGET)/*/*.[cs] sysdeps/\$(TARGET)/\$(ARCH)/*.[cs] libc/\$(ARCH)/*.[cs]) $(echo libc/*.c)"
+C_SRC="\$(SYSDEPS) $(echo libc/*.c)"
 
 for SRC_DIR in $C_SRC_DIR ; do
 	C_SRC="$C_SRC $(find "libc/$SRC_DIR" -name "*.c")"
@@ -72,6 +74,12 @@ done
 set -f
 tmake_add_static_library "libc" $C_SRC HAVE_C=yes HAVE_S=yes
 tmake_add_shared_library "libc" $C_SRC CFLAGS="\$(DYNFLAGS)" DEPENDENCIES="ld-tlibc" HAVE_C=yes HAVE_S=yes
+
+# add a define for sysdeps to know when we are compiling a sysdep
+echo "" >> "$MAKEFILE"
+for I in static-libc shared-libc shared-ld-tlibc ; do
+	echo "\$(patsubst %,\$(BUILDDIR)/$I/%.o,\$(SYSDEPS)) : CFLAGS += -D__SYSDEPS__=1"
+done >> "$MAKEFILE"
 
 # libm target
 tmake_add_library "libm" "\$(M_SRC)" LDFLAGS="-Wl,-lgcc_s" DEPENDENCIES="libc" HAVE_C=yes HAVE_S=yes

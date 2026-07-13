@@ -110,6 +110,8 @@ long pathconf(const char *pathname, int varcode);
 
 long sysconf(int name);
 
+long syscall(long number, ...);
+
 // use the same id as glibc and mlibc
 #define _SC_ARG_MAX 0
 #define _SC_CHILD_MAX 1

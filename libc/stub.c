@@ -40,4 +40,7 @@ STUB(closelog)
 STUB(vsyslog)
 STUB(setlogmask)
 
+STUB(__system_property_get)
+STUB(__stack_chk_fail)
+
 STUB(__tls_get_addr)

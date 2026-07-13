@@ -50,6 +50,7 @@ SYSDEP int sys_rmdir(const char *pathname);
 SYSDEP int sys_rename(const char *oldpath, const char *newpath);
 SYSDEP int sys_mkdir(const char *pathname, mode_t mode);
 SYSDEP int sys_mknod(const char *pathname, mode_t mode, dev_t dev);
+SYSDEP int sys_getcwd(char *buf, size_t size);
 SYSDEP int sys_open(const char *pathname, int flags, mode_t mode);
 SYSDEP int sys_openat(int dirfd, const char *pathname, int flags, mode_t mode);
 SYSDEP int sys_close(int fd);
@@ -81,6 +82,8 @@ SYSDEP void *sys_mmap(void *addr, size_t length, int prot, int flags, int fd, of
 SYSDEP int sys_munmap(void *addr, size_t length);
 SYSDEP int sys_mprotect(void *addr, size_t size, int prot);
 SYSDEP pid_t sys_getpid(void);
+SYSDEP pid_t sys_getpgid(pid_t pid);
+SYSDEP int sys_setpgid(pid_t pid, pid_t pgid);
 SYSDEP pid_t sys_fork(void);
 SYSDEP int sys_execve(const char *pathname, char *const *argv, char *const *envp);
 SYSDEP TLIBC_NORETURN void sys_exit(int status);

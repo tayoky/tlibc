@@ -46,7 +46,7 @@ tmake_add_static_library "libk" $K_SRC CFLAGS="\$(KFLAGS)"
 # libc objects used by linker
 DL_DEPS="tlibc.c auxv.c cxa.c pthread/uthread.c \$(ARCH)/__get_uthread.s fcntl/open.c errno.c ctype/ctype.c \
 	unistd/read.c unistd/write.c unistd/lseek.c unistd/close.c unistd/_exit.c \
-	unistd/getuid.c unistd/geteuid.c unistd/getgid.c unistd/getegid.c \
+	unistd/getuid.c unistd/geteuid.c unistd/getgid.c unistd/getegid.c unistd/getpid.c \
 	sys/mmap.c sys/mprotect.c sys/munmap.c \
 	string/strcmp.c string/strncmp.c string/strchr.c string/strrchr.c string/strcpy.c string/strlen.c string/strnlen.c \
 	string/memset.c string/memcmp.c string/memchr.c string/memcpy.c \

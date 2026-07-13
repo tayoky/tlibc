@@ -1,1 +1,51 @@
-../../stub/abi/fcntl.h
+#ifndef _ABI_FCNTL_H
+#define _ABI_FCNTL_H
+
+// Linux fcntl ABI
+
+#include <sys/types.h>
+
+#define O_RDONLY	0x0000000 //open for read only
+#define O_WRONLY	0x0000001 //open for write only
+#define O_RDWR		0x0000002 //open for both read and write
+#define O_CREAT		0x0000010 //create the file if it don't exist
+#define O_EXCL		0x0000020 //trigger an error if can't create the file
+#define O_NOCTTY	0x0000040 //if open tty don't make it the controlling tty
+#define O_TRUNC		0x0000080 //truncate the file to be empty
+#define O_APPEND	0x0000100 //go to the end of the file before each write
+#define	O_NONBLOCK	0x0000200 //don't block on read/write
+#define O_DIRECTORY	0x0000400 //must be a directory
+#define O_CLOEXEC	0x0000800 //set close_on_exec
+#define O_NOFOLLOW	0x0001000 //don't follow links
+
+#define F_DUPFD  0
+#define F_GETFD  1
+#define F_SETFD  2
+#define F_GETFL  3
+#define F_SETFL  4
+#define F_SETLK  5 // acquire/release lock
+#define F_SETLKW 6
+#define F_GETLK  7 // get lock status
+
+#define FD_CLOEXEC  0x10
+
+#define AT_FDCWD -100
+#define AT_SYMLINK_NOFOLLOW 1
+
+#define F_OK 0x8
+#define R_OK 0x4
+#define W_OK 0x2
+#define X_OK 0x1
+
+struct flock {
+	short l_type;
+	short l_whence;
+	off_t l_start;
+	off_t l_len;
+	pid_t l_pid;
+};
+
+#define F_RDLCK 0
+#define F_WRLCK 1
+#define F_UNLCK 3
+#endif

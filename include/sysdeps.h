@@ -8,6 +8,7 @@
 #include <tlibcnoreturn.h>
 #include <stdarg.h>
 #include <poll.h>
+#include <signal.h>
 #include <errno.h>
 
 #ifndef __TLIBC__
@@ -88,5 +89,12 @@ SYSDEP int sys_clock_settime(clockid_t clockid, const struct timespec *tp);
 SYSDEP int sys_usleep(useconds_t usec);
 SYSDEP int sys_nanosleep(const struct timespec *duration, struct timespec *rem);
 
+SYSDEP sighandler_t sys_signal(int signum, sighandler_t handler);
+SYSDEP int sys_sigaction(int signum, const struct sigaction *act, struct sigaction *oldact);
+SYSDEP int sys_kill(pid_t pid, int sig);
+SYSDEP int sys_sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
+SYSDEP int sys_sigpending(sigset_t *set);
+SYSDEP int sys_sigsuspend(const sigset_t *mask);
+SYSDEP int sys_sigwait(const sigset_t *set, int *sig);
 
 #endif

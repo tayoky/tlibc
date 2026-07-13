@@ -61,7 +61,7 @@ done
 tmake_add_shared_library "ld-tlibc" $DL_SRC CFLAGS="\$(DYNFLAGS) -D__DL_TLIBC__=1 -fPIC -mgeneral-regs-only -fvisibility=hidden" LDFLAGS="-static-libgcc -Wl,--no-dynamic-linker,-z,now,-Bsymbolic,-e,_start"
 
 # libc target
-C_SRC_DIR="ctype libgen time stdlib string wchar stdio unistd locale pwd pthread dl fcntl sys"
+C_SRC_DIR="ctype libgen time stdlib string wchar stdio unistd locale pwd pthread dl fcntl sys signal"
 C_SRC="\$(wildcard libc/\$(TARGET)/*.[cs] libc/\$(TARGET)/*/*.[cs] libc/\$(ARCH)/*.[cs]) $(echo libc/*.c)"
 
 for SRC_DIR in $C_SRC_DIR ; do

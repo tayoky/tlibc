@@ -24,9 +24,10 @@ long syscall(long number, ...) {
 	register long r3 asm("x3")  = arg4;
 	register long r4 asm("x4")  = arg5;
 	register long r5 asm("x5")  = arg6;
-	asm("svc #0" : "=r"(ret) : "r"(num), "0"(r0), "r"(r1), "r"(r2), "r"(r3), "r"(r4), "r"(r5) : "memory", "x6", "x7");
+	asm("svc #0" : "=r"(r0) : "r"(num), "r"(r0), "r"(r1), "r"(r2), "r"(r3), "r"(r4), "r"(r5) : "memory", "x6", "x7");
+	ret = r0;
 #else
 	ret = -ENOSYS;
 #endif
-	return __set_errno(ret);
+	return ret < 0 ? __set_errno(ret) : ret;
 }

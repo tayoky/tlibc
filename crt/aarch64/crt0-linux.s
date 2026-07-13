@@ -4,9 +4,8 @@
 .globl _start
 .type _start @function
 _start:
-	sub sp, sp, 16
-	stp x0, x1, [sp]
+	mov x0, sp
+	adrp x1, main
+	add x1, x1, :lo12:main
 	bl __init_tlibc
-	ldp x0, x1, [sp]
-	add sp, sp, 16
 .size _start, .-_start

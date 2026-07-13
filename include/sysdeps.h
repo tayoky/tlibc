@@ -2,6 +2,7 @@
 #define _SYSDEPS_H
 
 #include <abi/futex.h>
+#include <abi/time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <tlibcnoreturn.h>
@@ -78,8 +79,14 @@ SYSDEP int sys_ttyname_r(int fd, char *buf, size_t size);
 SYSDEP void *sys_mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
 SYSDEP int sys_munmap(void *addr, size_t length);
 SYSDEP int sys_mprotect(void *addr, size_t size, int prot);
-SYSDEP pid_t sys_waitpid(pid_t pid, int *status, int options);
+SYSDEP pid_t sys_fork(void);
+SYSDEP int sys_execve(const char *pathname, char *const *argv, char *const *envp);
 SYSDEP TLIBC_NORETURN void sys_exit(int status);
+SYSDEP pid_t sys_waitpid(pid_t pid, int *status, int options);
+SYSDEP int sys_clock_gettime(clockid_t clockid, struct timespec *tp);
+SYSDEP int sys_clock_settime(clockid_t clockid, const struct timespec *tp);
+SYSDEP int sys_usleep(useconds_t usec);
+SYSDEP int sys_nanosleep(const struct timespec *duration, struct timespec *rem);
 
 
 #endif

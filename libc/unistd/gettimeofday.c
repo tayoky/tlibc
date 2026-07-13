@@ -1,7 +1,9 @@
 #include <time.h>
+#include <errno.h>
 #include <unistd.h>
 
 int gettimeofday(struct timeval *tv, struct timezone *tz) {
+#ifdef CLOCK_REALTIME
 	(void)tz; // TODO : timezone support
 	struct timespec ts;
 	int ret = clock_gettime(CLOCK_REALTIME, &ts);
@@ -11,4 +13,7 @@ int gettimeofday(struct timeval *tv, struct timezone *tz) {
 		tv->tv_usec = ts.tv_nsec / 1000;
 	}
 	return 0;
+#else
+	return __set_errno(-ENOSYS);
+#endif
 }

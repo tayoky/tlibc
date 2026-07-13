@@ -31,7 +31,7 @@ char *ctime(const time_t *clock);
 char *ctime_r(const time_t *clock, char *buf);
 time_t mktime(struct tm *);
 int clock_gettime(clockid_t clock_id, struct timespec *tp);
-int clock_settime(clockid_t clock_id, struct timespec *tp);
+int clock_settime(clockid_t clock_id, const struct timespec *tp);
 clock_t clock(void);
 int nanosleep(const struct timespec *, struct timespec *);
 void tzset(void);

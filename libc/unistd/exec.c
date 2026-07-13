@@ -106,7 +106,7 @@ int execvpe(const char *file, char *const argv[], char *const envp[]) {
 
 		FILE *fd = fopen(full_filename, "r");
 		if (fd) {
-			// we find it
+			// we found it
 			fclose(fd);
 			int ret = execve(full_filename, argv, envp);
 			free(full_filename);

@@ -26,6 +26,8 @@ static int __pthread_creator(void *arg) {
 	return 0;
 }
 
+#define PAGE_ALIGN_UP(x) ((((x) + PAGE_SIZE - 1) / PAGE_SIZE) * PAGE_SIZE)
+
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine)(void *), void *arg) {
 	struct pthread_args *args = malloc(sizeof(struct pthread_args));
 	args->arg = arg;
@@ -44,22 +46,35 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_
 	}
 	args->uthread = uthread;
 
-	void *stack = attr->stack ? attr->stack : mmap(NULL, attr->stack_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
-	if (stack == MAP_FAILED) {
-		__free_uthread(uthread);
-		free(args);
-		return errno;
+	void *stack = attr->stack;
+	size_t stack_size;
+	if (stack) {
+		stack_size = attr->stack_size;
+	} else {
+		stack_size = PAGE_ALIGN_UP(attr->stack_size) + attr->guard_size;
+		// allocate our own stack and guards
+		stack = mmap(NULL, stack_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+		if (stack == MAP_FAILED) {
+			__free_uthread(uthread);
+			free(args);
+			return errno;
+		}
+
+		// set the guards
+		if (attr->guard_size > 0) {
+			mprotect(stack, attr->guard_size, PROT_NONE);
+		}
 	}
 
 	if (thread) *thread = uthread;
 
 	uthread->stack = stack;
-	uthread->stack_size = attr->stack_size;
+	uthread->stack_size = stack_size;
 	uthread->stack_is_allocated = !attr->stack;
 	uthread->detach_state = attr->detach_state;
 
 	// align the stack
-	uintptr_t stack_top = (uintptr_t)stack + attr->stack_size;
+	uintptr_t stack_top = (uintptr_t)stack + stack_size;
 	stack_top &= ~0xf;
 	stack_top -= 8;
 

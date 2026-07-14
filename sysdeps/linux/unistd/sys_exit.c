@@ -2,6 +2,7 @@
 #include <sysdeps.h>
 #include <unistd.h>
 
-int sys_exit(int status) {
-	return syscall(SYS_exit_group, status);
+TLIBC_NORETURN void sys_exit(int status) {
+	syscall(SYS_exit_group, status);
+	__builtin_unreachable();
 }

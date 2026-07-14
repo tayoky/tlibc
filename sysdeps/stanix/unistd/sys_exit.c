@@ -3,6 +3,7 @@
 #include <tlibcnoreturn.h>
 #include <unistd.h>
 
-int sys_exit(int status) {
-	return __set_errno(__syscall1(SYS_exit, (long)status));
+TLIBC_NORETURN void sys_exit(int status) {
+	__set_errno(__syscall1(SYS_exit, (long)status));
+	__builtin_unreachable();
 }

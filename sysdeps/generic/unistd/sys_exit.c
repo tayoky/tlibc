@@ -1,5 +1,7 @@
 #include <sysdeps.h>
 
-TLIBC_WEAK int sys_exit(int status) {
-	return __set_errno(-ENOSYS);
+TLIBC_WEAK TLIBC_NORETURN void sys_exit(int status) {
+	(void)status;
+	for (;;);
+	__builtin_unreachable();
 }

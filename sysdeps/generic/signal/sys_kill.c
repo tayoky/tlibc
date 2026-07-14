@@ -12,6 +12,6 @@ TLIBC_WEAK int sys_kill(pid_t pid, int sig) {
 			return 0;
 		}
 	} else {
-		return __set_errno(-ENOSYS);
+		return SYSDEP_STUB;
 	}
 }

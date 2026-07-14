@@ -28,6 +28,10 @@ struct stat;
 typedef TLIBC_FUTEX_TYPE futex_val_t;
 typedef _Atomic(TLIBC_FUTEX_TYPE) futex_atomic_t;
 
+__attribute__((visibility("hidden"))) int __stub(const char *func);
+
+#define SYSDEP_STUB __stub(__func__)
+
 SYSDEP pid_t sys_gettid(void);
 SYSDEP int sys_new_thread(void (*fn)(void*), void *stack, int flags, void *arg, pid_t *child_tid);
 SYSDEP TLIBC_NORETURN void sys_thread_exit(void);

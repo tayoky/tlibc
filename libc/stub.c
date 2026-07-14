@@ -1,21 +1,26 @@
 // we cannot include stdio.h
 // cause we might stub stdio functions
+#include <errno.h>
 typedef struct _FILE FILE;
 extern FILE *stderr;
 int fprintf(FILE *stream, const char *fmt, ...);
 
+__attribute__((visibility("hidden"))) int __stub(const char *func) {
+	fprintf(stderr, "tlibc : %s stub was called\n", func);
+	return __set_errno(-ENOSYS);
+}
+
 
 #define STUB(name) \
 	__attribute__((weak)) int name() { \
-		fprintf(stderr, "tlibc : " #name " stub was called\n"); \
+		__stub(#name); \
 		return 0; \
 	}
-
+#ifndef __DL_TLIBC__
 STUB(ftw)
 STUB(sync)
 STUB(flock)
 STUB(utime)
-STUB(fstatat)
 STUB(clock)
 STUB(alarm)
 STUB(popen)
@@ -44,3 +49,4 @@ STUB(__system_property_get)
 STUB(__stack_chk_fail)
 
 STUB(__tls_get_addr)
+#endif

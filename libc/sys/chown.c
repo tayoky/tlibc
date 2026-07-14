@@ -2,5 +2,5 @@
 #include <sysdeps.h>
 
 int chown(const char *pathname, uid_t owner, gid_t group) {
-	return CALL_SYSDEP(sys_chown, (pathname, owner, group));
+	return sys_chown(pathname, owner, group);
 }

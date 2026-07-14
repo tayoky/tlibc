@@ -27,9 +27,6 @@ static int __pthread_creator(void *arg) {
 }
 
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine)(void *), void *arg) {
-	if (!sys_new_thread || !sys_set_tls) {
-		return ENOSYS;
-	}
 	struct pthread_args *args = malloc(sizeof(struct pthread_args));
 	args->arg = arg;
 	args->start_routine = start_routine;
@@ -66,5 +63,13 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_
 	stack_top &= ~0xf;
 	stack_top -= 8;
 
-	return sys_new_thread((void *)__pthread_creator, (void *)stack_top, 0, args, &uthread->tid);
+	int ret = sys_new_thread((void *)__pthread_creator, (void *)stack_top, 0, args, &uthread->tid);
+	if (ret < 0) {
+		if (uthread->stack_is_allocated) {
+			munmap(uthread->stack, uthread->stack_size);
+		}
+		__free_uthread(uthread);
+		free(args);
+	}
+	return ret;
 }

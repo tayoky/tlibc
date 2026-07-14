@@ -2,5 +2,5 @@
 #include <sysdeps.h>
 
 int unlink(const char *pathname) {
-	return CALL_SYSDEP(sys_unlink, (pathname));
+	return sys_unlink(pathname);
 }

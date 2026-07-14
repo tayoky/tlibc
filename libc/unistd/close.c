@@ -2,5 +2,5 @@
 #include <sysdeps.h>
 
 int close(int fd) {
-	return CALL_SYSDEP(sys_close, (fd));
+	return sys_close(fd);
 }

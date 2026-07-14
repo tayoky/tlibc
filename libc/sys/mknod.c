@@ -2,5 +2,5 @@
 #include <sysdeps.h>
 
 int mknod(const char *pathname, mode_t mode, dev_t dev) {
-	return CALL_SYSDEP(sys_mknod, (pathname, mode, dev));
+	return sys_mknod(pathname, mode, dev);
 }

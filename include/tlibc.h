@@ -3,6 +3,7 @@
 
 #include <sys/types.h>
 #include <pthread.h>
+#include <sysdeps.h>
 #include <stddef.h>
 #include <limits.h>
 
@@ -30,7 +31,9 @@ struct __uthread {
 
 typedef int (*main_t)(int argc, char **argv, char **envp);
 
-struct __uthread *__get_uthread(void);
+static inline struct __uthread *__get_uthread(void) {
+	return sys_get_tls();
+}
 struct __uthread *__new_uthread(void);
 void __free_uthread(struct __uthread *uthread);
 void __init_environ(char **envp);

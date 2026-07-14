@@ -15,9 +15,8 @@ TLIBC_NORETURN void pthread_exit(void *retval) {
 		// TODO : free stack
 		__free_uthread(__get_uthread());
 	}
-	if (!sys_thread_exit) {
-		// FIXME : what do we do
-		for (;;);
-	}
 	sys_thread_exit();
+	// FIXME : what do we do
+	for (;;);
+	__builtin_unreachable();
 }

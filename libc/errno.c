@@ -7,11 +7,8 @@ int *__errno_location(void) {
 	static int stub;
 	return &stub;
 #else
-	// check if we have tls support
-	if (!sys_set_tls) {
-		static int err;
-		return &err;
-	}
-	return &__get_uthread()->err;
+	static int err;
+	struct __uthread *uthread = __get_uthread();
+	return uthread ? &uthread->err : &err;
 #endif
 }

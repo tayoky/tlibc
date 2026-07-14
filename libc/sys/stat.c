@@ -3,13 +3,11 @@
 #include <sysdeps.h>
 
 int stat(const char *pathname, struct stat *buf) {
-	if (sys_stat) {
-		return sys_stat(pathname, buf);
+	int ret = sys_stat(pathname, buf);
 #ifdef AT_FDCWD
-	} else if (sys_fstatat) {
-		return sys_fstatat(AT_FDCWD, pathname, buf, 0);
-#endif
-	} else {
-		return __set_errno(-ENOSYS);
+	if (ret < 0 && errno == ENOSYS) {
+		ret = sys_fstatat(AT_FDCWD, pathname, buf, 0);
 	}
+#endif
+	return ret;
 }

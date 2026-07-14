@@ -8,11 +8,10 @@ int pthread_join(pthread_t thread, void **arg) {
 	if (thread->detach_state != PTHREAD_CREATE_JOINABLE) {
 		return EINVAL;
 	}
-	if (sys_join_thread) {
-		// some OSes need a join
-		int ret = sys_join_thread(thread->tid, NULL);
-		if (ret < 0) return errno;
-	}
+	// some OSes need a join
+	int ret = sys_join_thread(thread->tid, NULL);
+	if (ret < 0 && errno != ENOSYS	) return errno;
+	
 	// TODO : use a futex if no join
 	if (arg) *arg = thread->retval;
 	if (thread->stack_is_allocated) {

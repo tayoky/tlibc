@@ -42,7 +42,7 @@ struct dirent *readdir(DIR *dir) {
 	}
 
 	int old_errno = errno;
-	if (CALL_SYSDEP(sys_readdir, (dir->fd, &dir->ret, dir->offset)) < 0) {
+	if (sys_readdir(dir->fd, &dir->ret, dir->offset) < 0) {
 		// hitting end (no more entry) should not trigger an errno
 		if (errno == ENOENT) errno = old_errno;
 		return NULL;

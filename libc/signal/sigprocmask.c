@@ -2,5 +2,5 @@
 #include <sysdeps.h>
 
 int sigprocmask(int how, const sigset_t *set, sigset_t *oldset) {
-	return CALL_SYSDEP(sys_sigprocmask, (how, set, oldset));
+	return sys_sigprocmask(how, set, oldset);
 }

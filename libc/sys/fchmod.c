@@ -2,5 +2,5 @@
 #include <sysdeps.h>
 
 int fchmod(int fd, mode_t mode) {
-	return CALL_SYSDEP(sys_fchmod, (fd, mode));
+	return sys_fchmod(fd, mode);
 }

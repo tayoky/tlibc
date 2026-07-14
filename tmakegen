@@ -12,6 +12,7 @@ TARGET=stanix
 # freestanding environment setup
 CFLAGS += -Wall \
 	-Wextra \
+	-Wno-unused-parameter \
 	-std=gnu99 \
 	-fno-stack-protector \
 	-fno-stack-check \
@@ -33,6 +34,7 @@ M_ARCH_SRC = $(wildcard libm/$(ARCH)/*.s)
 M_SRC = $(M_ARCH_SRC) $(filter-out $(M_ARCH_SRC:libm/$(ARCH)/%.s=libm/generic/%.c),$(wildcard libm/generic/*.c))
 
 SYSDEPS = $(wildcard sysdeps/$(TARGET)/*.[cs] sysdeps/$(TARGET)/*/*.[cs] sysdeps/$(TARGET)/$(ARCH)/*.[cs] libc/$(ARCH)/*.[cs])
+SYSDEPS += $(wildcard sysdeps/generic/*.[cs] sysdeps/generic/*/*.[cs] sysdeps/generic/$(ARCH)/*.[cs])
 
 DYNFLAGS = -D__DYNAMIC__=1'>> "$MAKEFILE"
 
@@ -46,7 +48,7 @@ tmake_add_static_library "libk" $K_SRC CFLAGS="\$(KFLAGS)"
 
 # ld-tlibc target
 # libc objects used by linker
-DL_DEPS="tlibc.c auxv.c cxa.c pthread/uthread.c \$(ARCH)/__get_uthread.s fcntl/open.c errno.c ctype/ctype.c \
+DL_DEPS="tlibc.c auxv.c cxa.c pthread/uthread.c \$(ARCH)/sys_arch_get_tls.s fcntl/open.c errno.c ctype/ctype.c \
 	unistd/read.c unistd/write.c unistd/lseek.c unistd/close.c unistd/_exit.c \
 	unistd/getuid.c unistd/geteuid.c unistd/getgid.c unistd/getegid.c unistd/getpid.c \
 	sys/mmap.c sys/mprotect.c sys/munmap.c \

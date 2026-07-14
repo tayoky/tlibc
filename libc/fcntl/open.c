@@ -12,13 +12,5 @@ int open(const char *pathname, int flags, ... /* mode_t mode */) {
 		va_end(args);
 	}
 
-	if (sys_open) {
-		return sys_open(pathname, flags, mode);
-#ifdef AT_FDCWD
-	} else if (sys_openat) {
-		return sys_openat(AT_FDCWD, pathname, flags, mode);
-#endif
-	} else {
-		return __set_errno(-ENOSYS);
-	}
+	return sys_open(pathname, flags, mode);
 }

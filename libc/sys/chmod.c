@@ -2,5 +2,5 @@
 #include <sysdeps.h>
 
 int chmod(const char *pathname, mode_t mode) {
-	return CALL_SYSDEP(sys_chmod, (pathname, mode));
+	return sys_chmod(pathname, mode);
 }

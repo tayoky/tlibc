@@ -9,6 +9,7 @@ _init:
 .section .fini
 .globl _fini
 .type _fini @function
+_fini:
 	sub sp, sp, 16
 	stp x29, x30, [sp]
 	/* crtbegin.o's fini section here */

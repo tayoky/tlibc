@@ -15,9 +15,10 @@
 #error "header for internal use only"
 #endif
 
-#define SYSDEP __attribute__((visibility("hidden"), weak))
+#define TLIBC_WEAK __attribute__((weak))
+#define SYSDEP __attribute__((visibility("hidden")))
 
-#define CALL_SYSDEP(name, args) name ? name args : __set_errno(-ENOSYS)
+//#define CALL_SYSDEP(name, args) name ? name args : __set_errno(-ENOSYS)
 
 struct winsize;
 struct termios;
@@ -29,11 +30,13 @@ typedef _Atomic(TLIBC_FUTEX_TYPE) futex_atomic_t;
 
 SYSDEP pid_t sys_gettid(void);
 SYSDEP int sys_new_thread(void (*fn)(void*), void *stack, int flags, void *arg, pid_t *child_tid);
-SYSDEP TLIBC_NORETURN void sys_thread_exit(void);
+SYSDEP int sys_thread_exit(void);
 SYSDEP int sys_join_thread(pid_t tid, void **arg);
 SYSDEP int sys_futex_wait(futex_atomic_t *addr, futex_val_t val);
 SYSDEP int sys_futex_wake(futex_atomic_t *addr, int count);
+SYSDEP void *sys_arch_get_tls(void);
 SYSDEP int sys_set_tls(void *tls);
+SYSDEP void *sys_get_tls(void);
 SYSDEP int sys_stat(const char *pathname, struct stat *st);
 SYSDEP int sys_lstat(const char *pathname, struct stat *st);
 SYSDEP int sys_fstat(int fd, struct stat *st);
@@ -86,7 +89,7 @@ SYSDEP pid_t sys_getpgid(pid_t pid);
 SYSDEP int sys_setpgid(pid_t pid, pid_t pgid);
 SYSDEP pid_t sys_fork(void);
 SYSDEP int sys_execve(const char *pathname, char *const *argv, char *const *envp);
-SYSDEP TLIBC_NORETURN void sys_exit(int status);
+SYSDEP int sys_exit(int status);
 SYSDEP pid_t sys_waitpid(pid_t pid, int *status, int options);
 SYSDEP int sys_clock_gettime(clockid_t clockid, struct timespec *tp);
 SYSDEP int sys_clock_settime(clockid_t clockid, const struct timespec *tp);

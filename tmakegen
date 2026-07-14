@@ -33,7 +33,7 @@ endif
 M_ARCH_SRC = $(wildcard libm/$(ARCH)/*.s)
 M_SRC = $(M_ARCH_SRC) $(filter-out $(M_ARCH_SRC:libm/$(ARCH)/%.s=libm/generic/%.c),$(wildcard libm/generic/*.c))
 
-SYSDEPS = $(wildcard sysdeps/$(TARGET)/*.[cs] sysdeps/$(TARGET)/*/*.[cs] sysdeps/$(TARGET)/$(ARCH)/*.[cs] libc/$(ARCH)/*.[cs])
+SYSDEPS = $(wildcard sysdeps/$(TARGET)/*.[cs] sysdeps/$(TARGET)/*/*.[cs] sysdeps/$(TARGET)/$(ARCH)/*.[cs]) 
 SYSDEPS += $(wildcard sysdeps/generic/*.[cs] sysdeps/generic/*/*.[cs] sysdeps/generic/$(ARCH)/*.[cs])
 
 DYNFLAGS = -D__DYNAMIC__=1'>> "$MAKEFILE"
@@ -67,7 +67,7 @@ tmake_add_shared_library "ld-tlibc" $DL_SRC CFLAGS="\$(DYNFLAGS) -D__DL_TLIBC__=
 
 # libc target
 C_SRC_DIR="ctype libgen time stdlib string wchar stdio unistd locale pwd pthread dl fcntl sys signal"
-C_SRC="\$(SYSDEPS) $(echo libc/*.c)"
+C_SRC="\$(SYSDEPS) \$(wildcard libc/\$(ARCH)/*.[cs]) $(echo libc/*.c)"
 
 for SRC_DIR in $C_SRC_DIR ; do
 	C_SRC="$C_SRC $(find "libc/$SRC_DIR" -name "*.c")"

@@ -20,6 +20,7 @@ int sigpending(sigset_t *set);
 int sigsuspend(const sigset_t *mask);
 int sigwait(const sigset_t *set, int *sig);
 int kill(pid_t pid, int sig);
+int killpg(pid_t pgrp, int sig);
 int raise(int sig);
 int sigaction(int signum, const struct sigaction *act,struct sigaction * oldact);
 sighandler_t signal(int signum, sighandler_t handler);

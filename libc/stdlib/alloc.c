@@ -1,4 +1,5 @@
 #include <sys/mman.h>
+#include <errno.h>
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -31,12 +32,14 @@ struct bin {
 	struct slab *free;
 };
 
-struct big_alloc {
+struct alloc {
+	// size is actually a block ptr for aligned allocs
+	// it is unsafe to touch size before checking slab is non NULL
 	size_t size;
-	// we need to keep the slab ptr last
-	// to fake a NULL  slab ptr
-	struct slab *slab_ptr;
+	struct slab *slab;
 };
+
+#define ALLOC_ALIGNED 0x1
 
 #define PAGE_ALIGN_UP(x) ((((x) + PAGE_SIZE - 1) / PAGE_SIZE) * PAGE_SIZE)
 
@@ -54,6 +57,12 @@ static struct bin bins[BIN_SIZES_COUNT] = {
 	BIN(1024),
 };
 
+static struct alloc *get_alloc(void *ptr) {
+	struct alloc *alloc = ptr;
+	alloc--;
+	return alloc;
+}
+
 static struct bin *get_bin(size_t size) {
 	for (size_t i=0; i<BIN_SIZES_COUNT; i++) {
 		if (size <= bins[i].size) {
@@ -63,12 +72,6 @@ static struct bin *get_bin(size_t size) {
 	return NULL;
 }
 
-static struct slab *get_slab(void *ptr) {
-	struct slab **slab_ptr = ptr;
-	slab_ptr--;
-	return *slab_ptr;
-}
-
 static void *slab_allocate(struct slab *slab) {
 	if (!slab || !slab->free) return NULL;
 	slab->allocated_count++;
@@ -76,9 +79,8 @@ static void *slab_allocate(struct slab *slab) {
 	slab->free = node->next;
 
 	// we need to store the slab ptr before the node
-	struct slab **slab_ptr = (struct slab **)node;
-	slab_ptr--;
-	*slab_ptr = slab;
+	struct alloc *alloc = get_alloc(node);
+	alloc->slab = slab;
 	return node;
 }
 
@@ -197,26 +199,45 @@ static void bin_free(struct slab *slab, void *ptr) {
 	}
 }
 
-static struct big_alloc *get_big(void *ptr) {
-	struct big_alloc *alloc = ptr;
-	alloc--;
-	return alloc;
-}
-
 static void *big_allocate(size_t size) {
-	size_t alloc_size = PAGE_ALIGN_UP(size + sizeof(struct big_alloc));
-	struct big_alloc *alloc = mmap(NULL, alloc_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
+	size_t alloc_size = PAGE_ALIGN_UP(size + sizeof(struct alloc));
+	struct alloc *alloc = mmap(NULL, alloc_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
 	if (alloc == MAP_FAILED) return NULL;
 
-	// allocations have a NULL slab ptr
-	alloc->slab_ptr = NULL;
-	alloc->size = alloc_size - sizeof(struct big_alloc);
+	// big allocations have a NULL slab ptr
+	alloc->slab = NULL;
+	alloc->size = alloc_size - sizeof(struct alloc);
 	return alloc + 1;
 }
 
-static void big_free(void *ptr) {
-	struct big_alloc *alloc = get_big(ptr);
-	munmap(alloc, alloc->size + sizeof(struct big_alloc));
+static void big_free(struct alloc *alloc) {
+	munmap(alloc, alloc->size + sizeof(struct alloc));
+}
+
+static void *aligned_get_block(struct alloc *alloc) {
+		// in aligned allocations we use size to store ptr to original block
+	return (void*)(alloc->size & ~ALLOC_ALIGNED);
+}
+
+static void aligned_free(struct alloc *alloc) {
+	void *ptr = aligned_get_block(alloc);
+	free(ptr);
+}
+
+size_t alloc_get_size(struct alloc *alloc) {
+	if (alloc->slab) {
+		return alloc->slab->bin->size;
+	} else if (alloc->size & ALLOC_ALIGNED) {
+		// we need to deduce size from the size
+		// of the block
+		void *block = aligned_get_block(alloc);
+		struct alloc *block_alloc = get_alloc(block);
+		size_t block_size = alloc_get_size(block_alloc);
+		size_t offset = (uintptr_t)alloc - (uintptr_t)block_alloc;
+		return block_size - offset;
+	} else {
+		return alloc->size;
+	}
 }
 
 void *malloc(size_t size) {
@@ -231,11 +252,13 @@ void *malloc(size_t size) {
 
 void free(void *ptr) {
 	if (!ptr) return;
-	struct slab *slab = get_slab(ptr);
-	if (slab) {
-		bin_free(slab, ptr);
+	struct alloc *alloc = get_alloc(ptr);
+	if (alloc->slab) {
+		bin_free(alloc->slab, ptr);
+	} else if (alloc->size & ALLOC_ALIGNED) {
+		aligned_free(alloc);
 	} else {
-		big_free(ptr);
+		big_free(alloc);
 	}
 }
 
@@ -246,32 +269,52 @@ void *realloc(void *ptr, size_t newsize) {
 		return NULL;
 	}
 
-	struct slab *slab = get_slab(ptr);
-	if (slab) {
-		struct bin *bin = slab->bin;
-		if (bin->size >= newsize) {
-			// we could decrease size
-			// but who care
-			return ptr;
-		}
-		void *new_ptr = malloc(newsize);
-		if (!new_ptr) return NULL;
-		memcpy(new_ptr, ptr, bin->size);
-		slab_free(slab, ptr);
-		return new_ptr;
-	} else {
-		// big alloc
-		struct big_alloc *alloc = get_big(ptr);
-		if (alloc->size >= newsize) {
-			// we could decrease size
-			// but who care
-			return ptr;
-		}
-
-		void *new_ptr = malloc(newsize);
-		if (!new_ptr) return NULL;
-		memcpy(new_ptr, ptr, alloc->size);
-		big_free(ptr);
-		return new_ptr;
+	struct alloc *alloc = get_alloc(ptr);
+	size_t old_size = alloc_get_size(alloc);
+	if (old_size >= newsize) {
+		// we could decrease size
+		// but who care
+		return ptr;
 	}
+
+	// note that we do not have to guarantee alignment anymore
+	// for aligned allocations
+	
+	void *new_ptr = malloc(newsize);
+	if (!new_ptr) return NULL;
+	memcpy(new_ptr, ptr, old_size);
+	free(ptr);
+	return new_ptr;
+}
+
+int posix_memalign(void **memptr, size_t alignment, size_t size) {
+	if (alignment % sizeof(void *) != 0 || (alignment & (alignment - 1)) != 0) return EINVAL;
+	if (size == 0) {
+		*memptr = NULL;
+		return 0;
+	}
+
+	if (alignment <= 16) {
+		// malloc already guarantee 16 bytes alignment
+		void *ptr = malloc(size);
+		if (!ptr) return errno;
+		*memptr = ptr;
+		return 0;
+	}
+
+	size_t total_size = alignment + size;
+	void *ptr = malloc(total_size);
+	if (!ptr) return errno;
+	uintptr_t addr = (uintptr_t)ptr;
+	if (addr % alignment != 0) {
+		// we need to align
+		addr += alignment - (addr % alignment);
+		struct alloc *alloc = get_alloc((void*)addr);
+		alloc->slab = NULL;
+		// in aligned allocs we use size to store real size
+		alloc->size = ALLOC_ALIGNED | (uintptr_t)ptr;
+		ptr = (void*)addr;
+	}
+	*memptr = ptr;
+	return 0;
 }

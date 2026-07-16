@@ -106,7 +106,8 @@ static struct slab *slab_new(struct bin *bin) {
 	
 	// we need to make space between each element of the slab
 	// to put the slab pointer
-	// note that we reserve space for the pointer but it is set in slab_allocate
+	// note that we reserve space for the alloc
+	// header but it is set in slab_allocate
 	for (uintptr_t addr=align_size(sizeof(struct slab)+sizeof(struct slab*)); addr+bin->size<=SLAB_SIZE; addr += align_size(bin->size + sizeof(struct slab *))) {
 		struct node *node = (struct node *)(((char*)slab) + addr);
 		node->next = slab->free;
@@ -219,6 +220,35 @@ static void *aligned_get_block(struct alloc *alloc) {
 	return (void*)(alloc->size & ~ALLOC_ALIGNED);
 }
 
+static void *aligned_allocate(size_t alignment, size_t size) {
+	if (alignment % sizeof(void *) != 0 || (alignment & (alignment - 1)) != 0) {
+		__set_errno(-EINVAL);
+		return NULL;
+	}
+	if (size == 0) return NULL;
+
+	if (alignment <= 16) {
+		// malloc already guarantee 16 bytes alignment
+		return malloc(size);
+	}
+
+	size_t total_size = alignment + size;
+	void *ptr = malloc(total_size);
+	if (!ptr) return NULL;
+	uintptr_t addr = (uintptr_t)ptr;
+	if (addr % alignment != 0) {
+		// we need to align
+		addr += alignment - (addr % alignment);
+		struct alloc *alloc = get_alloc((void*)addr);
+		alloc->slab = NULL;
+		// in aligned allocs we use size 
+		// to store pointer to original block
+		alloc->size = ALLOC_ALIGNED | (uintptr_t)ptr;
+		ptr = (void*)addr;
+	}
+	return ptr;
+}
+
 static void aligned_free(struct alloc *alloc) {
 	void *ptr = aligned_get_block(alloc);
 	free(ptr);
@@ -247,6 +277,20 @@ void *malloc(size_t size) {
 		return bin_allocate(bin);
 	} else {
 		return big_allocate(size);
+	}
+}
+
+void *aligned_alloc(size_t alignment, size_t size) {
+	return aligned_allocate(alignment, size);
+}
+
+int posix_memalign(void **memptr, size_t alignment, size_t size) {
+	void *ptr = aligned_allocate(alignment, size);
+	if (ptr || size == 0) {
+		*memptr = ptr;
+		return 0;
+	} else {
+		return errno;
 	}
 }
 
@@ -285,36 +329,4 @@ void *realloc(void *ptr, size_t newsize) {
 	memcpy(new_ptr, ptr, old_size);
 	free(ptr);
 	return new_ptr;
-}
-
-int posix_memalign(void **memptr, size_t alignment, size_t size) {
-	if (alignment % sizeof(void *) != 0 || (alignment & (alignment - 1)) != 0) return EINVAL;
-	if (size == 0) {
-		*memptr = NULL;
-		return 0;
-	}
-
-	if (alignment <= 16) {
-		// malloc already guarantee 16 bytes alignment
-		void *ptr = malloc(size);
-		if (!ptr) return errno;
-		*memptr = ptr;
-		return 0;
-	}
-
-	size_t total_size = alignment + size;
-	void *ptr = malloc(total_size);
-	if (!ptr) return errno;
-	uintptr_t addr = (uintptr_t)ptr;
-	if (addr % alignment != 0) {
-		// we need to align
-		addr += alignment - (addr % alignment);
-		struct alloc *alloc = get_alloc((void*)addr);
-		alloc->slab = NULL;
-		// in aligned allocs we use size to store real size
-		alloc->size = ALLOC_ALIGNED | (uintptr_t)ptr;
-		ptr = (void*)addr;
-	}
-	*memptr = ptr;
-	return 0;
 }

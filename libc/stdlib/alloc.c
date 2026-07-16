@@ -49,9 +49,11 @@ struct alloc {
 static struct bin bins[] = {
 	BIN(16),
 	BIN(32),
+	BIN(48),
 	BIN(64),
 	BIN(96),
 	BIN(128),
+	BIN(192),
 	BIN(256),
 	BIN(512),
 	BIN(1024),

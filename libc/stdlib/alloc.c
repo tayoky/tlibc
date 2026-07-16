@@ -67,12 +67,20 @@ static struct alloc *get_alloc(void *ptr) {
 }
 
 static struct bin *get_bin(size_t size) {
-	for (size_t i=0; i<BIN_SIZES_COUNT; i++) {
+	size_t start = 0;
+	size_t end = BIN_SIZES_COUNT - 1;
+	struct bin *best = NULL;
+	while (start <= end) {
+		size_t i = (start + end) / 2;
 		if (size <= bins[i].size) {
-			return &bins[i];
+			best = &bins[i];
+			if (i == 0) break;
+			end = i - 1;
+		} else {
+			start = i + 1;
 		}
 	}
-	return NULL;
+	return best;
 }
 
 static void *slab_allocate(struct slab *slab) {

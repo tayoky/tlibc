@@ -43,10 +43,10 @@ struct alloc {
 
 #define PAGE_ALIGN_UP(x) ((((x) + PAGE_SIZE - 1) / PAGE_SIZE) * PAGE_SIZE)
 
-#define BIN_SIZES_COUNT 8
+#define BIN_SIZES_COUNT sizeof(bins) / sizeof(*bins)
 #define SLAB_SIZE 8192
 #define BIN(n) {.size = n, .full = NULL, .partial = NULL, .free = NULL}
-static struct bin bins[BIN_SIZES_COUNT] = {
+static struct bin bins[] = {
 	BIN(16),
 	BIN(32),
 	BIN(64),
@@ -55,6 +55,7 @@ static struct bin bins[BIN_SIZES_COUNT] = {
 	BIN(256),
 	BIN(512),
 	BIN(1024),
+	BIN(2048),
 };
 
 static struct alloc *get_alloc(void *ptr) {
@@ -276,6 +277,21 @@ void *malloc(size_t size) {
 	if (bin) {
 		return bin_allocate(bin);
 	} else {
+		return big_allocate(size);
+	}
+}
+
+void *calloc(size_t num, size_t size) {
+	size *= num;
+	
+	if (size == 0) return NULL;
+	struct bin *bin = get_bin(size);
+	if (bin) {
+		void *ptr = bin_allocate(bin);
+		if (ptr) memset(ptr, 0, size);
+		return ptr;
+	} else {
+		// big allocations are already zeroed
 		return big_allocate(size);
 	}
 }

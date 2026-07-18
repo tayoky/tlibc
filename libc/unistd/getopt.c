@@ -39,7 +39,7 @@ int getopt_long(int argc, char *const *argv, const char *optstring, const struct
 	char *prog_name = basename(d);
 
 	// check it's an option
-	if (argv[optind][0] != '-') {
+	if (argv[optind][0] != '-' || !argv[optind][1]) {
 		switch (non_option_handling) {
 		case -1:
 			optarg = argv[optind];

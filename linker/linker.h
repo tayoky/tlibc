@@ -52,6 +52,8 @@ struct elf_table {
 struct elf_object {
 	struct elf_object *next;
 	struct elf_object *prev;
+	struct elf_object *global_next;
+	struct elf_object *global_prev;
 	Elf_Ehdr header;
 	size_t ref_count;
 	uintptr_t addr;
@@ -61,18 +63,24 @@ struct elf_object {
 	Elf_Sym *symtab;
 	Elf_Dyn *dynamics;
 	uint32_t *hash;
-	struct elf_object **depencies;
+	struct elf_object **deps;
 	void *tls;
 	size_t phdrs_count;
 	size_t strtab_size;
 	size_t symbols_count;
 	size_t hash_size;
-	size_t depencies_count;
+	size_t deps_count;
 	size_t id;
 	size_t tls_filesz;
 	size_t tls_size;
 	int flags;
+	int state;
 };
+
+#define STATE_LOADED          0
+#define STATE_DYNAMICS_PARSED 1
+#define STATE_RELOCATED       2
+#define STATE_READY           3
 
 struct tls_index {
 	unsigned long ti_module;
@@ -80,17 +88,37 @@ struct tls_index {
 };
 void *__tls_get_addr(struct tls_index *ti);
 
+struct lookup {
+	const char *name;
+	uint32_t hash;
+	Elf_Sym *found_sym;
+	struct elf_object *found_object;
+	int skip_program;
+};
+
 void dl_setup_libc_alloc(void);
 void *dl_alloc(size_t size);
 void dl_free(void *ptr);
 char *dl_strdup(const char *str);
 char *dl_strndup(const char *str, size_t count);
 int dl_error(char *str);
+struct elf_object *dl_load(const char *filename, int fd, int flags);
+int dl_relocate(struct elf_object *object);
+int dl_finish_loading(struct elf_object *object);
+void dl_unload(struct elf_object *object);
+void lookup_init(struct lookup *lookup, const char *name);
+int lookup_object(struct lookup *lookup, struct elf_object *object);
+int lookup_deps(struct lookup *lookup, struct elf_object *object);
+int lookup_global(struct lookup *lookup);
+
 struct elf_object *elf_load(const char *path, int lib, int fd);
-Elf_Sym *dl_lookup(struct elf_object *object, const char *sym, int flags, struct elf_object **found_object);
-#define LOOKUP_DEPENCIES 0x01
+int elf_handle_dynamics(struct elf_object *object);
+int elf_relocate(struct elf_object *object);
+int elf_constructors(struct elf_object *object);
+int elf_destructors(struct elf_object *object);
 void elf_unload(struct elf_object *object);
-Elf_Sym *elf_lookup(struct elf_object *object, const char *name);
+Elf_Sym *elf_lookup(struct lookup *lookup, struct elf_object *object);
+
 void abi_enter(void *entry, long *auxv, size_t auxv_size);
 struct elf_object *cache_find_id(size_t id);
 int open_lib(const char *path);

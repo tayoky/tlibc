@@ -23,21 +23,29 @@ int reloc(struct elf_object *object, Elf_Rela *rel) {
 		// must link
 		const char *name = get_str(object, obj_sym->st_name);
 		if (!name) return -1;
-		Elf_Sym *found_sym = dl_lookup(object, name, LOOKUP_DEPENCIES, &found_object);
 
-		if (found_sym) {
-			if (ELF_ST_BIND(found_sym->st_info) == STB_WEAK && (ELF_ST_BIND(obj_sym->st_info) == STB_GLOBAL && obj_sym->st_shndx != SHN_UNDEF)) {
-				// cannot override global with weak
-				goto keep_sym_obj;
-			} else {
-				sym = found_sym;
-				sym_val = found_sym->st_value + found_object->addr;
-			}
+		struct lookup lookup;
+		lookup_init(&lookup, name);
+		// skip program for copy relocs
+#ifdef __x86_64__
+		if (ELF_R_TYPE(rel->r_info) == R_X86_64_COPY) {
+			lookup.skip_program = 1;
+		}
+#endif
+		int found = lookup_global(&lookup);
+		if (!(object->flags & RTLD_GLOBAL)) {
+			// object is not global
+			found = lookup_deps(&lookup, object) || found;
+			found = lookup_object(&lookup, object) || found;
+		}
+		if (found) {
+			sym = lookup.found_sym;
+			sym_val = lookup.found_sym->st_value + lookup.found_object->addr;
+			found_object = lookup.found_object;
 		} else if (obj_sym->st_shndx == SHN_UNDEF && ELF_ST_BIND(obj_sym->st_info) != STB_WEAK) {
 			dl_error("cannot resolve symbol");
 			return -1;
 		} else {
-keep_sym_obj:
 			sym = obj_sym;
 			sym_val = obj_sym->st_value + object->addr;
 		}

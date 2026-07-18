@@ -16,12 +16,15 @@
 static char *error_string = NULL;
 static struct elf_object *cache_last = NULL;
 static struct elf_object *cache_first = NULL;
+static struct elf_object *global_first = NULL;
+static struct elf_object *global_last = NULL;
 static struct elf_object *program = NULL;
 const char *lib_path = NULL;
 const char *rpath = NULL;
 int dl_debug = 0;
 struct elf_object ld_tlibc = {
 	.ref_count = 1,
+	.flags = RTLD_GLOBAL,
 };
 
 static struct elf_object *cache_find(const char *name) {
@@ -71,71 +74,57 @@ static void cache_remove(struct elf_object *object) {
 	}
 }
 
+static void global_add(struct elf_object *object) {
+	object->global_prev = global_last;
+	object->global_next = NULL;
+	if (global_last) {
+		global_last->global_next = object;
+	} else {
+		global_first = object;
+	}
+	global_last = object;
+}
+
+static void global_remove(struct elf_object *object) {
+	if (object->global_prev) {
+		object->global_prev->global_next = object->global_next;
+	} else {
+		global_first = object->global_next;
+	}
+
+	if (object->global_next) {
+		object->next->global_prev = object->global_prev;
+	} else {
+		global_last = object->global_prev;
+	}
+}
+
 int dl_error(char *str) {
 	error_string = str;
 	return -1;
 }
 
-void *dlopen(const char *filename, int flags) {
-	if (!(flags & (RTLD_LAZY | RTLD_NOW))) {
-		dl_error("invalid flags");
-		return NULL;
-	}
-	if (!filename) {
-		return program;
-	}
-	const char *name = strchr(filename, '/');
-	if (name) {
-		name++;
-	} else {
-		name = filename;
-	}
-	struct elf_object *object = cache_find(filename);
-	if (object) {
-		object->ref_count++;
-		if (flags & RTLD_NOLOAD) {
-			// we can use NOLOAD to update flags
-			object->flags = flags;
-		}
-		return object;
-	}
-	if (flags & RTLD_NOLOAD) return NULL;
+// taken from the ELF spec
+static unsigned long elf_hash(const unsigned char *name) {
+	unsigned long h = 0, g;
 
-	object = elf_load(filename, 1, -1);
-	if (!object) return NULL;
-
-	object->name = dl_strdup(name);
-	object->ref_count = 1;
-	object->flags = flags;
-	cache_add(object);
-	return object;
-}
-
-int dlclose(void *handle) {
-	struct elf_object *object = handle;
-	if (!object) return dl_error("Invalid object");
-	if (object == program
-		|| handle == RTLD_DEFAULT
-		|| handle == RTLD_NEXT) {
-		return 0;
+	while (*name) {
+		h = (h << 4) + *name++;
+		if ((g = h & 0xf0000000))
+			h ^= g >> 24;
+		h &= ~g;
 	}
-	object->ref_count--;
-	if (object->ref_count > 0) return 0;
-	cache_remove(object);
-	elf_unload(object);
-	return 0;
-}
-
-char *dlerror(void) {
-	char *ret = error_string;
-	error_string = NULL;
-	return ret;
+	return h;
 }
 
 static Elf_Sym *self_lookup(const char *name) {
 	static Elf_Sym sym = {
 		.st_info = ELF_ST_INFO(STB_GLOBAL, STT_FUNC),
 	};
+	if (!strcmp(name, "environ")) {
+		sym.st_value = (uintptr_t)(void *)&environ;
+		return &sym;
+	}
 	if (!strcmp(name, "dlopen")) {
 		sym.st_value = (uintptr_t)(void *)dlopen;
 		return &sym;
@@ -159,56 +148,161 @@ static Elf_Sym *self_lookup(const char *name) {
 	return NULL;
 }
 
-Elf_Sym *dl_lookup(struct elf_object *object, const char *name, int flags, struct elf_object **found_object) {
-	Elf_Sym *sym = NULL;
-	// lookup ourself only if not asking for depencies
-	if (!(flags & LOOKUP_DEPENCIES)) {
-		if (object == &ld_tlibc) {
-			sym = self_lookup(name);
-		} else {
-			sym = elf_lookup(object, name);
-		}
-		if (found_object) *found_object = object;
+void lookup_init(struct lookup *lookup, const char *name) {
+	lookup->name = name;
+	lookup->hash = elf_hash((const unsigned char *)name);
+	lookup->found_sym = NULL;
+	lookup->found_object = NULL;
+	lookup->skip_program = 1;
+}
+
+int lookup_object(struct lookup *lookup, struct elf_object *object) {
+	if (lookup->skip_program && object == program) return 0;
+	Elf_Sym *sym;
+	if (object == &ld_tlibc) {
+		sym = self_lookup(lookup->name);
+	} else {
+		sym = elf_lookup(lookup, object);
 	}
-	for (size_t i = 0; i < object->depencies_count; i++) {
-		struct elf_object *new_object;
-		Elf_Sym *new_sym = dl_lookup(object->depencies[i], name, flags & ~LOOKUP_DEPENCIES, &new_object);
-		if (!new_sym) continue;
-		// better than what we found ?
-		// global overwrite weak
-		if (!sym || (ELF_ST_BIND(new_sym->st_info) == STB_GLOBAL && ELF_ST_BIND(sym->st_info) == STB_WEAK)) {
-			sym = new_sym;
-			if (found_object) *found_object = new_object;
-		}
+	if (!sym) return 0;
+	
+	// the only case where we can override is
+	// overriding weak with global
+	if (!lookup->found_sym || (ELF_ST_BIND(lookup->found_sym->st_info) == STB_WEAK && ELF_ST_BIND(sym->st_info) == STB_GLOBAL)) {
+		lookup->found_sym = sym;
+		lookup->found_object = object;
+		return 1;
 	}
-	return sym;
+	return 0;
+}
+
+int lookup_deps(struct lookup *lookup, struct elf_object *object) {
+	int found = 0;
+	for (size_t i=0; i<object->deps_count; i++) {
+		found = lookup_object(lookup, object->deps[i]) || found;
+	}
+	return found;
+}
+
+int lookup_global(struct lookup *lookup) {
+	int found = 0;
+	for (struct elf_object *object = global_first; object; object = object->global_next) {
+		found = lookup_object(lookup, object) || found;
+	}
+	return found;
+}
+
+struct elf_object *dl_load(const char *filename, int fd, int flags) {
+	const char *name = strchr(filename, '/');
+	if (name) {
+		name++;
+	} else {
+		name = filename;
+	}
+
+	struct elf_object *object = cache_find(name);
+	if (object) {
+		object->ref_count++;
+		if (!(object->flags & RTLD_GLOBAL) && (flags & RTLD_GLOBAL)) {
+			object->flags |= RTLD_GLOBAL;
+			global_add(object);
+		}
+		return object;
+	}
+	if (flags & RTLD_NOLOAD) return NULL;
+	object = elf_load(filename, 1, fd);
+	if (!object) return NULL;
+
+	object->name = dl_strdup(name);
+	object->ref_count = 1;
+	object->flags = flags;
+	object->state = STATE_LOADED;
+	cache_add(object);
+	if (flags & RTLD_GLOBAL) {
+		global_add(object);
+	}
+
+	if (elf_handle_dynamics(object) < 0) {
+		dl_unload(object);
+		return NULL;
+	}
+	object->state = STATE_DYNAMICS_PARSED;
+	return object;
+}
+
+int dl_relocate(struct elf_object *object) {
+	if (object->state >= STATE_RELOCATED) return 0;
+	if (elf_relocate(object) < 0) return -1;
+	object->state = STATE_RELOCATED;
+	return 0;
+}
+
+int dl_finish_loading(struct elf_object *object) {
+	if (object->state >= STATE_READY) return 0;
+	if (elf_constructors(object) < 0) return -1;
+	object->state = STATE_READY;
+	return 0;
+}
+	
+void dl_unload(struct elf_object *object) {
+	if (object->ref_count-- > 1) return;
+	if (object->state >= STATE_READY) {
+		elf_destructors(object);
+	}
+	if (object->flags & RTLD_GLOBAL) {
+		global_remove(object);
+	}
+	cache_remove(object);
+	elf_unload(object);
+}
+
+void *dlopen(const char *filename, int flags) {
+	if (!(flags & (RTLD_LAZY | RTLD_NOW))) {
+		dl_error("invalid flags");
+		return NULL;
+	}
+	if (!filename) {
+		return program;
+	}
+
+	struct elf_object *object = dl_load(filename, flags, -1);
+	// TODO : relocate and finish loading
+	return object;
+}
+
+int dlclose(void *handle) {
+	struct elf_object *object = handle;
+	if (object == program
+		|| handle == RTLD_DEFAULT
+		|| handle == RTLD_NEXT) {
+		return 0;
+	}
+	if (!object) return dl_error("Invalid object");
+	dl_unload(object);
+	return 0;
+}
+
+char *dlerror(void) {
+	char *ret = error_string;
+	error_string = NULL;
+	return ret;
 }
 
 void *dlsym(void *handle, const char *sym) {
+	struct lookup lookup;
+	int found = 0;
+	lookup_init(&lookup, sym);
 	if (handle == RTLD_DEFAULT) {
-		// first try the executable
-		Elf_Sym *ret = elf_lookup(program, sym);
-		if (ret) return (void *)(ret->st_value + program->addr);
-		// all library marked as global
-		struct elf_object *lib = cache_first;
-		while (lib) {
-			if (lib->flags & RTLD_GLOBAL) {
-				ret = elf_lookup(lib, sym);
-				if (ret) return (void *)(ret->st_value + lib->addr);
-			}
-			lib = lib->next;
-		}
-		return NULL;
-	}
-	if (handle == RTLD_NEXT) {
+		found = lookup_global(&lookup);
+	} else if (handle == RTLD_NEXT) {
 		// TODO
 		return NULL;
+	} else {
+		found = lookup_object(&lookup, handle);
+		found = lookup_deps(&lookup, handle) || found;
 	}
-	if (!handle) return NULL;
-	struct elf_object *object = handle;
-	struct elf_object *found_object;
-	Elf_Sym *ret = dl_lookup(object, sym, 0, &found_object);
-	return ret ? (void *)ret->st_value + found_object->addr : NULL;
+	
+	return found ? (void *)lookup.found_sym->st_value + lookup.found_object->addr : NULL;
 }
 
 static const char *auxv_name(long type) {
@@ -313,16 +407,26 @@ int main(int argc, char **argv, char **envp) {
 	// add the linker itself to the cache
 	ld_tlibc.name = "ld-tlibc.so",
 	cache_add(&ld_tlibc);
+	global_add(&ld_tlibc);
 
 	// maybee the kernel gave us a fd for the executable
 	errno = 0;
 	int fd = (int)getauxval(AT_EXECFD);
 	if (fd == 0 && errno == ENOENT) fd = -1;
 
-	program = elf_load(argv[0], 0, fd);
+	program = dl_load(argv[0], 0, fd);
 	if (!program) {
+error:
 		fprintf(stderr, "ld-tlibc.so : %s\n", dlerror());
 		return EXIT_FAILURE;
+	}
+
+	for (struct elf_object *object = cache_first; object; object = object->next) {
+		if (dl_relocate(object) < 0) goto error;
+	}
+
+	for (struct elf_object *object= cache_first; object; object = object->next) {
+		if (dl_finish_loading(object) < 0) goto error;
 	}
 
 	dl_setup_libc_alloc();

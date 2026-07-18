@@ -145,7 +145,7 @@ static Elf_Dyn *find_dynamic(struct elf_object *object, long tag) {
 }
 
 // TODO : check pointers are in bound
-static int handle_dynamics(struct elf_object *object) {
+int elf_handle_dynamics(struct elf_object *object) {
 	Elf_Dyn *dyn_strtab = find_dynamic(object, DT_STRTAB);
 	Elf_Dyn *dyn_strsz = find_dynamic(object, DT_STRSZ);
 	Elf_Dyn *dyn_symtab = find_dynamic(object, DT_SYMTAB);
@@ -181,22 +181,14 @@ static int handle_dynamics(struct elf_object *object) {
 		if (!rpath) return -1;
 	}
 
-	// HACK for environ
-	Elf_Sym *environ_sym = elf_lookup(object, "environ");
-	if (environ_sym && environ_sym->st_shndx != SHN_UNDEF) {
-		char ***environ_ptr = (void *)(environ_sym->st_value + object->addr);
-		if (dl_debug) fprintf(stderr, "ld-tlibc.so : set environ at %p to %p\n", environ_ptr, environ);
-		*environ_ptr = environ;
-	}
-
-	// determinate depencies count
-	object->depencies_count = 0;
+	// determinate deps count
+	object->deps_count = 0;
 	for (size_t i = 0; object->dynamics[i].d_tag != DT_NULL; i++) {
 		if (object->dynamics[i].d_tag != DT_NEEDED) continue;
-		object->depencies_count++;
+		object->deps_count++;
 	}
-	object->depencies = dl_alloc(object->depencies_count * sizeof(struct elf_object *));
-	memset(object->depencies, 0, object->depencies_count * sizeof(struct elf_object *));
+	object->deps = dl_alloc(object->deps_count * sizeof(struct elf_object *));
+	memset(object->deps, 0, object->deps_count * sizeof(struct elf_object *));
 
 	// and load them
 	size_t index = 0;
@@ -206,18 +198,18 @@ static int handle_dynamics(struct elf_object *object) {
 		if (!name) return -1;
 
 		if (dl_debug) fprintf(stderr, "ld-tlibc.so : find depencie '%s'\n", name);
-		void *lib = dlopen(name, RTLD_NOW | RTLD_LOCAL);
+		void *lib = dl_load(name, object->flags, -1);
 		if (!lib) {
 			if (dl_debug) fprintf(stderr, "ld-tlibc.so : fail to load '%s' : %s\n", name, dlerror());
 			dl_error("cannot access a needed shared library");
 			return -1;
 		}
-		object->depencies[index++] = lib;
+		object->deps[index++] = lib;
 	}
 	return 0;
 }
 
-static int apply_relocs(struct elf_object *object) {
+int elf_relocate(struct elf_object *object) {
 	Elf_Dyn *dyn_rela = find_dynamic(object, DT_RELA);
 	Elf_Dyn *dyn_relasz = find_dynamic(object, DT_RELASZ);
 	Elf_Dyn *dyn_relaent = find_dynamic(object, DT_RELAENT);
@@ -289,41 +281,7 @@ static int apply_relocs(struct elf_object *object) {
 		if (reloc(object, (Elf_Rela *)addr) < 0) return -1;
 	}
 
-	return 0;
-}
-
-static void call_constructors(struct elf_object *object) {
-	Elf_Dyn *dyn_init = find_dynamic(object, DT_INIT);
-	Elf_Dyn *dyn_init_array = find_dynamic(object, DT_INIT_ARRAY);
-	Elf_Dyn *dyn_init_arraysz = find_dynamic(object, DT_INIT_ARRAYSZ);
-	if (dyn_init) {
-		func_t init = (void *)(dyn_init->d_un.d_ptr + object->addr);
-		init();
-	}
-	if (dyn_init_array && dyn_init_arraysz) {
-		func_t *init_array = (void *)(dyn_init_array->d_un.d_ptr + object->addr);
-		size_t count = dyn_init_arraysz->d_un.d_val / sizeof(func_t);
-		for (size_t i = 0; i < count; i++) {
-			init_array[i]();
-		}
-	}
-}
-
-static void call_destructors(struct elf_object *object) {
-	Elf_Dyn *dyn_fini = find_dynamic(object, DT_FINI);
-	Elf_Dyn *dyn_fini_array = find_dynamic(object, DT_FINI_ARRAY);
-	Elf_Dyn *dyn_fini_arraysz = find_dynamic(object, DT_FINI_ARRAYSZ);
-	if (dyn_fini_array && dyn_fini_arraysz) {
-		func_t *fini_array = (void *)(dyn_fini_array->d_un.d_ptr + object->addr);
-		size_t count = dyn_fini_arraysz->d_un.d_val / sizeof(func_t);
-		for (size_t i = 0; i < count; i++) {
-			fini_array[i]();
-		}
-	}
-	if (dyn_fini) {
-		func_t fini = (void *)(dyn_fini->d_un.d_ptr + object->addr);
-		fini();
-	}
+	return set_protections(object);
 }
 
 struct elf_object *elf_load(const char *path, int is_lib, int fd) {
@@ -402,21 +360,6 @@ struct elf_object *elf_load(const char *path, int is_lib, int fd) {
 		goto close;
 	}
 
-	// and now handle the loaded dynamics
-	if (handle_dynamics(object) < 0) {
-		goto close;
-	}
-
-	if (apply_relocs(object) < 0) {
-		goto close;
-	}
-
-	if (set_protections(object) < 0) {
-		goto close;
-	}
-
-	call_constructors(object);
-
 	close(file);
 
 	return object;
@@ -428,42 +371,64 @@ free:
 	return NULL;
 }
 
+int elf_constructors(struct elf_object *object) {
+	Elf_Dyn *dyn_init = find_dynamic(object, DT_INIT);
+	Elf_Dyn *dyn_init_array = find_dynamic(object, DT_INIT_ARRAY);
+	Elf_Dyn *dyn_init_arraysz = find_dynamic(object, DT_INIT_ARRAYSZ);
+	if (dyn_init) {
+		func_t init = (void *)(dyn_init->d_un.d_ptr + object->addr);
+		init();
+	}
+	if (dyn_init_array && dyn_init_arraysz) {
+		func_t *init_array = (void *)(dyn_init_array->d_un.d_ptr + object->addr);
+		size_t count = dyn_init_arraysz->d_un.d_val / sizeof(func_t);
+		for (size_t i = 0; i < count; i++) {
+			init_array[i]();
+		}
+	}
+	return 0;
+}
+
+int elf_destructors(struct elf_object *object) {
+	Elf_Dyn *dyn_fini = find_dynamic(object, DT_FINI);
+	Elf_Dyn *dyn_fini_array = find_dynamic(object, DT_FINI_ARRAY);
+	Elf_Dyn *dyn_fini_arraysz = find_dynamic(object, DT_FINI_ARRAYSZ);
+	if (dyn_fini_array && dyn_fini_arraysz) {
+		func_t *fini_array = (void *)(dyn_fini_array->d_un.d_ptr + object->addr);
+		size_t count = dyn_fini_arraysz->d_un.d_val / sizeof(func_t);
+		for (size_t i = 0; i < count; i++) {
+			fini_array[i]();
+		}
+	}
+	if (dyn_fini) {
+		func_t fini = (void *)(dyn_fini->d_un.d_ptr + object->addr);
+		fini();
+	}
+	return 0;
+}
+
 void elf_unload(struct elf_object *object) {
-	if (object->dynamics) call_destructors(object);
 	if (object->header.e_type == ET_DYN && object->addr) {
 		// we can free the whole allocated block
 		munmap((void *)object->addr, get_total_size(object));
 	}
-	for (size_t i = 0; i < object->depencies_count; i++) {
-		if (!object->depencies[i]) continue;
-		dlclose(object->depencies[i]);
+	for (size_t i = 0; i < object->deps_count; i++) {
+		if (!object->deps[i]) continue;
+		dlclose(object->deps[i]);
 	}
-	dl_free(object->depencies);
+	dl_free(object->deps);
 	dl_free(object->name);
 	dl_free(object->phdrs);
 	dl_free(object);
 }
 
-// taken from the ELF spec
-static unsigned long elf_hash(const unsigned char *name) {
-	unsigned long h = 0, g;
 
-	while (*name) {
-		h = (h << 4) + *name++;
-		if ((g = h & 0xf0000000))
-			h ^= g >> 24;
-		h &= ~g;
-	}
-	return h;
-}
-
-Elf_Sym *elf_lookup(struct elf_object *object, const char *name) {
-	uint32_t hash = elf_hash((const unsigned char *)name);
+Elf_Sym *elf_lookup(struct lookup *lookup, struct elf_object *object) {
 	uint32_t nbucket = object->hash[0];
 	uint32_t nchain = object->hash[1];
 	uint32_t *bucket = object->hash + 2;
 	uint32_t *chain = object->hash + 2 + nbucket;
-	size_t index = bucket[hash % nbucket];
+	size_t index = bucket[lookup->hash % nbucket];
 	while (index != 0) {
 		if (index >= nchain) {
 			// uh
@@ -477,7 +442,7 @@ Elf_Sym *elf_lookup(struct elf_object *object, const char *name) {
 			dl_error("invalid symbol");
 			return NULL;
 		}
-		if (sym->st_shndx != SHN_UNDEF && !strcmp(name, sym_name) && ELF_ST_BIND(sym->st_info) != STB_LOCAL) {
+		if (sym->st_shndx != SHN_UNDEF && !strcmp(lookup->name, sym_name) && ELF_ST_BIND(sym->st_info) != STB_LOCAL) {
 			// we found it
 			return sym;
 		}

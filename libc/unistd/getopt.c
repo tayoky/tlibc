@@ -74,8 +74,8 @@ int getopt_long(int argc, char *const *argv, const char *optstring, const struct
 				if (!strcmp(argv[optind] + 2, longopts[i].name)) {
 					if (longindex) *longindex = i;
 					optind++;
-					if (longopts[i].has_arg > 1 && !optarg) {
-						if (longopts[i].has_arg == 1 && optind >= argc) {
+					if (longopts[i].has_arg >= 1 && !optarg) {
+						if (longopts[i].has_arg == required_argument && optind >= argc) {
 							if (opterr && !aerror) fprintf(stderr, "%s: missing operand\n", prog_name);
 							return aerror ? ':' : '?';
 						}
@@ -129,7 +129,7 @@ int getopt_long(int argc, char *const *argv, const char *optstring, const struct
 		}
 	} else {
 		if (opterr && !aerror) {
-			fprintf(stderr, "%s: invalid option -- %c\n", prog_name, argv[optind][7]);
+			fprintf(stderr, "%s: invalid option -- %c\n", prog_name, argv[optind][i]);
 		}
 		ret = '?';
 	}

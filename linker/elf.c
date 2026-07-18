@@ -414,7 +414,7 @@ void elf_unload(struct elf_object *object) {
 	}
 	for (size_t i = 0; i < object->deps_count; i++) {
 		if (!object->deps[i]) continue;
-		dlclose(object->deps[i]);
+		dl_unload(object->deps[i]);
 	}
 	dl_free(object->deps);
 	dl_free(object->name);

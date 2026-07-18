@@ -12,7 +12,7 @@ void *dlsym(void *handle, const char *sym);
 #define RTLD_LOCAL  0x08
 #define RTLD_NOLOAD 0x10
 
-#define RTLD_DEFAULT  (void*)0x1432
-#define RTLD_NEXT     (void*)0x1234 
+#define RTLD_DEFAULT  ((void*)0L)
+#define RTLD_NEXT     ((void*)-1L)
 
 #endif

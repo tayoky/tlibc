@@ -25,6 +25,7 @@ int dl_debug = 0;
 struct elf_object ld_tlibc = {
 	.ref_count = 1,
 	.flags = RTLD_GLOBAL,
+	.state = STATE_READY,
 };
 
 static struct elf_object *cache_find(const char *name) {
@@ -232,6 +233,9 @@ struct elf_object *dl_load(const char *filename, int fd, int flags) {
 
 int dl_relocate(struct elf_object *object) {
 	if (object->state >= STATE_RELOCATED) return 0;
+	for (size_t i=0; i<object->deps_count; i++) {
+		if (dl_relocate(object->deps[i]) < 0) return -1;
+	}
 	if (elf_relocate(object) < 0) return -1;
 	object->state = STATE_RELOCATED;
 	return 0;
@@ -239,6 +243,9 @@ int dl_relocate(struct elf_object *object) {
 
 int dl_finish_loading(struct elf_object *object) {
 	if (object->state >= STATE_READY) return 0;
+	for (size_t i=0; i<object->deps_count; i++) {
+		if (dl_finish_loading(object->deps[i]) < 0) return -1;
+	}
 	if (elf_constructors(object) < 0) return -1;
 	object->state = STATE_READY;
 	return 0;
@@ -266,8 +273,14 @@ void *dlopen(const char *filename, int flags) {
 	}
 
 	struct elf_object *object = dl_load(filename, flags, -1);
-	// TODO : relocate and finish loading
+	if (!object) return NULL;
+	if (dl_relocate(object) < 0) goto unload;
+	if (dl_finish_loading(object) < 0) goto unload;
 	return object;
+
+unload:
+	dl_unload(object);
+	return NULL;
 }
 
 int dlclose(void *handle) {
@@ -420,14 +433,8 @@ error:
 		fprintf(stderr, "ld-tlibc.so : %s\n", dlerror());
 		return EXIT_FAILURE;
 	}
-
-	for (struct elf_object *object = cache_first; object; object = object->next) {
-		if (dl_relocate(object) < 0) goto error;
-	}
-
-	for (struct elf_object *object= cache_first; object; object = object->next) {
-		if (dl_finish_loading(object) < 0) goto error;
-	}
+	if (dl_relocate(program) < 0) goto error;
+	if (dl_finish_loading(program) < 0) goto error;
 
 	dl_setup_libc_alloc();
 

@@ -257,6 +257,7 @@ int getopt(int argc, char *const *argv, const char *optstring);
 extern char **environ;
 extern int optind;
 extern int opterr;
+extern int optopt;
 extern char *optarg;
 
 #endif

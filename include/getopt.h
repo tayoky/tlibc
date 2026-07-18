@@ -12,6 +12,7 @@ int getopt_long(int argc,char *const*argv,const char *optstring,const struct opt
 
 extern int optind;
 extern int opterr;
+extern int optopt;
 extern char *optarg;
 
 #define no_argument       0

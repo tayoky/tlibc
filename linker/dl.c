@@ -124,6 +124,7 @@ static Elf_Sym *self_lookup(const char *name) {
 	};
 	if (!strcmp(name, "environ")) {
 		sym.st_value = (uintptr_t)(void *)&environ;
+		sym.st_size = sizeof(environ);
 		return &sym;
 	}
 	if (!strcmp(name, "dlopen")) {
@@ -154,7 +155,7 @@ void lookup_init(struct lookup *lookup, const char *name) {
 	lookup->hash = elf_hash((const unsigned char *)name);
 	lookup->found_sym = NULL;
 	lookup->found_object = NULL;
-	lookup->skip_program = 1;
+	lookup->skip_program = 0;
 }
 
 int lookup_object(struct lookup *lookup, struct elf_object *object) {

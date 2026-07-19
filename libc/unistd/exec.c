@@ -7,15 +7,17 @@
 
 extern char **environ;
 
-// iplement all exec functions using execve
+// implement all exec functions using execve
 
-/// @brief convert an arg list
-/// @param arg0 first arg
-/// @param args va_list of arg
-/// @return an vector
+/**
+ * @brief convert an arg list
+ * @param arg0 first arg
+ * @param args va_list of arg
+ * @return an vector
+ */
 static char **ltov(const char *arg0, va_list args) {
 	int argc = 1;
-	char **argv = malloc(sizeof(char *));
+	char **argv = malloc(2 * sizeof(char *));
 	argv[0] = (char *)arg0;
 
 	for (;;) {
@@ -29,7 +31,7 @@ static char **ltov(const char *arg0, va_list args) {
 		argv = realloc(argv, sizeof(char *) * (argc + 1));
 	}
 
-	// last entry in argv is alaway NULL
+	// last entry in argv is always NULL
 	argv[argc] = NULL;
 	return argv;
 }

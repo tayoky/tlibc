@@ -200,7 +200,7 @@ struct elf_object *dl_load(const char *filename, int fd, int flags) {
 	} else {
 		name = filename;
 	}
-
+	
 	struct elf_object *object = cache_find(name);
 	if (object) {
 		object->ref_count++;
@@ -427,7 +427,7 @@ int main(int argc, char **argv, char **envp) {
 	int fd = (int)getauxval(AT_EXECFD);
 	if (fd == 0 && errno == ENOENT) fd = -1;
 
-	program = dl_load(argv[0], 0, fd);
+	program = dl_load(argv[0], fd, RTLD_GLOBAL | RTLD_NOW);
 	if (!program) {
 error:
 		fprintf(stderr, "ld-tlibc.so : %s\n", dlerror());

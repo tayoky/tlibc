@@ -198,7 +198,7 @@ int elf_handle_dynamics(struct elf_object *object) {
 		if (!name) return -1;
 
 		if (dl_debug) fprintf(stderr, "ld-tlibc.so : find depencie '%s'\n", name);
-		void *lib = dl_load(name, object->flags, -1);
+		void *lib = dl_load(name, -1, object->flags);
 		if (!lib) {
 			if (dl_debug) fprintf(stderr, "ld-tlibc.so : fail to load '%s' : %s\n", name, dlerror());
 			dl_error("cannot access a needed shared library");
@@ -303,6 +303,7 @@ struct elf_object *elf_load(const char *path, int is_lib, int fd) {
 
 	if (read(file, &object->header, sizeof(Elf_Ehdr)) < (ssize_t)sizeof(Elf_Ehdr)) {
 		dl_error("read failed");
+		fprintf(stderr, "cannot read header\n");
 		goto close;
 	}
 	if (!check_ehdr(&object->header, is_lib)) {

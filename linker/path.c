@@ -41,8 +41,10 @@ int open_lib(const char *path) {
 		if (fd >= 0) return fd;
 		if (lib_path) fd = try_path_list(lib_path, path);
 		if (fd >= 0) return fd;
+		fd = try_dir("/lib", path);
+		if (fd >= 0) return fd;
 		fd = try_dir("/usr/lib", path);
 		if (fd >= 0) return fd;
-		return try_dir("/lib", path);
+		return try_dir("/usr/local/lib", path);
 	}
 }

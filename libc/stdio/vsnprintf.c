@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 
 #define OUT(c) \
 	{ \
@@ -389,10 +390,11 @@ finish_flags:;
 			uint = (uintptr_t)va_arg(args, void *);
 			print_uint(buf, maxlen, uint, 16, width * padding_sign, padding_char, precision == -1 ? (int)sizeof(uintptr_t) * CHAR_BIT / 4 : precision, *fmt == 'X', positive_sign, alternate_form);
 			break;
+		case 'm':
 		case 's':
 		case 'c':;
 			// TODO : wchar
-			char *str;
+			const char *str = NULL;
 			char ch;
 			size_t len;
 			if (*fmt == 'c') {
@@ -401,7 +403,13 @@ finish_flags:;
 				ch = (char)c;
 				str = &ch;
 			} else {
-				str = va_arg(args, char *);
+				if (*fmt == 's') {
+					str = va_arg(args, char *);
+				} else {
+#ifndef __LIBK__
+					str = strerror(errno);
+#endif
+				}
 				if (str) {
 					len = strnlen(str, precision);
 				} else {

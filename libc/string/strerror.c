@@ -122,12 +122,12 @@ static const char *_error_strings[] = {
 	[ESTRPIPE] = N_("Streams pipe error"),
 };
 
-static char _error_string_unkown[100];
+static char _error_string_unknown[100];
 const char *strerror(int errnum) {
 	if ((errnum >= 0 || (size_t)errnum < (size_t)sizeof(_error_strings) / sizeof(char *)) && _error_strings[errnum]) {
 		return dgettext("tlibc", _error_strings[errnum]);
 	} else {
-		snprintf(_error_string_unkown, sizeof(_error_string_unknown), "%d", errnum);
-		return _error_string_unkown;
+		snprintf(_error_string_unknown, sizeof(_error_string_unknown), "%d", errnum);
+		return _error_string_unknown;
 	}
 }

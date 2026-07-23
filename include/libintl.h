@@ -3,9 +3,9 @@
 
 #include <locale.h>
 
-char *gettext(const char *msgid);
-char *dgettext(const char *domainname, const char *msgid);
-char *dcgettext(const char *domainname, const char *msgid, int category);
+char *gettext(const char *msgid) __attribute__((format_arg(1)));
+char *dgettext(const char *domainname, const char *msgid) __attribute__((format_arg(2)));
+char *dcgettext(const char *domainname, const char *msgid, int category) __attribute__((format_arg(2)));
 char *ngettext(const char *msgid1, const char *msgid2, unsigned long n);
 char *dngettext(const char *domainname, const char *msgid1, const char *msgid2, unsigned long n);
 char *dcngettext(const char *domainname, const char *msgid1, const char *msgid2, unsigned long n, int category);

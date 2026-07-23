@@ -103,7 +103,7 @@ static int _print_uint(char *buf, size_t maxlen, uint64_t value, int base, int p
 		if (maxlen) maxlen -= tmp; \
 	} while (0);
 
-#if !defined(__LIBK__) && !defined(__DL_TLIBC__)
+#if !defined(__LIBK__) && !defined(__LD_TLIBC__)
 static int _print_float(char *buf, size_t maxlen, long double number, int base, int padding, char padding_char, int precision, int high, int positive_sign, int alternate_form, int exponent) {
 	int count = 0;
 	if (isnan(number)) {
@@ -436,7 +436,7 @@ finish_flags:;
 			}
 			break;
 			// dynamic linker never print floats and libk cannot use float
-#if !defined(__LIBK__) && !defined(__DL_TLIBC__)
+#if !defined(__LIBK__) && !defined(__LD_TLIBC__)
 		case 'f':
 		case 'F':
 			// default precision for float is 6

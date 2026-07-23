@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <libintl.h>
 
 int optind = 1;
 int opterr = 1;
@@ -76,14 +77,14 @@ int getopt_long(int argc, char *const *argv, const char *optstring, const struct
 					optind++;
 					if (longopts[i].has_arg >= 1 && !optarg) {
 						if (longopts[i].has_arg == required_argument && optind >= argc) {
-							if (opterr && !aerror) fprintf(stderr, "%s: missing operand\n", prog_name);
+							if (opterr && !aerror) fprintf(stderr, dgettext("tlibc", "%s: missing operand\n"), prog_name);
 							return aerror ? ':' : '?';
 						}
 						optarg = argv[optind];
 						optind++;
 					}
 					if (longopts[i].has_arg == 0 && optarg) {
-						if (opterr && !aerror) fprintf(stderr, "%s: unexpected operand\n", prog_name);
+						if (opterr && !aerror) fprintf(stderr, dgettext("tlibc", "%s: unexpected operand\n"), prog_name);
 						return '?';
 					}
 					if (longopts[i].flag) {
@@ -95,7 +96,7 @@ int getopt_long(int argc, char *const *argv, const char *optstring, const struct
 				}
 			}
 		}
-		if (opterr && !aerror) fprintf(stderr, "%s: invalid option %s\n", prog_name, argv[optind]);
+		if (opterr && !aerror) fprintf(stderr, dgettext("tlibc", "%s: invalid option %s\n"), prog_name, argv[optind]);
 		optind++;
 		return '?';
 	}
@@ -119,7 +120,7 @@ int getopt_long(int argc, char *const *argv, const char *optstring, const struct
 					if (aerror) {
 						ret = ':';
 					} else {
-						if (opterr) fprintf(stderr, "%s: missing operand\n", prog_name);
+						if (opterr) fprintf(stderr, dgettext("tlibc", "%s: missing operand\n"), prog_name);
 						ret = '?';
 					}
 				} else {
@@ -129,7 +130,7 @@ int getopt_long(int argc, char *const *argv, const char *optstring, const struct
 		}
 	} else {
 		if (opterr && !aerror) {
-			fprintf(stderr, "%s: invalid option -- %c\n", prog_name, argv[optind][i]);
+			fprintf(stderr, dgettext("tlibc", "%s: invalid option -%c\n"), prog_name, argv[optind][i]);
 		}
 		ret = '?';
 	}

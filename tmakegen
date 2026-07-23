@@ -38,7 +38,7 @@ M_SRC = $(M_ARCH_SRC) $(filter-out $(M_ARCH_SRC:libm/$(ARCH)/%.s=libm/generic/%.
 SYSDEPS = $(wildcard sysdeps/$(TARGET)/*.[cs] sysdeps/$(TARGET)/*/*.[cs] sysdeps/$(TARGET)/$(ARCH)/*.[cs]) 
 SYSDEPS += $(wildcard sysdeps/generic/*.[cs] sysdeps/generic/*/*.[cs] sysdeps/generic/$(ARCH)/*.[cs])
 
-DYNFLAGS = -D__DYNAMIC__=1'>> "$MAKEFILE"
+DYNFLAGS = -D__SHARED__=1'>> "$MAKEFILE"
 
 # libk target
 K_DEPS="errno.c string/memset.c string/memcpy.c string/memchr.c string/memcmp.c string/strcat.c string/strlen.c  string/strnlen.c string/strcpy.c string/strncpy.c string/strcmp.c string/strncmp.c string/strchr.c string/strstr.c string/strncasecmp.c ctype/ctype.c stdio/vsnprintf.c stdio/snprintf.c stdio/vsprintf.c stdio/sprintf.c stdlib/strto.c"
@@ -65,7 +65,7 @@ for I in $DL_DEPS ; do
 	DL_SRC="$DL_SRC libc/$I"
 done
 
-tmake_add_shared_library "ld-tlibc" $DL_SRC CFLAGS="\$(DYNFLAGS) -D__DL_TLIBC__=1 -fPIC -mgeneral-regs-only -fvisibility=hidden" LDFLAGS="-static-libgcc -Wl,--no-dynamic-linker,-z,now,-Bsymbolic,-e,_start"
+tmake_add_shared_library "ld-tlibc" $DL_SRC CFLAGS="\$(DYNFLAGS) -D__LD_TLIBC__=1 -fPIC -mgeneral-regs-only -fvisibility=hidden" LDFLAGS="-static-libgcc -Wl,--no-dynamic-linker,-z,now,-Bsymbolic,-e,_start"
 
 # libc target
 C_SRC_DIR="ctype libgen libintl time stdlib string wchar stdio unistd locale pwd pthread dl fcntl sys signal"

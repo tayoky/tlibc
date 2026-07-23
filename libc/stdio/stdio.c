@@ -21,7 +21,7 @@ static FILE _stderr = {
 	.buftype = _IONBF,
 };
 
-#ifdef __DL_TLIBC__
+#ifdef __LD_TLIBC__
 // we need to avoid pointer in data section
 // because dynamic linker cannot have reloc
 

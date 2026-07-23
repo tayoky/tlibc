@@ -1,9 +1,10 @@
 #include <dlfcn.h>
+#include <libintl.h>
 
 __attribute__((weak)) char *dlerror(void) {
-#ifdef __DYNAMIC__
-	return "Dynamic linker is not loaded";
+#ifdef __SHARED__
+	return dgettext("tlibc", "Dynamic linker is not loaded");
 #else
-	return "Executable is staticly linked";
+	return dgettext("tlibc", "Executable is staticly linked");
 #endif
 }

@@ -16,7 +16,7 @@ __attribute__((visibility("hidden"))) int __stub(const char *func) {
 		__stub(#name); \
 		return 0; \
 	}
-#ifndef __DL_TLIBC__
+#ifndef __LD_TLIBC__
 STUB(ftw)
 STUB(sync)
 STUB(flock)
@@ -48,4 +48,6 @@ STUB(__system_property_get)
 STUB(__stack_chk_fail)
 
 STUB(__tls_get_addr)
+STUB(__assert2)
+STUB(dup2)
 #endif

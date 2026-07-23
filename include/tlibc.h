@@ -37,7 +37,7 @@ static inline struct __uthread *__get_uthread(void) {
 struct __uthread *__new_uthread(void);
 void __free_uthread(struct __uthread *uthread);
 void __init_environ(char **envp);
-#ifdef __DL_TLIBC__
+#ifdef __LD_TLIBC__
 void __init_stdio(void);
 #endif
 void __init_tlibc(long *stack, main_t main);

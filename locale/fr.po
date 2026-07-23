@@ -1,0 +1,502 @@
+# French translations for tlibc package.
+# Copyright (C) 2026 THE tlibc'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the tlibc package.
+# <tayoky4848@gmail.com>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: tlibc bc4efea\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-23 15:06+0200\n"
+"PO-Revision-Date: 2026-07-23 14:40+0200\n"
+"Last-Translator: <tayoky4848@gmail.com>\n"
+"Language-Team: French <nobody@example.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: libc/dl/dlerror.c:6
+msgid "Dynamic linker is not loaded"
+msgstr "Le chargeur dynamique n'est pas chargé"
+
+#: libc/dl/dlerror.c:8
+msgid "Executable is staticly linked"
+msgstr ""
+
+#: libc/string/strerror.c:9
+msgid "Operation not permitted"
+msgstr "Opération non permise"
+
+#: libc/string/strerror.c:10
+msgid "No such file or directory"
+msgstr "Pas de fichier ou dossier de ce nom"
+
+#: libc/string/strerror.c:11
+msgid "No such process"
+msgstr "Pas de processus"
+
+#: libc/string/strerror.c:12
+msgid "Interrupted system call"
+msgstr "Appel système intérrompu"
+
+#: libc/string/strerror.c:13
+msgid "Input/Output error"
+msgstr "Erreur d'Entrée/Sortie"
+
+#: libc/string/strerror.c:14
+msgid "No such device or address"
+msgstr "Aucun périphérique ou addresse de ce type"
+
+#: libc/string/strerror.c:15
+msgid "Argument list too long"
+msgstr "Liste d'arguments trop longue"
+
+#: libc/string/strerror.c:16
+msgid "Exec format error"
+msgstr "Erreur de format d'exécution"
+
+#: libc/string/strerror.c:17
+msgid "Bad file descriptor"
+msgstr "Mauvais descripteur de fichier"
+
+#: libc/string/strerror.c:18
+msgid "No child processes"
+msgstr "Pas de processus enfant"
+
+#: libc/string/strerror.c:19
+msgid "Resource temporarily unavailable"
+msgstr "La ressource est temporairement inaccessible"
+
+#: libc/string/strerror.c:20
+msgid "Cannot allocate memory"
+msgstr "Impossible d'allouer de la memoire"
+
+#: libc/string/strerror.c:21
+msgid "Permission denied"
+msgstr "Permission refusée"
+
+#: libc/string/strerror.c:22
+msgid "Bad address"
+msgstr "Mauvaise addresse"
+
+#: libc/string/strerror.c:23
+msgid "Block device required"
+msgstr ""
+
+#: libc/string/strerror.c:24
+msgid "Device or resource busy"
+msgstr "Périphérique ou ressource occupé"
+
+#: libc/string/strerror.c:25
+msgid "File exists"
+msgstr "Le fichier éxiste"
+
+#: libc/string/strerror.c:26
+msgid "Invalid cross-device link"
+msgstr "Lien qui traverse les périphériques invalide"
+
+#: libc/string/strerror.c:27
+msgid "No such device"
+msgstr "Aucun périphérique de ce type"
+
+#: libc/string/strerror.c:28
+msgid "Not a directory"
+msgstr "Pas un dossier"
+
+#: libc/string/strerror.c:29
+msgid "Is a directory"
+msgstr "Est un dossier"
+
+#: libc/string/strerror.c:30
+msgid "Invalid argument"
+msgstr "Argument invalide"
+
+#: libc/string/strerror.c:31
+msgid "Too many open files in system"
+msgstr "Trop de fichiers ouverts sur le système"
+
+#: libc/string/strerror.c:32
+msgid "Too many open files"
+msgstr "Trop de fichiers ouverts"
+
+#: libc/string/strerror.c:33
+msgid "Inappropriate ioctl for device"
+msgstr "Ioctl inapproprié pour le périphérique"
+
+#: libc/string/strerror.c:34
+msgid "Text file busy"
+msgstr "Fichier texte occupé"
+
+#: libc/string/strerror.c:35
+msgid "File too large"
+msgstr "Fichier trop grand"
+
+#: libc/string/strerror.c:36
+msgid "No space left on device"
+msgstr "Pas d'espace disponible sur le périphérique"
+
+#: libc/string/strerror.c:37
+msgid "Illegal seek"
+msgstr "Positionnement interdit"
+
+#: libc/string/strerror.c:38
+msgid "Read only file system"
+msgstr "Système de fichier en lecture seul"
+
+#: libc/string/strerror.c:39
+msgid "Too many links"
+msgstr "Trop de liens"
+
+#: libc/string/strerror.c:40
+msgid "Broken pipe"
+msgstr "Tuyau brisée"
+
+#: libc/string/strerror.c:41
+msgid "Math arg out of domain of func"
+msgstr "Paramétre mathématique en dehors du domaine de la fonction"
+
+#: libc/string/strerror.c:42
+msgid "Math result not representable"
+msgstr "Le résultat mathématique n'est pas représentable"
+
+#: libc/string/strerror.c:43
+msgid "No message of desired type"
+msgstr "Pas de message du type désiré"
+
+#: libc/string/strerror.c:44
+msgid "Identifier removed"
+msgstr "Identifieur retirée"
+
+#: libc/string/strerror.c:45
+msgid "Channel number out of range"
+msgstr "Numéro de canal invalide"
+
+#: libc/string/strerror.c:46
+msgid "Level 2 not synchronized"
+msgstr ""
+
+#: libc/string/strerror.c:47
+msgid "Level 3 halted"
+msgstr ""
+
+#: libc/string/strerror.c:48
+msgid "Level 3 reset"
+msgstr ""
+
+#: libc/string/strerror.c:49
+msgid "Link number out of range"
+msgstr ""
+
+#: libc/string/strerror.c:50
+msgid "Protocol driver not attached"
+msgstr ""
+
+#: libc/string/strerror.c:51
+msgid "No CSI structure available"
+msgstr ""
+
+#: libc/string/strerror.c:52
+msgid "Level 2 halted"
+msgstr ""
+
+#: libc/string/strerror.c:53
+msgid "Deadlock condition"
+msgstr ""
+
+#: libc/string/strerror.c:54
+msgid "No record locks available"
+msgstr ""
+
+#: libc/string/strerror.c:55
+msgid "Invalid exchange"
+msgstr ""
+
+#: libc/string/strerror.c:56
+msgid "Invalid request descriptor"
+msgstr ""
+
+#: libc/string/strerror.c:57
+msgid "Exchange full"
+msgstr ""
+
+#: libc/string/strerror.c:58
+msgid "No anode"
+msgstr ""
+
+#: libc/string/strerror.c:59
+msgid "Invalid request code"
+msgstr ""
+
+#: libc/string/strerror.c:60
+msgid "Invalid slot"
+msgstr ""
+
+#: libc/string/strerror.c:61
+msgid "File locking deadlock error"
+msgstr ""
+
+#: libc/string/strerror.c:62
+msgid "Bad font file format"
+msgstr ""
+
+#: libc/string/strerror.c:63
+msgid "Device not a stream"
+msgstr ""
+
+#: libc/string/strerror.c:64
+msgid "No data available"
+msgstr ""
+
+#: libc/string/strerror.c:65
+msgid "Timer expired"
+msgstr ""
+
+#: libc/string/strerror.c:66
+msgid "Out of streams resources"
+msgstr ""
+
+#: libc/string/strerror.c:67
+msgid "Machine is not on the network"
+msgstr "La machine n'est pas connectée au résau"
+
+#: libc/string/strerror.c:68
+msgid "Package not installed"
+msgstr "Paquet non installé"
+
+#: libc/string/strerror.c:69
+msgid "The object is remote"
+msgstr ""
+
+#: libc/string/strerror.c:70
+msgid "The link has been severed"
+msgstr ""
+
+#: libc/string/strerror.c:71
+msgid "Advertise error"
+msgstr ""
+
+#: libc/string/strerror.c:72
+msgid "Srmount error"
+msgstr ""
+
+#: libc/string/strerror.c:73
+msgid "Communication error on send"
+msgstr ""
+
+#: libc/string/strerror.c:74
+msgid "Protocol error"
+msgstr ""
+
+#: libc/string/strerror.c:75
+msgid "Multihop attempted"
+msgstr ""
+
+#: libc/string/strerror.c:76
+msgid "Cross mount point"
+msgstr ""
+
+#: libc/string/strerror.c:77
+msgid "Bad message"
+msgstr ""
+
+#: libc/string/strerror.c:78
+msgid "Inappropriate file type or format"
+msgstr ""
+
+#: libc/string/strerror.c:79
+msgid "Name not unique"
+msgstr ""
+
+#: libc/string/strerror.c:80
+msgid "File descriptor in bad state"
+msgstr ""
+
+#: libc/string/strerror.c:81
+msgid "Remote address changed"
+msgstr ""
+
+#: libc/string/strerror.c:82
+msgid "Can not access a needed shared library"
+msgstr "Impossible d'acceder à une bibiliothère partagée requise"
+
+#: libc/string/strerror.c:83
+msgid "Accessing a corrupted shared library"
+msgstr ""
+
+#: libc/string/strerror.c:84
+msgid ".lib section in a.out corrupted"
+msgstr ""
+
+#: libc/string/strerror.c:85
+msgid "Attempting to link in too many libraries"
+msgstr ""
+
+#: libc/string/strerror.c:86
+msgid "Attempting to exec a shared library"
+msgstr "Tentative d'executer une bibliothèque partagée"
+
+#: libc/string/strerror.c:87
+msgid "Function not implemented"
+msgstr "Fonction non implementée"
+
+#: libc/string/strerror.c:88
+msgid "Directory not empty"
+msgstr "Dossier non vide"
+
+#: libc/string/strerror.c:89
+msgid "File or path name too long"
+msgstr "Filer ou chemin de ficher trop long"
+
+#: libc/string/strerror.c:90
+msgid "Too many symbolic links"
+msgstr "Trop de lien symboliques"
+
+#: libc/string/strerror.c:91
+msgid "Operation not supported on transport endpoint"
+msgstr ""
+
+#: libc/string/strerror.c:92
+msgid "Protocol family not supported"
+msgstr ""
+
+#: libc/string/strerror.c:93
+msgid "Connection reset by peer"
+msgstr ""
+
+#: libc/string/strerror.c:94
+msgid "No buffer space available"
+msgstr ""
+
+#: libc/string/strerror.c:95
+msgid "Address family not supported by protocol family"
+msgstr ""
+
+#: libc/string/strerror.c:96
+msgid "Protocol wrong type for socket"
+msgstr ""
+
+#: libc/string/strerror.c:97
+msgid "Socket operation on non-socket"
+msgstr ""
+
+#: libc/string/strerror.c:98
+msgid "Protocol not available"
+msgstr ""
+
+#: libc/string/strerror.c:99
+msgid "Can't send after socket shutdown"
+msgstr ""
+
+#: libc/string/strerror.c:100
+msgid "Connection refused"
+msgstr "Connection refusée"
+
+#: libc/string/strerror.c:101
+msgid "Address already in use"
+msgstr "Addresse déja utilisée"
+
+#: libc/string/strerror.c:102
+msgid "Connection aborted"
+msgstr "Connection interrompu anormalement"
+
+#: libc/string/strerror.c:103
+msgid "Network is unreachable"
+msgstr "Le résau ne peut pas être atteint"
+
+#: libc/string/strerror.c:104
+msgid "Network interface is not configured"
+msgstr "Interface résau non configurée"
+
+#: libc/string/strerror.c:105
+msgid "Connection timed out"
+msgstr "Délai d'attente dépassé pour la connection"
+
+#: libc/string/strerror.c:106
+msgid "Host is down"
+msgstr ""
+
+#: libc/string/strerror.c:107
+msgid "No route to host"
+msgstr ""
+
+#: libc/string/strerror.c:108
+msgid "Connection already in progress"
+msgstr "Connection déja en cours"
+
+#: libc/string/strerror.c:109
+msgid "Socket already connected"
+msgstr "Socket déja connecté"
+
+#: libc/string/strerror.c:110
+msgid "Destination address required"
+msgstr ""
+
+#: libc/string/strerror.c:111
+msgid "Message too long"
+msgstr "Message trop long"
+
+#: libc/string/strerror.c:112
+msgid "Unknown protocol"
+msgstr "Protocole inconnu"
+
+#: libc/string/strerror.c:113
+msgid "Socket type not supported"
+msgstr "Type de socket non supporté"
+
+#: libc/string/strerror.c:114
+msgid "Address not available"
+msgstr "Addresse non disponible"
+
+#: libc/string/strerror.c:115
+msgid "Socket is already connected"
+msgstr ""
+
+#: libc/string/strerror.c:116
+msgid "Socket is not connected"
+msgstr ""
+
+#: libc/string/strerror.c:117
+msgid "Operation not supported"
+msgstr "Opération non supportée"
+
+#: libc/string/strerror.c:118
+msgid "Value too large for defined data type"
+msgstr "Valeur trop grande pour le type de donnée definit"
+
+#: libc/string/strerror.c:119
+msgid "Operation canceled"
+msgstr "Opération arretée"
+
+#: libc/string/strerror.c:120
+msgid "State not recoverable"
+msgstr ""
+
+#: libc/string/strerror.c:121
+msgid "Previous owner died"
+msgstr ""
+
+#: libc/string/strerror.c:122
+msgid "Streams pipe error"
+msgstr ""
+
+#: libc/unistd/getopt.c:80 libc/unistd/getopt.c:123
+#, c-format
+msgid "%s: missing operand\n"
+msgstr "%s: paramètre manquant\n"
+
+#: libc/unistd/getopt.c:87
+#, c-format
+msgid "%s: unexpected operand\n"
+msgstr "%s: paramètre inattendu\n"
+
+#: libc/unistd/getopt.c:99
+#, c-format
+msgid "%s: invalid option %s\n"
+msgstr "%s: option non reconnue %s\n"
+
+#: libc/unistd/getopt.c:133
+#, c-format
+msgid "%s: invalid option -%c\n"
+msgstr "%s: option non reconnue -%c\n"

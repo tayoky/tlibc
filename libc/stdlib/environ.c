@@ -9,7 +9,7 @@
 // environement variable manipulation
 __attribute__((weak)) char **environ;
 
-#ifdef __DL_TLIBC__
+#ifdef __LD_TLIBC__
 
 // for the dynamic linker, don't allocate memory
 void __init_environ(char **envp) {

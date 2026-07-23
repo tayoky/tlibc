@@ -3,9 +3,11 @@
 . ./tconf.sh
 
 # defaults
-: ${SHARED:=static}
+: ${STATIC:=yes}
 : ${SHARED:=no}
 : ${SYSROOT=./sysroot}
+
+OPTIONS="STATIC SHARED"
 
 tconf_init "$@"
 

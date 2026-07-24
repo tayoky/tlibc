@@ -15,11 +15,14 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
 
+    - name: install gettext
+      run: sudo apt install gettext
+
     - name: configure
       run: mkdir -p sysroot/usr && ./configure --prefix=./sysroot/usr --enable-shared
 
-    - name: install header
-      run: make install-headers
+    - name: install headers
+      run: make install-include
 
     - name: build
       run: make

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tlibc bc4efea\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-23 15:06+0200\n"
+"POT-Creation-Date: 2026-07-24 22:13+0200\n"
 "PO-Revision-Date: 2026-07-23 14:40+0200\n"
 "Last-Translator: <tayoky4848@gmail.com>\n"
 "Language-Team: French <nobody@example.org>\n"
@@ -23,6 +23,138 @@ msgstr "Le chargeur dynamique n'est pas chargé"
 
 #: libc/dl/dlerror.c:8
 msgid "Executable is staticly linked"
+msgstr "L'exécutable est lié statiquement"
+
+#: libc/signal/strsignal.c:9
+msgid "Hangup"
+msgstr "Raccrochage"
+
+#: libc/signal/strsignal.c:10
+msgid "Interrupt"
+msgstr "Interruption"
+
+#: libc/signal/strsignal.c:11
+msgid "Quit"
+msgstr "Quitter"
+
+#: libc/signal/strsignal.c:12
+msgid "Illegal instruction"
+msgstr "Instruction illégal"
+
+#: libc/signal/strsignal.c:13
+msgid "Trace trap"
+msgstr "Piége"
+
+#: libc/signal/strsignal.c:14
+msgid "Aborted"
+msgstr "Abandon"
+
+#: libc/signal/strsignal.c:16
+msgid "Meow"
+msgstr "Miaou"
+
+#: libc/signal/strsignal.c:18
+msgid "Floating point exception"
+msgstr "Erreur de nombre a virgule flotante"
+
+#: libc/signal/strsignal.c:19
+msgid "Killed"
+msgstr "Tué"
+
+#: libc/signal/strsignal.c:20
+msgid "Bus error"
+msgstr "Erreur de bus"
+
+#: libc/signal/strsignal.c:21
+msgid "Segmentation fault"
+msgstr "Erreur de segmentation"
+
+#: libc/signal/strsignal.c:22
+msgid "Bas system call"
+msgstr "Mauvais appel système"
+
+#: libc/signal/strsignal.c:23 libc/string/strerror.c:40
+msgid "Broken pipe"
+msgstr "Tuyau brisée"
+
+#: libc/signal/strsignal.c:24
+msgid "Alarm clock"
+msgstr "Alarme d'hologe"
+
+#: libc/signal/strsignal.c:25
+msgid "Terminated"
+msgstr "Terminé"
+
+#: libc/signal/strsignal.c:26
+msgid "Urgent condition"
+msgstr "Évènement"
+
+#: libc/signal/strsignal.c:27
+msgid "Stoped (signal)"
+msgstr "Arrêté (signal)"
+
+#: libc/signal/strsignal.c:28
+msgid "Stoped"
+msgstr "Arrêté"
+
+#: libc/signal/strsignal.c:29
+msgid "Continued"
+msgstr "Continué"
+
+#: libc/signal/strsignal.c:30
+msgid "Child terminated"
+msgstr "Enfant terminé"
+
+#: libc/signal/strsignal.c:31
+msgid "Background read"
+msgstr "Lecture en arrière plan"
+
+#: libc/signal/strsignal.c:32
+msgid "Background write"
+msgstr "Ecriture en arrière plan"
+
+#: libc/signal/strsignal.c:34
+msgid "Poll event"
+msgstr "Évenement de poll"
+
+#: libc/signal/strsignal.c:37
+msgid "IO data available"
+msgstr "Données disponibles"
+
+#: libc/signal/strsignal.c:39
+msgid "Exceeded CPU time limit"
+msgstr "Temps de cpu excedé"
+
+#: libc/signal/strsignal.c:40
+msgid "Exceeded file size limit"
+msgstr "Limite de taille de fichier excedée"
+
+#: libc/signal/strsignal.c:41
+msgid "Virtual time alarm"
+msgstr "Alarme virtuelle"
+
+#: libc/signal/strsignal.c:42
+msgid "Profiling time alarm"
+msgstr "Alarme profilage"
+
+#: libc/signal/strsignal.c:43
+msgid "Window size changes"
+msgstr "Changement de la taille de la fenêtre"
+
+#: libc/signal/strsignal.c:45
+msgid "Information request"
+msgstr "Information requise"
+
+#: libc/signal/strsignal.c:47
+msgid "User signal 1"
+msgstr "Signal utilisateur 1"
+
+#: libc/signal/strsignal.c:48
+msgid "User signal 2"
+msgstr "Signal utilisateur 2"
+
+#: libc/signal/strsignal.c:50
+msgid "Thread library AST"
 msgstr ""
 
 #: libc/string/strerror.c:9
@@ -83,7 +215,7 @@ msgstr "Mauvaise addresse"
 
 #: libc/string/strerror.c:23
 msgid "Block device required"
-msgstr ""
+msgstr "Périphérique bloc requis"
 
 #: libc/string/strerror.c:24
 msgid "Device or resource busy"
@@ -148,10 +280,6 @@ msgstr "Système de fichier en lecture seul"
 #: libc/string/strerror.c:39
 msgid "Too many links"
 msgstr "Trop de liens"
-
-#: libc/string/strerror.c:40
-msgid "Broken pipe"
-msgstr "Tuyau brisée"
 
 #: libc/string/strerror.c:41
 msgid "Math arg out of domain of func"
@@ -500,3 +628,6 @@ msgstr "%s: option non reconnue %s\n"
 #, c-format
 msgid "%s: invalid option -%c\n"
 msgstr "%s: option non reconnue -%c\n"
+
+#~ msgid "Stop from tty"
+#~ msgstr "Stop depuis le teletype"

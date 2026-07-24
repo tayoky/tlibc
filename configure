@@ -21,5 +21,3 @@ tconf_check_attribute "$CC" "weak"
 ARCH=${HOST%%-*}
 
 tconf_fini
-
-./tmakegen

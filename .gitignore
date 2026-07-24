@@ -13,4 +13,3 @@ sysroot/*
 config.mk
 config.h
 tconf
-Makefile

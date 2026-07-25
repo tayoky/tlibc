@@ -1,11 +1,8 @@
 # makefile include to generate headers
 
-FILESGROUPS += HEADERS
-HEADERS_SRCS ?= $(wildcard *.h)
-HEADERS ?= $(addprefix $(BUILDDIR)/,$(HEADERS_SRCS))
-HEADERSDIR ?= $(INCLUDEDIR)
+HEADERS ?= $(wildcard *.h)
+INCS ?= $(addprefix $(BUILDDIR)/,$(HEADERS))
 
-.PHONY : all
 all : $(HEADERS)
 
 # cdefs contain the guards itself
@@ -19,4 +16,4 @@ $(BUILDDIR)/%.h : %.h
 	@echo "GEN $@"
 	$(Q)cat "$(TOP)/prologue.h" $^ "$(TOP)/epilogue.h" > $@
 
-include $(TMAKE_DIR)/tmake-files.mk
+include $(TMAKE_DIR)/tmake-incs.mk

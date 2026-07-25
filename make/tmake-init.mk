@@ -37,3 +37,8 @@ ifeq ($(V),1)
 else
 	Q = @
 endif
+
+# define mains targets
+all :
+install : all
+.PHONY : all install

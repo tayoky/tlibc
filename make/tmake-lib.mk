@@ -4,12 +4,12 @@ LIB ?= $(PACKAGE)
 SRCS ?= $(wildcard *.[cs])
 STATIC ?= yes
 SHARED ?= yes
-INCS ?= $(wildcard include/*)
 STATIC_LIB ?= lib$(LIB).a
 SHARED_LIB ?= lib$(LIB).so
 STATIC_OBJS += $(SRCS:%=$(BUILDDIR)/%.o)
 SHARED_OBJS += $(SRCS:%=$(BUILDDIR)/%.so)
 CFLAGS := -std=c99 -I ./ $(CFLAGS)
+LIBMODE ?= 0744
 
 all :
 
@@ -26,7 +26,7 @@ install : install-static
 install-static : $(BUILDDIR)/$(STATIC_LIB)
 	@mkdir -p "$(DESTDIR)$(LIBDIR)"
 	@echo "INSTALL $(STATIC_LIB)"
-	$(Q)cp "$(BUILDDIR)/$(STATIC_LIB)" "$(DESTDIR)$(LIBDIR)/"
+	$(Q)$(INSTALL) -m $(LIBMODE) "$(BUILDDIR)/$(STATIC_LIB)" "$(DESTDIR)$(LIBDIR)/"
 
 uninstall : uninstall-static
 uninstall-static :
@@ -45,7 +45,7 @@ install : install-shared
 install-shared : $(BUILDDIR)/$(SHARED_LIB)
 	@mkdir -p "$(DESTDIR)$(LIBDIR)"
 	@echo "INSTALL $(SHARED_LIB)"
-	$(Q)cp "$(BUILDDIR)/$(SHARED_LIB)" "$(DESTDIR)$(LIBDIR)/"
+	$(Q)$(INSTALL) -m $(LIBMODE) "$(BUILDDIR)/$(SHARED_LIB)" "$(DESTDIR)$(LIBDIR)/"
 
 uninstall : uninstall-shared
 uninstall-shared :

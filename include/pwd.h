@@ -23,5 +23,6 @@ struct passwd *getpwent(void);
 void setpwent(void);
 int fgetpwent_r(FILE *stream, struct passwd *pwbuf,char *buf, size_t size,struct passwd **pwbufp);
 struct passwd *fgetpwent(FILE *stream);
+int putpwent(const struct passwd *restrict pwbuf, FILE *restrict stream);
 
 #endif

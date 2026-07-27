@@ -118,3 +118,7 @@ struct passwd *getpwnam(const char *name) {
 	getpwnam_r(name, &_pwbuf, _buf, sizeof(_buf), &ret);
 	return ret;
 }
+
+int putpwent(const struct passwd *restrict pwbuf, FILE *restrict stream) {
+	return fprintf(stream, "%s:%s:%ld:%ld:%s:%s:%s\n", pwbuf->pw_name, pwbuf->pw_passwd, pwbuf->pw_uid, pwbuf->pw_gid, pwbuf->pw_gecos, pwbuf->pw_dir, pwbuf->pw_shell) < 0 ? -1 : 0;
+}

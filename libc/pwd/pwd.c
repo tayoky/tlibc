@@ -1,4 +1,5 @@
 #include <sys/types.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <pwd.h>
 #include <stdio.h>
@@ -7,41 +8,37 @@
 static struct passwd _pwbuf;
 static char _buf[1048];
 static FILE *passwd_file = NULL;
+static int is_master = 0;
 
-#define OUT(c) \
-	if (size > 0) { \
-		*(unsigned char *)buf = c; \
-		buf++; \
-		size--; \
-	} else { \
-		return __set_errno(-ERANGE); \
+static long parse_long(const char *str) {
+	char *end;
+	long l = strtol(str, &end, 10);
+	if (end == str || *end) {
+		return -1;
 	}
-#define PARSE_STR(var, end) \
-	var = buf; \
-	while ((c = fgetc(stream)) != end) { \
-		if (c == EOF) return -1; \
-		OUT(c); \
-	} \
-	OUT('\0');
-#define PARSE_INT(var, end) \
-	var = 0; \
-	while ((c = fgetc(stream)) != end) { \
-		if (c == EOF) return -1; \
-		var *= 10; \
-		var += c - '0'; \
-	}
+	return l;
+}
 
-// NOT SAFE FOR NUMBER
 int fgetpwent_r(FILE *stream, struct passwd *pwbuf, char *buf, size_t size, struct passwd **pwbufp) {
 	if (pwbufp) *pwbufp = NULL;
-	int c = 0;
-	PARSE_STR(pwbuf->pw_name, ':');
-	PARSE_STR(pwbuf->pw_passwd, ':');
-	PARSE_INT(pwbuf->pw_uid, ':');
-	PARSE_INT(pwbuf->pw_gid, ':');
-	PARSE_STR(pwbuf->pw_gecos, ':');
-	PARSE_STR(pwbuf->pw_dir, ':');
-	PARSE_STR(pwbuf->pw_shell, '\n');
+	fgets(buf, size, stream);
+	memset(pwbuf, 0, sizeof(struct passwd));
+	pwbuf->pw_name   = strsep(&buf, ":");
+	pwbuf->pw_passwd = strsep(&buf, ":");
+	pwbuf->pw_uid    = parse_long(strsep(&buf, ":"));
+	pwbuf->pw_gid    = parse_long(strsep(&buf, ":"));
+	if (is_master) {
+		pwbuf->pw_class  = strsep(&buf, ":");
+		pwbuf->pw_change = parse_long(strsep(&buf, ":"));
+		pwbuf->pw_expire = parse_long(strsep(&buf, ":"));
+	}
+	pwbuf->pw_gecos  = strsep(&buf, ":");
+	pwbuf->pw_dir    = strsep(&buf, ":");
+	pwbuf->pw_shell  = strsep(&buf, ":\n");
+	if (!pwbuf->pw_shell || pwbuf->pw_uid < 0 || pwbuf->pw_gid < 0 || pwbuf->pw_change < 0 || pwbuf->pw_expire < 0) {
+		errno = EILSEQ;
+		return -1;
+	}
 	if (pwbufp) *pwbufp = pwbuf;
 	return 0;
 }
@@ -58,7 +55,16 @@ void setpwent(void) {
 	if (passwd_file) {
 		rewind(passwd_file);
 	} else {
+		// try master first
+		// master only exist on BSD/Stanix
+		// and is only for root user
+		passwd_file = fopen("/etc/master.passwd", "r");
+		if (passwd_file) {
+			is_master = 1;
+			return;
+		}
 		passwd_file = fopen("/etc/passwd", "r");
+		is_master = 0;
 	}
 }
 

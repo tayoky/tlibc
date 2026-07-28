@@ -5,13 +5,16 @@
 #include <stdio.h>
 
 struct passwd {
-    char    *pw_name;   // user's login name
-    char    *pw_passwd; // user's password
-    uid_t    pw_uid;    // numerical user ID
-    gid_t    pw_gid;    // numerical group ID
-    char    *pw_gecos;  // user information
-    char    *pw_dir;    // initial working directory
-    char    *pw_shell;  // program to use as shell
+	char *pw_name;    // user's login name
+	char *pw_passwd;  // user's password
+	uid_t pw_uid;     // numerical user ID
+	gid_t pw_gid;     // numerical group ID
+	char *pw_class;   // user class
+	time_t pw_change; // password change date
+	time_t pw_expire; // password expire date
+	char *pw_gecos;   // user information
+	char *pw_dir;     // initial working directory
+	char *pw_shell;   // program to use as shell
 };
 
 struct passwd *getpwnam(const char *);

@@ -26,7 +26,8 @@ static char **ltov(const char *arg0, va_list args) {
 		if (arg == NULL) {
 			break;
 		}
-
+		
+		argv[argc] = arg;
 		argc++;
 		argv = realloc(argv, sizeof(char *) * (argc + 1));
 	}

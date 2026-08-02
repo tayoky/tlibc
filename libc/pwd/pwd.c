@@ -21,7 +21,7 @@ static long parse_long(const char *str) {
 
 int fgetpwent_r(FILE *stream, struct passwd *pwbuf, char *buf, size_t size, struct passwd **pwbufp) {
 	if (pwbufp) *pwbufp = NULL;
-	fgets(buf, size, stream);
+	if (!fgets(buf, size, stream)) return -1;
 	memset(pwbuf, 0, sizeof(struct passwd));
 	pwbuf->pw_name   = strsep(&buf, ":");
 	pwbuf->pw_passwd = strsep(&buf, ":");

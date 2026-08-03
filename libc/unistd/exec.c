@@ -91,18 +91,10 @@ int execvpe(const char *file, char *const argv[], char *const envp[]) {
 
 	// we are going to modify this
 	char *d = strdup(path);
-	path = d;
+	char *ptr;
+	path = strtok_r(d, ":", &ptr);
 
-	size_t path_count = 1;
-
-	for (size_t i = 0; path[i]; i++) {
-		if (path[i] == ':') {
-			path_count++;
-			path[i] = '\0';
-		}
-	}
-
-	for (size_t i = 0; i < path_count; i++) {
+	while (path) {
 		// is what we search here ?
 		char *full_filename = malloc(strlen(path) + strlen(file) + 2);
 		sprintf(full_filename, "%s/%s", path, file);
@@ -111,15 +103,15 @@ int execvpe(const char *file, char *const argv[], char *const envp[]) {
 		if (fd) {
 			// we found it
 			fclose(fd);
+			free(d);
 			int ret = execve(full_filename, argv, envp);
 			free(full_filename);
-			free(d);
 			return ret;
 		}
 		free(full_filename);
 
 		// go to the next one
-		path += strlen(path) + 1;
+		path = strtok_r(NULL, ":", &ptr);
 	}
 
 	free(d);

@@ -2,31 +2,31 @@
 #define _TLIBC_H
 
 #include <sys/types.h>
-#include <pthread.h>
-#include <sysdeps.h>
-#include <stddef.h>
 #include <limits.h>
+#include <pthread.h>
+#include <stddef.h>
+#include <sysdeps.h>
 
-//this is reserved for internal use
-//this should not be used by common program that use crt0.o
+// this is reserved for internal use
+// this should not be used by common program that use crt0.o
 #ifndef __TLIBC__
 #error "header for internal use only"
 #endif
 
 struct __uthread {
-    struct __uthread *self;
-    void *keys[PTHREAD_KEYS_MAX];
-    void **dtv;
-    size_t dtv_size;
-    void *stack;
-    size_t stack_size;
-    void *retval;
-    struct __pthread_cleanup *cleanups;
-    pid_t tid;
-    int stack_is_allocated;
-    int err;
-    int detach_state;
-    int cancel;
+	struct __uthread *self;
+	void *keys[PTHREAD_KEYS_MAX];
+	void **dtv;
+	size_t dtv_size;
+	void *stack;
+	size_t stack_size;
+	void *retval;
+	struct __pthread_cleanup *cleanups;
+	pid_t tid;
+	int stack_is_allocated;
+	int err;
+	int detach_state;
+	int cancel;
 	futex_atomic_t dead;
 };
 

@@ -92,8 +92,13 @@ typedef struct {
 #define	SIG_UNBLOCK	2 //unblock specified signal set
 #define	SIG_SETMASK	3 //set specified signal set
 
-#define SA_RESTART 0x1
-#define SA_SIGINFO 0x2
+#define SA_NOCLDSTOP 0x01
+#define SA_ONSTACK   0x02
+#define SA_RESETHAND 0x04
+#define SA_RESTART   0x08
+#define SA_SIGINFO   0x10
+#define SA_NOCLDWAIT 0x20
+#define SA_NODEFER   0x40
 
 typedef void (*sighandler_t)(int);
 typedef int sig_atomic_t;

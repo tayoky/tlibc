@@ -11,12 +11,12 @@ TLIBC_NORETURN void pthread_exit(void *retval) {
 		}
 	}
 	__get_uthread()->retval = retval;
-	if (__get_uthread()->detach_state == PTHREAD_CREATE_DETACHED) {
+	if (atomic_load(&__get_uthread()->detach_state) == PTHREAD_CREATE_DETACHED) {
 		// TODO : free stack
 		__free_uthread(__get_uthread());
 	} else {
-		atomic_store(&__get_uthread()->dead, 1);
-		sys_futex_wait(&__get_uthread()->dead, INT_MAX);
+		atomic_store(&__get_uthread()->futex, 1);
+		sys_futex_wait(&__get_uthread()->futex, INT_MAX);
 	}
 	sys_thread_exit();
 }

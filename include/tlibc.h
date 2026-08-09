@@ -27,6 +27,7 @@ struct __uthread {
     int err;
     int detach_state;
     int cancel;
+	futex_atomic_t dead;
 };
 
 typedef int (*main_t)(int argc, char **argv, char **envp);

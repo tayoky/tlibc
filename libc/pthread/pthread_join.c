@@ -10,9 +10,13 @@ int pthread_join(pthread_t thread, void **arg) {
 	}
 	// some OSes need a join
 	int ret = sys_join_thread(thread->tid, NULL);
-	if (ret < 0 && errno != ENOSYS	) return errno;
+	if (ret < 0 && errno != ENOSYS) return errno;
 	
-	// TODO : use a futex if no join
+	// FIXME : we might have a race here
+	// if others threads also try to wait
+	while (!atomic_load(thread->dead)) {
+		if (sys_futex_wait(&thread->dead, 0) < 0 && errno != EAGAIN) return errno;
+	}
 	if (arg) *arg = thread->retval;
 	if (thread->stack_is_allocated) {
 		munmap(thread->stack, thread->stack_size);

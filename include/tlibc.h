@@ -25,9 +25,9 @@ struct __uthread {
 	pid_t tid;
 	int stack_is_allocated;
 	int err;
-	int detach_state;
-	int cancel;
-	futex_atomic_t dead;
+	TLIBC_ATOMIC_INT detach_state;
+	TLIBC_ATOMIC_INT cancel;
+	futex_atomic_t futex;
 };
 
 typedef int (*main_t)(int argc, char **argv, char **envp);

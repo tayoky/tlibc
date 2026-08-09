@@ -5,7 +5,7 @@
 #include <sysdeps.h>
 
 int pthread_join(pthread_t thread, void **arg) {
-	if (thread->detach_state != PTHREAD_CREATE_JOINABLE) {
+	if (atomic_load(&thread->detach_state) != PTHREAD_CREATE_JOINABLE) {
 		return EINVAL;
 	}
 	// some OSes need a join
@@ -14,8 +14,11 @@ int pthread_join(pthread_t thread, void **arg) {
 	
 	// FIXME : we might have a race here
 	// if others threads also try to wait
-	while (!atomic_load(&thread->dead)) {
-		if (sys_futex_wait(&thread->dead, 0) < 0 && errno != EAGAIN) return errno;
+	while (!atomic_load(&thread->futex)) {
+		if (sys_futex_wait(&thread->futex, 0) < 0 && errno != EAGAIN) return errno;
+	}
+	if (atomic_load(&thread->detach_state) != PTHREAD_CREATE_JOINABLE) {
+		return EINVAL;
 	}
 	if (arg) *arg = thread->retval;
 	if (thread->stack_is_allocated) {

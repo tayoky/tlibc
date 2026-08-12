@@ -8,6 +8,7 @@ struct __uthread;
 typedef struct __uthread *pthread_t;
 
 int pthread_kill(pthread_t thread, int sig);
+int pthread_sigqueue(pthread_t thread, int sig, const union sigval value);
 int pthread_sigmask(int how, const sigset_t *restrict set, sigset_t *restrict oldset);
 
 int sigaddset(sigset_t *sigset, int signum);

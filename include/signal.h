@@ -22,6 +22,8 @@ int sigwaitinfo(const sigset_t *restrict set, int *restrict sig, siginfo_t *rest
 int sigwait(const sigset_t *set, int *sig);
 int kill(pid_t pid, int sig);
 int killpg(pid_t pgrp, int sig);
+int tgkill(pid_t pid, pid_t tid, int sig);
+int sigqueue(pid_t pid, int sig, const union sigval value);
 int raise(int sig);
 int sigaction(int signum, const struct sigaction *act,struct sigaction * oldact);
 sighandler_t signal(int signum, sighandler_t handler);

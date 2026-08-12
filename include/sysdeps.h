@@ -3,6 +3,7 @@
 
 #include <abi/futex.h>
 #include <abi/time.h>
+#include <abi/signal.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <tlibcnoreturn.h>
@@ -103,6 +104,9 @@ SYSDEP int sys_nanosleep(const struct timespec *duration, struct timespec *rem);
 SYSDEP sighandler_t sys_signal(int signum, sighandler_t handler);
 SYSDEP int sys_sigaction(int signum, const struct sigaction *act, struct sigaction *oldact);
 SYSDEP int sys_kill(pid_t pid, int sig);
+SYSDEP int sys_tgkill(pid_t pid, pid_t tid, int sig);
+SYSDEP int sys_sigqueue(pid_t pid, int sig, const union sigval value);
+SYSDEP int sys_tgsigqueue(pid_t pid, pid_t tid, int sig, const union sigval value);
 SYSDEP int sys_sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
 SYSDEP int sys_sigpending(sigset_t *set);
 SYSDEP int sys_sigsuspend(const sigset_t *mask);

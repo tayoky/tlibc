@@ -219,5 +219,8 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_fstatat       94
 #define SYS_fchownat      95
 #define SYS_fchmodat      96
+#define SYS_tgkill        97
+#define SYS_sigqueue      98
+#define SYS_tgsigqueue    99
 
 #endif

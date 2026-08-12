@@ -8,9 +8,14 @@ int rand(void) {
 }
 
 int rand_r(unsigned int *seedp) {
-	*seedp = *seedp * 18483838 + 12345;
-	return *seedp % RAND_MAX;
+	unsigned int x = *seedp;
+	x ^= x << 13;
+	x ^= x >> 17;
+	x ^= x << 5;
+	*seedp = x;
+	return x % RAND_MAX;
 }
+
 void srand(unsigned int seed) {
 	s = seed;
 }

@@ -5,7 +5,7 @@
 
 #define N_(str) str
 
-static char *signames[] = {
+static char *signames[NSIG] = {
 	[SIGHUP]  = N_("Hangup"),
 	[SIGINT]  = N_("Interrupt"),
 	[SIGQUIT] = N_("Quit"),
@@ -52,7 +52,7 @@ static char *signames[] = {
 };
 
 char *strsignal(int signum) {
-	if (signum > NSIG || signum <= 0 || !signames[signum]) {
+	if (signum >= NSIG || signum <= 0 || !signames[signum]) {
 		static char buf[32];
 		sprintf(buf, "%d", signum);
 		return buf;

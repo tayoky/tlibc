@@ -18,6 +18,7 @@ int sigismember(const sigset_t *set, int signum);
 int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
 int sigpending(sigset_t *set);
 int sigsuspend(const sigset_t *mask);
+int sigwaitinfo(const sigset_t *restrict set, int *restrict sig, siginfo_t *restrict siginfo);
 int sigwait(const sigset_t *set, int *sig);
 int kill(pid_t pid, int sig);
 int killpg(pid_t pgrp, int sig);

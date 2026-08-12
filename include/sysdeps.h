@@ -106,6 +106,7 @@ SYSDEP int sys_kill(pid_t pid, int sig);
 SYSDEP int sys_sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
 SYSDEP int sys_sigpending(sigset_t *set);
 SYSDEP int sys_sigsuspend(const sigset_t *mask);
+SYSDEP int sys_sigwaitinfo(const sigset_t *restrict set, int *restrict sig, siginfo_t *restrict siginfo);
 SYSDEP int sys_sigwait(const sigset_t *set, int *sig);
 
 // user management

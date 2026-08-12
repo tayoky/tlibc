@@ -155,7 +155,7 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_poll          30
 #define SYS_sigprogmask   31
 #define SYS_sigaction     32
-#define SYS_sigwait       33
+#define SYS_sigwaitinfo   33
 #define SYS_sigsuspend    34
 #define SYS_sigpending    35
 #define SYS_kill          36

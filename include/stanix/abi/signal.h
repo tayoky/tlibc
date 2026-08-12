@@ -100,6 +100,54 @@ typedef struct {
 #define SA_NOCLDWAIT 0x20
 #define SA_NODEFER   0x40
 
+#define ILL_ILLOPC   1
+#define ILL_ILLOPN   2
+#define ILL_ILLADR   3
+#define ILL_ILLTRP   4
+#define ILL_PRVOPC   5
+#define ILL_PRVREG   6
+#define ILL_COPROC   7
+#define ILL_BADSTK   8
+
+#define FPE_INTDIV   9
+#define FPE_INTOVF  10
+#define FPE_FLTDIV  11
+#define FPE_FLTOVF  12
+#define FPE_FLTUND  13
+#define FPE_FLTRES  14
+#define FPE_FLTINV  15
+#define FPE_FLTSUB  16
+
+#define SEGV_MAPERR 17
+#define SEGV_ACCERR 18
+
+#define BUS_ADRALN  19
+#define BUS_ADRERR  20
+#define BUS_OBJERR  21
+
+#define TRAP_BRKPT  22
+#define TRAP_TRACE  23
+
+#define CLD_EXITED  24
+#define CLD_KILLED  25
+#define CLD_DUMPED  26
+#define CLD_TRAPPED 27
+#define CLD_STOPPED 28
+#define CLD_CONTINUED 29
+
+#define POLL_IN     30
+#define POLL_OUT    31
+#define POLL_MSG    32
+#define POLL_ERR    33
+#define POLL_PRI    34
+#define POLL_HUP    35
+
+#define SI_USER     36
+#define SI_QUEUE    37
+#define SI_TIMER    38
+#define SI_ASYNCIO  39
+#define SI_MESGQ    40
+
 typedef void (*sighandler_t)(int);
 typedef int sig_atomic_t;
 

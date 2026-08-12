@@ -6,7 +6,7 @@
 #include <sys/signal.h>
 #include <stdint.h>
 
-typedef uintptr_t mcontext_t[96];
+typedef __attribute__((aligned(16))) uintptr_t mcontext_t[96];
 typedef struct __ucontext {
     struct __ucontext *uc_link;
     sigset_t    uc_sigmask;

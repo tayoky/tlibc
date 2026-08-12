@@ -1,4 +1,5 @@
 #include <sysdeps.h>
+#include <stddef.h>
 
 TLIBC_WEAK int sys_sigwait(const sigset_t *set, int *sig) {
 	return sys_sigwaitinfo(set, sig, NULL);

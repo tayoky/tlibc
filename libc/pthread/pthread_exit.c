@@ -16,7 +16,7 @@ TLIBC_NORETURN void pthread_exit(void *retval) {
 		__free_uthread(__get_uthread());
 	} else {
 		atomic_store(&__get_uthread()->futex, 1);
-		sys_futex_wait(&__get_uthread()->futex, INT_MAX);
+		sys_futex_wake(&__get_uthread()->futex, INT_MAX);
 	}
 	sys_thread_exit();
 }

@@ -86,6 +86,8 @@ int setpgid(pid_t pid, pid_t pgid);
 pid_t getpgid(pid_t pid);
 pid_t getpgrp(void);
 int setpgrp(void);
+pid_t getsid(void);
+pid_t setsid(void);
 
 // tty management
 char *ttyname(int fd);

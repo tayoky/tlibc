@@ -222,5 +222,7 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_tgkill        97
 #define SYS_sigqueue      98
 #define SYS_tgsigqueue    99
+#define SYS_setsid        100
+#define SYS_getsid        101
 
 #endif

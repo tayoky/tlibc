@@ -92,6 +92,8 @@ SYSDEP int sys_mprotect(void *addr, size_t size, int prot);
 SYSDEP pid_t sys_getpid(void);
 SYSDEP pid_t sys_getpgid(pid_t pid);
 SYSDEP int sys_setpgid(pid_t pid, pid_t pgid);
+SYSDEP pid_t sys_getsid(void);
+SYSDEP pid_t sys_setsid(void);
 SYSDEP pid_t sys_fork(void);
 SYSDEP int sys_execve(const char *pathname, char *const *argv, char *const *envp);
 SYSDEP TLIBC_NORETURN void sys_exit(int status);

@@ -43,25 +43,27 @@ struct text_domain {
 #define MO_MAGIC 0x950412de
 
 static struct text_domain *domains[LC_ALL] = {0};
-static size_t domains_count = 0;
-static struct text_domain *global_domain;
+static size_t domains_count[LC_ALL] = {0};
+static char global_domain[256] = "messages";
 
 static struct text_domain *get_domain(const char *domainname, int category) {
-	if (!domainname) {
-		if (!global_domain) global_domain = get_domain("messages", LC_MESSAGES);
-		return global_domain;
+	if (category < 0 || category >= LC_ALL) {
+		return NULL;
 	}
-	for (size_t i=0; i<domains_count; i++) {
+	if (!domainname) {
+		domainname = global_domain;
+	}
+	for (size_t i=0; i<domains_count[category]; i++) {
 		if (!strcmp(domains[category][i].name, domainname)) {
 			return &domains[category][i];
 		}
 	}
-	struct text_domain *new_domains = realloc(domains[category], sizeof(struct text_domain) * (domains_count + 1));
+	struct text_domain *new_domains = realloc(domains[category], sizeof(struct text_domain) * (domains_count[category] + 1));
 	if (!new_domains) return NULL;
 	domains[category] = new_domains;
-	memset(&domains[category][domains_count], 0, sizeof(struct text_domain));
-	domains[category][domains_count].name = strdup(domainname);
-	return &domains[category][domains_count++];
+	memset(&domains[category][domains_count[category]], 0, sizeof(struct text_domain));
+	domains[category][domains_count[category]].name = strdup(domainname);
+	return &domains[category][domains_count[category]++];
 }
 
 static const char *category2str(int category) {
@@ -98,6 +100,7 @@ static int load_domain(struct text_domain *domain, int category) {
 		// retry with generic language without region
 		*strchr(locale, '_') = '\0';
 		snprintf(path, sizeof(path), "%s/%s/%s/%s.mo", dir, locale, category2str(category), domain->name);
+		fd = open(path, O_RDONLY);
 	}
 	if (fd < 0) return -1;
 
@@ -175,29 +178,9 @@ uint32_t hash_pjw(const char *str) {
 	return hval;
 }
 
-static const char *hash_lookup(struct text_domain *domain, const char *msgid) {
-	mo_header_t *header = (mo_header_t*)domain->data;
-	if (header->hash_size < 2) return msgid;
-	uint32_t hash = hash_pjw(msgid);
-	uint32_t index = hash % header->hash_size;
-	uint32_t incr = 1 + (hash % (header->hash_size - 2));
-	size_t max_iter = header->hash_size;
-	while (domain->hash_table[index] && (max_iter--) > 0) {
-		size_t str_idx = domain->hash_table[index] - 1;
-		if (str_idx >= header->num_strings) return msgid;
-		const char *candidate = get_str(domain, domain->orig_table, str_idx);
-		if (!candidate) return msgid;
-		if (!strcmp(candidate, msgid)) {
-			return get_str(domain, domain->trans_table, str_idx);
-		}
-		index = (index + incr) % header->hash_size;
-	}
-	return msgid;
-}
-
 static const char *bsearch_lookup(struct text_domain *domain, const char *msgid) {
 	mo_header_t *header = (mo_header_t*)domain->data;
-	if (header->num_strings == 0) return msgid;
+	if (header->num_strings == 0) return NULL;
 	size_t start = 0;
 	size_t end = header->num_strings - 1;
 	while (end >= start) {
@@ -214,16 +197,37 @@ static const char *bsearch_lookup(struct text_domain *domain, const char *msgid)
 			end = i - 1;
 		}
 	}
-	return msgid;
+	return NULL;
+}
+
+static const char *hash_lookup(struct text_domain *domain, const char *msgid) {
+	mo_header_t *header = (mo_header_t*)domain->data;
+	uint32_t hash = hash_pjw(msgid);
+	uint32_t index = hash % header->hash_size;
+	uint32_t incr = 1 + (hash % (header->hash_size - 2));
+	size_t max_iter = header->hash_size;
+	while (domain->hash_table[index] && (max_iter--) > 0) {
+		size_t str_idx = domain->hash_table[index] - 1;
+		if (str_idx >= header->num_strings) return NULL;
+		const char *candidate = get_str(domain, domain->orig_table, str_idx);
+		if (!candidate) return NULL;
+		if (!strcmp(candidate, msgid)) {
+			return get_str(domain, domain->trans_table, str_idx);
+		}
+		index = (index + incr) % header->hash_size;
+	}
+	return NULL;
 }
 
 static const char *lookup_msgid(struct text_domain *domain, const char *msgid) {
 	mo_header_t *header = (mo_header_t*)domain->data;
-	if (header->hash_size > 0) {
-		return hash_lookup(domain, msgid);
+	const char *msg;
+	if (header->hash_size <= 2) {
+		msg = bsearch_lookup(domain, msgid);
 	} else {
-		return bsearch_lookup(domain, msgid);
+		msg = hash_lookup(domain, msgid);
 	}
+	return msg ? msg : msgid;
 }
 
 char *dcgettext(const char *domainname, const char *msgid, int category) {
@@ -239,7 +243,8 @@ char *dcngettext(const char *domainname, const char *msgid1, const char *msgid2,
 }
 
 char *textdomain(const char *domainname) {
-	struct text_domain *domain = get_domain(domainname, LC_MESSAGES);
-	global_domain = domain;
-	return global_domain->name;
+	if (domainname) {
+		snprintf(global_domain, sizeof(global_domain), "%s", domainname);
+	}
+	return global_domain;
 }

@@ -18,6 +18,9 @@ CFLAGS += -I.
 CFLAGS += -D__LD_TLIBC__=1 -fPIC -mgeneral-regs-only -fvisibility=hidden
 LDFLAGS += -static-libgcc -Wl,--no-dynamic-linker,-z,now,-Bsymbolic,-e,_start
 
+# the dynamic linker need to be execuable
+LIBMODE = 0755
+
 LIB = ld-tlibc
 SHARED_LIB = ld-tlibc.so
 SRCDIRS += $(TOP)/libc/ $(TOP)/libc/pthread/ $(TOP)/libc/$(ARCH)/ \

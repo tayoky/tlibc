@@ -68,6 +68,10 @@ SYSDEP off_t sys_lseek(int fd, off_t offset, int whence);
 SYSDEP int sys_fcntl(int fd, int op, va_list args);
 SYSDEP int sys_ioctl(int fd, unsigned long op, void *arg);
 SYSDEP int sys_readdir(int fd, struct dirent *entry, long index);
+SYSDEP int sys_fdatasync(int fd);
+SYSDEP int sys_fsync(int fd);
+SYSDEP int sys_syncfs(int fd);
+SYSDEP void sys_sync(void);
 
 SYSDEP int sys_socket(int domain, int type, int protocol);
 SYSDEP int sys_bind(int socket, const struct sockaddr *address, socklen_t address_len);

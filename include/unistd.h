@@ -51,6 +51,11 @@ int symlink(const char *target, const char *linkpath);
 ssize_t readlink(const char *path, char *buf, size_t bufsize);
 int rmdir(const char *pathname);
 
+int fdatasync(int fd);
+int fsync(int fd);
+int syncfs(int fd);
+void sync(void);
+
 unsigned int sleep(unsigned int seconds);
 int usleep(useconds_t usec);
 

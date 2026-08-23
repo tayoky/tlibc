@@ -18,7 +18,6 @@ __attribute__((visibility("hidden"))) int __stub(const char *func) {
 	}
 #ifndef __LD_TLIBC__
 STUB(ftw)
-STUB(sync)
 STUB(flock)
 STUB(utime)
 STUB(clock)

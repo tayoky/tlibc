@@ -17,5 +17,6 @@ typedef struct cdrom_toc_header {
 typedef struct cdrom_toc_entry {
 	size_t track;
 	off_t start;
+	size_t size;
 } cdrom_toc_entry_t;
 #endif

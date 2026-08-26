@@ -18,5 +18,6 @@ typedef struct cdrom_toc_entry {
 	size_t track;
 	off_t start;
 	size_t size;
+	uint8_t flags;
 } cdrom_toc_entry_t;
 #endif

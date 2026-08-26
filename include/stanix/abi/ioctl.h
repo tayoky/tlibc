@@ -23,7 +23,7 @@ struct winsize {
 
 #define	TIOCGPTPEER 105 //get slave fd
 	
-#define I_EJECT 501 //eject a device
+// OLD deprecated
 #define I_MODEL 502 //get the model of a device (reserve 256 char)
 
 #endif

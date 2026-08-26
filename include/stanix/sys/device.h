@@ -7,7 +7,7 @@ typedef struct device_info {
 	char product[256];
 	char firmware[256];
 	char vendor[256];
-	char setial[256];
+	char serial[256];
 } device_info_t;
 
 #define DEVICE_GET_INFO 19000

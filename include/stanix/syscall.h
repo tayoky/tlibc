@@ -228,5 +228,7 @@ static inline long __syscall6(long n,long a1,long a2,long a3,long a4,long a5,lon
 #define SYS_fsync         103
 #define SYS_syncfs        104
 #define SYS_sync          105
+#define SYS_chroot        106
+#define SYS_fchroot       107
 
 #endif

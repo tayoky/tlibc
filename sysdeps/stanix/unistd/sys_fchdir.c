@@ -1,7 +1,6 @@
-#include <errno.h>
+#include <sysdeps.h>
 #include <syscall.h>
-#include <unistd.h>
 
-int fchdir(int fd) {
+int sys_fchdir(int fd) {
 	return __set_errno(__syscall1(SYS_fchdir, fd));
 }

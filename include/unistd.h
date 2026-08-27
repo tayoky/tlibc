@@ -74,11 +74,13 @@ int execv(const char *pathname, char *const argv[]);
 int execvp(const char *file, char *const argv[]);
 int execvpe(const char *file, char *const argv[], char *const envp[]);
 
-//cwd management
+// cwd/root management
 
 char *getcwd(char *buf, size_t size);
 int chdir(const char *path);
 int fchdir(int fd);
+int chroot(const char *path);
+int fchroot(int fd);
 
 int isatty(int fd);
 

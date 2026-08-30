@@ -21,6 +21,7 @@ typedef struct block_disk_info {
 
 typedef struct block_part_info {
 	char uuid[64];
+	char fs_uuid[64];
 	off_t offset;
 	size_t size;
 	char reserved[128];

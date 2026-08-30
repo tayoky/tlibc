@@ -6,6 +6,7 @@
 #define MS_NOEXEC  0x04
 #define MS_NOSUID  0x08
 #define MS_RDONLY  0x10
+#define MS_AUTO    0x20
 
 int mount(const char *source,const char *target,const char *filesystemtype,unsigned long mountflags,const void *data);
 

@@ -3,9 +3,15 @@
 
 #include <sys/types.h>
 
-// OLD deprecated
-#define I_BLOCK_GET_SIZE 17000
+// deprecated, use BLOCK_GET_TOPOLOGY instead
+#define BLOCK_GET_SIZE     17000
 
-#define BLOCK_GET_SIZE 17000
+#define BLOCK_GET_TOPOLOGY 17001
+#define BLOCK_RESCAN_PARTS 17002
+
+typedef struct block_topology {
+	size_t logical_block_size;
+	size_t blocks_count;
+} block_topology_t;
 
 #endif

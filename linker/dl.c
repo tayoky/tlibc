@@ -94,7 +94,7 @@ static void global_remove(struct elf_object *object) {
 	}
 
 	if (object->global_next) {
-		object->next->global_prev = object->global_prev;
+		object->global_next->global_prev = object->global_prev;
 	} else {
 		global_last = object->global_prev;
 	}
@@ -207,13 +207,16 @@ struct elf_object *dl_load(const char *filename, int fd, int flags) {
 		object->ref_count++;
 		if (!(object->flags & RTLD_GLOBAL) && (flags & RTLD_GLOBAL)) {
 			object->flags |= RTLD_GLOBAL;
-			global_add(object);
+			if (object->state >= STATE_DYNAMICS_PARSED) {
+				global_add(object);
+			}
 		}
 		return object;
 	}
 	if (flags & RTLD_NOLOAD) return NULL;
 	object = elf_load(filename, 1, fd);
 	if (!object) return NULL;
+	cache_add(object);
 
 	object->name = dl_strdup(name);
 	object->ref_count = 1;
@@ -224,12 +227,14 @@ struct elf_object *dl_load(const char *filename, int fd, int flags) {
 
 int dl_parse_dynamics(struct elf_object *object) {
 	if (object->state >= STATE_DYNAMICS_PARSED) return 0;
-	cache_add(object);
 	if (object->flags & RTLD_GLOBAL) {
 		global_add(object);
 	}
 
 	if (elf_handle_dynamics(object) < 0) return -1;
+	for (size_t i=0; i<object->deps_count; i++) {
+		if (dl_parse_dynamics(object->deps[i]) < 0) return -1;
+	}
 	object->state = STATE_DYNAMICS_PARSED;
 	return 0;
 }
@@ -275,7 +280,7 @@ void *dlopen(const char *filename, int flags) {
 		return program;
 	}
 
-	struct elf_object *object = dl_load(filename, flags, -1);
+	struct elf_object *object = dl_load(filename, -1, flags);
 	if (!object) return NULL;
 	if (dl_relocate(object) < 0) goto unload;
 	if (dl_finish_loading(object) < 0) goto unload;

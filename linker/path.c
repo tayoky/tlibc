@@ -12,23 +12,17 @@ static int try_dir(const char *dir, const char *path) {
 }
 
 static int try_path_list(const char *list, const char *path) {
-	while (*list) {
-		const char *end = strchr(list, ':');
-		if (!end) end = strchr(list, '\0');
-
-		if (end == list + 1) {
-			// skip empty path like "::"
-			list = end;
-			continue;
-		}
-
-		char *dir = dl_strndup(list, end - list);
-		int fd = try_dir(dir, path);
-		dl_free(dir);
-		if (fd >= 0) return fd;
-		list = end;
+	char *dup = dl_strdup(list);
+	char *ptr;
+	char *dir = strtok_r(dup, ":", &ptr);
+	int fd = -1;
+	while (dir) {
+		fd = try_dir(dir, path);
+		if (fd >= 0) break;
+		dir = strtok_r(NULL, ":", &ptr);
 	}
-	return -1;
+	dl_free(dup);
+	return fd;
 }
 
 int open_lib(const char *path) {

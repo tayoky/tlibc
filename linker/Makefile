@@ -8,7 +8,7 @@ DL_DEPS = tlibc.c stub.c auxv.c cxa.c uthread.c sys_arch_get_tls.s open.c errno.
 	read.c write.c lseek.c close.c _exit.c \
 	getuid.c geteuid.c getgid.c getegid.c getpid.c \
 	mmap.c mprotect.c munmap.c \
-	strcmp.c strncmp.c strchr.c strrchr.c strcpy.c strlen.c strnlen.c \
+	strcmp.c strncmp.c strchr.c strrchr.c strcpy.c strlen.c strnlen.c strtok_r.c \
 	memset.c memcmp.c memchr.c memcpy.c \
 	vsnprintf.c vsprintf.c sprintf.c fwrite.c __fileio_write.c fflush.c \
 	puts.c putchar.c fputs.c fputc.c stdio.c vfprintf.c fprintf.c \

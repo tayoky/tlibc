@@ -219,17 +219,19 @@ struct elf_object *dl_load(const char *filename, int fd, int flags) {
 	object->ref_count = 1;
 	object->flags = flags;
 	object->state = STATE_LOADED;
+	return object;
+}
+
+int dl_parse_dynamics(struct elf_object *object) {
+	if (object->state >= STATE_DYNAMICS_PARSED) return 0;
 	cache_add(object);
-	if (flags & RTLD_GLOBAL) {
+	if (object->flags & RTLD_GLOBAL) {
 		global_add(object);
 	}
 
-	if (elf_handle_dynamics(object) < 0) {
-		dl_unload(object);
-		return NULL;
-	}
+	if (elf_handle_dynamics(object) < 0) return -1;
 	object->state = STATE_DYNAMICS_PARSED;
-	return object;
+	return 0;
 }
 
 int dl_relocate(struct elf_object *object) {
@@ -397,8 +399,16 @@ int main(int argc, char **argv, char **envp) {
 		argc--;
 		argv++;
 	}
+
+	// add the linker itself to the cache
+	ld_tlibc.name = "ld-tlibc.so",
+	cache_add(&ld_tlibc);
+	global_add(&ld_tlibc);
+
+	int is_setuid = 1;
 	if (getuid() == geteuid() && getgid() == getegid()) {
-		// don't allow LD_LIBRARY_PATH or LD_DEBUG on set-uid/gid programs
+		// don't allow LD_PRELOAD, LD_LIBRARY_PATH or LD_DEBUG on set-uid/gid programs
+		is_setuid = 0;
 		lib_path = getenv("LD_LIBRARY_PATH");
 		const char *ld_debug = getenv("LD_DEBUG");
 		dl_debug = ld_debug && ld_debug[0];
@@ -416,12 +426,8 @@ int main(int argc, char **argv, char **envp) {
 				entry++;
 			}
 		}
-	}
 
-	// add the linker itself to the cache
-	ld_tlibc.name = "ld-tlibc.so",
-	cache_add(&ld_tlibc);
-	global_add(&ld_tlibc);
+	}
 
 	// maybee the kernel gave us a fd for the executable
 	errno = 0;
@@ -434,6 +440,25 @@ error:
 		fprintf(stderr, "ld-tlibc.so : %s\n", dlerror());
 		return EXIT_FAILURE;
 	}
+	
+	// load the preloads
+	const char *preload = getenv("LD_PRELOAD");
+	if (preload && !is_setuid) {
+		char *dup = dl_strdup(preload);
+		char *ptr;
+		char *lib = strtok_r(dup, ":", &ptr);
+		while (lib) {
+			struct elf_object *object = dl_load(lib, -1, RTLD_GLOBAL | RTLD_NOW);
+			if (!object) goto error;
+			if (dl_parse_dynamics(object) < 0) goto error;
+			if (dl_relocate(object) < 0) goto error;
+			if (dl_finish_loading(object) < 0) goto error;
+			lib = strtok_r(NULL, ":", &ptr);
+		}
+		dl_free(dup);
+	}
+
+	if (dl_parse_dynamics(program) < 0) goto error;
 	if (dl_relocate(program) < 0) goto error;
 	if (dl_finish_loading(program) < 0) goto error;
 

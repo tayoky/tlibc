@@ -199,6 +199,12 @@ int elf_handle_dynamics(struct elf_object *object) {
 
 		if (dl_debug) fprintf(stderr, "ld-tlibc.so : find depencie '%s'\n", name);
 		void *lib = dl_load(name, -1, object->flags);
+		if (lib) {
+			if (dl_parse_dynamics(lib) < 0) {
+				dl_unload(lib);
+				lib = NULL;
+			}
+		}
 		if (!lib) {
 			if (dl_debug) fprintf(stderr, "ld-tlibc.so : fail to load '%s' : %s\n", name, dlerror());
 			dl_error("cannot access a needed shared library");

@@ -102,6 +102,7 @@ void dl_free(void *ptr);
 char *dl_strdup(const char *str);
 int dl_error(char *str);
 struct elf_object *dl_load(const char *filename, int fd, int flags);
+int dl_parse_dynamics(struct elf_object *object);
 int dl_relocate(struct elf_object *object);
 int dl_finish_loading(struct elf_object *object);
 void dl_unload(struct elf_object *object);

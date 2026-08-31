@@ -71,6 +71,10 @@
 #define PATH_MAX 256
 #endif
 
+#ifndef NAME_MAX
+#define NAME_MAX 256
+#endif
+
 #ifndef LINE_MAX
 #define LINE_MAX 1024
 #endif

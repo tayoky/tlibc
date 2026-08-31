@@ -7,6 +7,7 @@
 #define MS_NOSUID  0x08
 #define MS_RDONLY  0x10
 #define MS_AUTO    0x20
+#define MS_MOVE    0x40
 
 int mount(const char *source,const char *target,const char *filesystemtype,unsigned long mountflags,const void *data);
 

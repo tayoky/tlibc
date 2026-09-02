@@ -124,7 +124,9 @@ int getopt_long(int argc, char *const *argv, const char *optstring, const struct
 						ret = '?';
 					}
 				} else {
-					optarg = argv[optind + 1];
+					optind++;
+					optarg = argv[optind];
+					goto finish_short;
 				}
 			}
 		}
@@ -136,6 +138,7 @@ int getopt_long(int argc, char *const *argv, const char *optstring, const struct
 	}
 	i++;
 	if (!argv[optind][i]) {
+		finish_short:
 		i = 1;
 		optind++;
 	}

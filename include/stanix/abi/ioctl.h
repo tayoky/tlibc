@@ -21,9 +21,8 @@ struct winsize {
 #define	TIOCGWINSZ 104 //get window size
 #define	TIOCSWINSZ 103 //set window size
 
-#define	TIOCGPTPEER 105 //get slave fd
+#define	TIOCGPTPEER 105 // get slave fd
+#define TIOCSCTTY   106 // set the controlling tty
+#define TIOCNOTTY   107 // drop the controlling tty
 	
-// OLD deprecated
-#define I_MODEL 502 //get the model of a device (reserve 256 char)
-
 #endif

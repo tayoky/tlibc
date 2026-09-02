@@ -30,7 +30,7 @@ FILE *fopen(const char *path, const char *mode) {
 		flags |= O_CLOEXEC;
 	}
 
-	int fd = open(path, flags, 0777);
+	int fd = open(path, flags, 0666);
 	if (fd < 0) {
 		return NULL;
 	}

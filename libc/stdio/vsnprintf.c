@@ -295,10 +295,10 @@ finish_flags:;
 			if (precision != -1) padding_char = ' ';
 			intmax_t sint = 0;
 			switch (lenght) {
-			case LEN_HH:
+			case LEN_H:
 				T_CAST(sint, short);
 				break;
-			case LEN_H:
+			case LEN_HH:
 				T_CAST(sint, char);
 				break;
 			case LEN_L:
@@ -339,10 +339,10 @@ finish_flags:;
 			if (precision != -1) padding_char = ' ';
 			intmax_t uint = 0;
 			switch (lenght) {
-			case LEN_HH:
+			case LEN_H:
 				T_CAST(uint, unsigned short);
 				break;
-			case LEN_H:
+			case LEN_HH:
 				T_CAST(uint, unsigned char);
 				break;
 			case LEN_L:

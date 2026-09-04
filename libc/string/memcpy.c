@@ -20,11 +20,11 @@ void *memcpy(void *dest, const void *src, size_t n) {
 }
 
 void *memmove(void *dest, const void *src, size_t n) {
-	if (dest == src) {
+	if ((char*)dest == (char*)src) {
 		return dest;
 	}
 
-	if (dest < src) {
+	if ((char*)dest < (char*)src) {
 		return memcpy(dest, src, n);
 	}
 
@@ -33,7 +33,7 @@ void *memmove(void *dest, const void *src, size_t n) {
 	asm volatile("std \n rep movsb \n cld" : "=D"(dest), "=S"(src), "+c"(n) : "D"((char *)dest + n - 1), "S"((char *)src + n - 1));
 	return prev;
 #else
-	while (n < 0) {
+	while (n > 0) {
 		n--;
 		((char *)dest)[n] = ((char *)src)[n];
 	}

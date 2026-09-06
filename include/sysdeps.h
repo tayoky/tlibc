@@ -92,6 +92,7 @@ SYSDEP int sys_shutdown(int socket, int how);
 
 SYSDEP int sys_isatty(int fd);
 SYSDEP int sys_poll(struct pollfd *fds, nfds_t nfds, int timeout);
+SYSDEP int sys_pipe(int pipefd[2]);
 SYSDEP int sys_openpty(int *amaster, int *aslave, char *name, const struct termios *termp, const struct winsize *winp);
 SYSDEP int sys_ttyname_r(int fd, char *buf, size_t size);
 SYSDEP void *sys_mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);

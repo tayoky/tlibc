@@ -70,6 +70,8 @@ SYSDEP ssize_t sys_read(int fd, const void *buffer, size_t count);
 SYSDEP ssize_t sys_write(int fd, const void *buffer, size_t count);
 SYSDEP off_t sys_lseek(int fd, off_t offset, int whence);
 SYSDEP int sys_fcntl(int fd, int op, va_list args);
+SYSDEP int sys_truncate(const char *path, off_t length);
+SYSDEP int sys_ftruncate(int fd, off_t length);
 SYSDEP int sys_ioctl(int fd, unsigned long op, void *arg);
 SYSDEP int sys_readdir(int fd, struct dirent *entry, long index);
 SYSDEP int sys_fdatasync(int fd);

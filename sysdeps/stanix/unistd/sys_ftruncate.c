@@ -1,7 +1,7 @@
 #include <errno.h>
 #include <syscall.h>
-#include <unistd.h>
+#include <sysdeps.h>
 
-int ftruncate(int fd, off_t length) {
+int sys_ftruncate(int fd, off_t length) {
 	return __set_errno(__syscall2(SYS_ftruncate, fd, (long)length));
 }

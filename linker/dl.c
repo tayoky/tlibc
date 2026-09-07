@@ -282,6 +282,7 @@ void *dlopen(const char *filename, int flags) {
 
 	struct elf_object *object = dl_load(filename, -1, flags);
 	if (!object) return NULL;
+	if (dl_parse_dynamics(object) < 0) goto unload;
 	if (dl_relocate(object) < 0) goto unload;
 	if (dl_finish_loading(object) < 0) goto unload;
 	return object;

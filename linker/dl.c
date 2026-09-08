@@ -182,6 +182,7 @@ int lookup_deps(struct lookup *lookup, struct elf_object *object) {
 	int found = 0;
 	for (size_t i=0; i<object->deps_count; i++) {
 		found = lookup_object(lookup, object->deps[i]) || found;
+		found = lookup_deps(lookup, object->deps[i]) || found;
 	}
 	return found;
 }
@@ -268,6 +269,7 @@ void dl_unload(struct elf_object *object) {
 		global_remove(object);
 	}
 	cache_remove(object);
+	dl_free(object->name);
 	elf_unload(object);
 }
 

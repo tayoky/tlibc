@@ -418,7 +418,6 @@ void elf_unload(struct elf_object *object) {
 		dl_unload(object->deps[i]);
 	}
 	dl_free(object->deps);
-	dl_free(object->name);
 	dl_free(object->phdrs);
 	dl_free(object);
 }

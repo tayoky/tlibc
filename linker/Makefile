@@ -27,6 +27,6 @@ SRCDIRS += $(TOP)/libc/ $(TOP)/libc/pthread/ $(TOP)/libc/$(ARCH)/ \
 	  $(TOP)/libc/fcntl/ $(TOP)/libc/ctype/ $(TOP)/libc/unistd/ \
 	  $(TOP)/libc/sys/ \
 	  $(TOP)/libc/string/ $(TOP)/libc/stdio/ $(TOP)/libc/stdlib/
-SRCS += $(TOP)/crt/$(ARCH)/crt0-$(TARGET).s $(DL_DEPS) $(wildcard *.c) abi/$(ARCH)-$(TARGET).s
+SRCS += $(TOP)/crt/$(ARCH)/crt0-$(TARGET).s $(DL_DEPS) $(wildcard *.c) arch/$(ARCH).s
 STATIC = no
 include $(TMAKE_DIR)/tmake-lib.mk

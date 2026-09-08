@@ -477,20 +477,12 @@ error:
 		envc++;
 	}
 
-	long *auxv_top = (long *)envp;
-	while (*auxv_top) auxv_top++;
-	auxv_top++;
-	while (*auxv_top) auxv_top++;
-	long *auxv = (long *)argv;
-	auxv--;
-
-	// align the size
-	size_t auxv_size = auxv_top - auxv;
-	if (auxv_size % 2) {
-		auxv_size++;
-	}
+	// compute the position of the stack pointer at the start
+	long *stack = (long *)argv;
+	stack--;
 
 	// emulate entry from kernel
-	abi_enter((void *)(program->header.e_entry + program->addr), auxv, auxv_size * sizeof(long));
+	enter_program((void *)(program->header.e_entry + program->addr), stack);
+	__builtin_unreachable();
 	return EXIT_FAILURE;
 }

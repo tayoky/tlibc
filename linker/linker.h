@@ -119,7 +119,7 @@ int elf_destructors(struct elf_object *object);
 void elf_unload(struct elf_object *object);
 Elf_Sym *elf_lookup(struct lookup *lookup, struct elf_object *object);
 
-void abi_enter(void *entry, long *auxv, size_t auxv_size);
+void enter_program(void *entry, void *stack);
 struct elf_object *cache_find_id(size_t id);
 int open_lib(const char *path);
 const char *get_str(struct elf_object *object, size_t offset);

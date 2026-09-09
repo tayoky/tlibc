@@ -119,20 +119,15 @@ const char *get_str(struct elf_object *object, size_t offset) {
 }
 
 static size_t get_total_size(struct elf_object *object) {
-	uintptr_t start = UINTPTR_MAX;
-	uintptr_t end = 0;
+	uintptr_t max = 0;
 	for (size_t i = 0; i < object->phdrs_count; i++) {
 		Elf_Phdr *pheader = &object->phdrs[i];
 		if (pheader->p_type != PT_LOAD) continue;
-		if (PAGE_ALIGN_DOWN(pheader->p_vaddr) < start) {
-			start = PAGE_ALIGN_DOWN(pheader->p_vaddr);
-		}
-		if (PAGE_ALIGN_UP(pheader->p_vaddr + pheader->p_memsz) > end) {
-			end = PAGE_ALIGN_UP(pheader->p_vaddr + pheader->p_memsz);
+		if (PAGE_ALIGN_UP(pheader->p_vaddr + pheader->p_memsz) > max) {
+			max = PAGE_ALIGN_UP(pheader->p_vaddr + pheader->p_memsz);
 		}
 	}
-	if (start > end) return 0;
-	return end - start;
+	return max;
 }
 
 static Elf_Dyn *find_dynamic(struct elf_object *object, long tag) {

@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 // environ growing
-extern char **envirion;
+extern char **environ;
 static char **array = NULL;
 
 int __grow_environ(const char *str) {
@@ -16,7 +16,7 @@ int __grow_environ(const char *str) {
 
 	if (array == environ) {
 		// we can grow environ
-		char **new = realloc(array, (envc + 2) * sizeof(char));
+		char **new = realloc(array, (envc + 2) * sizeof(char *));
 		if (!new) return -1;
 		array = new;
 	} else {

@@ -46,7 +46,10 @@ void __init_tlibc(long *stack, main_t main) {
 	__init_stdio();
 #endif
 
-	environ = envp;
+	// do not reset environ if it was already set by the dynamic linker
+	if (!environ) {
+		environ = envp;
+	}
 
 #ifndef __LD_TLIBC__
 	atexit(__fini_tlibc);

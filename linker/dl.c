@@ -125,6 +125,7 @@ static Elf_Sym *self_lookup(const char *name) {
 	if (!strcmp(name, "environ")) {
 		sym.st_value = (uintptr_t)(void *)&environ;
 		sym.st_size = sizeof(environ);
+		sym.st_info = ELF_ST_INFO(STB_WEAK, STT_OBJECT);
 		return &sym;
 	}
 	if (!strcmp(name, "dlopen")) {

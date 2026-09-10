@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <tlibc.h>
 
 extern char **environ;
 
@@ -23,17 +24,14 @@ int putenv(char *str) {
 		key++;
 	}
 
-	if (!environ[key]) {
-		// no key found
-		environ = realloc(environ, (key + 2) * sizeof(char *));
-
-		// set last NULL entry
-		environ[key + 1] = NULL;
-
+	if (environ[key]) {
 		environ[key] = str;
-		return 0;
+	} else {
+		// no slot found
+
+		int ret = __grow_environ(str);
+		if (ret < 0) return ret;
 	}
 
-	environ[key] = str;
 	return 0;
 }

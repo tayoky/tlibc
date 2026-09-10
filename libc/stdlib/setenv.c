@@ -2,6 +2,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
+#include <tlibc.h>
 
 extern char **environ;
 
@@ -20,15 +21,21 @@ int setenv(const char *name, const char *value, int overwrite) {
 		key++;
 	}
 
+	char *str;
+	int ret = asprintf(&str, "%s=%s", name, value);
+	if (ret < 0) return ret;
+
 	if (environ[key]) {
-		if (!overwrite) return 0;
+		if (overwrite) {
+			environ[key] = str;
+		}
 	} else  {
 		// no key found
-		environ = realloc(environ, (key + 2) * sizeof(char *));
-
-		// set last NULL entry
-		environ[key + 1] = NULL;
+		ret = __grow_environ(str);
+		if (ret < 0) {
+			free(str);
+			return ret;
+		}
 	}
-
-	return asprintf(&environ[key], "%s=%s", name, value);
+	return 0;
 }

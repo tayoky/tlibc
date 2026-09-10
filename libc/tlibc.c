@@ -17,6 +17,8 @@ extern func __fini_array_start[] __attribute__((weak));
 extern func __init_array_end[] __attribute__((weak));
 extern func __fini_array_end[] __attribute__((weak));
 
+__attribute__((weak)) char **environ;
+
 #ifndef __LD_TLIBC__
 static void __fini_tlibc(void) {
 #ifndef __SHARED__ // dynamic linker aready call destructors
@@ -44,8 +46,7 @@ void __init_tlibc(long *stack, main_t main) {
 	__init_stdio();
 #endif
 
-	// the dynamic linker need environ access
-	__init_environ(envp);
+	environ = envp;
 
 #ifndef __LD_TLIBC__
 	atexit(__fini_tlibc);

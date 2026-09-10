@@ -12,7 +12,7 @@ DL_DEPS = tlibc.c stub.c auxv.c cxa.c uthread.c sys_arch_get_tls.s open.c errno.
 	memset.c memcmp.c memchr.c memcpy.c \
 	vsnprintf.c vsprintf.c sprintf.c fwrite.c __fileio_write.c fflush.c \
 	puts.c putchar.c fputs.c fputc.c stdio.c vfprintf.c fprintf.c \
-	exit.c environ.c getenv.c
+	exit.c getenv.c
 
 CFLAGS += -I.
 CFLAGS += -D__LD_TLIBC__=1 -fPIC -mgeneral-regs-only -fvisibility=hidden

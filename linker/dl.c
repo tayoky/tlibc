@@ -76,6 +76,7 @@ static void cache_remove(struct elf_object *object) {
 }
 
 static void global_add(struct elf_object *object) {
+	if (object->global_next || object->global_prev || global_first == object) return;
 	object->global_prev = global_last;
 	object->global_next = NULL;
 	if (global_last) {
@@ -98,6 +99,8 @@ static void global_remove(struct elf_object *object) {
 	} else {
 		global_last = object->global_prev;
 	}
+	object->global_prev = NULL;
+	object->global_next = NULL;
 }
 
 int dl_error(char *str) {
@@ -409,11 +412,6 @@ int main(int argc, char **argv, char **envp) {
 		argv++;
 	}
 
-	// add the linker itself to the cache
-	ld_tlibc.name = "ld-tlibc.so",
-	cache_add(&ld_tlibc);
-	global_add(&ld_tlibc);
-
 	int is_setuid = 1;
 	if (getuid() == geteuid() && getgid() == getegid()) {
 		// don't allow LD_PRELOAD, LD_LIBRARY_PATH or LD_DEBUG on set-uid/gid programs
@@ -466,6 +464,12 @@ error:
 		}
 		dl_free(dup);
 	}
+
+	// add the linker itself to the cache, right after the program
+	global_add(program);
+	ld_tlibc.name = "ld-tlibc.so",
+	cache_add(&ld_tlibc);
+	global_add(&ld_tlibc);
 
 	if (dl_parse_dynamics(program) < 0) goto error;
 	if (dl_relocate(program) < 0) goto error;

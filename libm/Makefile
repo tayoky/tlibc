@@ -7,5 +7,5 @@ ARCH_SRCS = $(wildcard $(ARCH)/*.[sc])
 SRCS = $(ARCH_SRCS) $(filter-out $(ARCH_SRCS:$(ARCH)/%.s=generic/%.c),$(wildcard generic/*.c))
 
 LIB = m
-LDFLAGS += -lc -Wl,-lgcc_s
+LDFLAGS += -lc
 include $(TMAKE_DIR)/tmake-lib.mk

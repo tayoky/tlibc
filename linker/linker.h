@@ -54,6 +54,7 @@ struct elf_object {
 	struct elf_object *prev;
 	struct elf_object *global_next;
 	struct elf_object *global_prev;
+	struct elf_object *preload_next;
 	Elf_Ehdr header;
 	size_t ref_count;
 	uintptr_t addr;

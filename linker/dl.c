@@ -447,9 +447,16 @@ error:
 		fprintf(stderr, "ld-tlibc.so : %s\n", dlerror());
 		return EXIT_FAILURE;
 	}
+
+	// add the linker itself to the cache, right after the program
+	global_add(program);
+	ld_tlibc.name = "ld-tlibc.so",
+	cache_add(&ld_tlibc);
+	global_add(&ld_tlibc);
 	
 	// load the preloads
 	const char *preload = getenv("LD_PRELOAD");
+	struct elf_object *preloads = NULL;
 	if (preload && !is_setuid) {
 		char *dup = dl_strdup(preload);
 		char *ptr;
@@ -458,29 +465,25 @@ error:
 			struct elf_object *object = dl_load(lib, -1, RTLD_GLOBAL | RTLD_NOW);
 			if (!object) goto error;
 			if (dl_parse_dynamics(object) < 0) goto error;
-			if (dl_relocate(object) < 0) goto error;
-			if (dl_finish_loading(object) < 0) goto error;
+			object->preload_next = preloads;
+			preloads = object;
 			lib = strtok_r(NULL, ":", &ptr);
 		}
 		dl_free(dup);
 	}
-
-	// add the linker itself to the cache, right after the program
-	global_add(program);
-	ld_tlibc.name = "ld-tlibc.so",
-	cache_add(&ld_tlibc);
-	global_add(&ld_tlibc);
-
 	if (dl_parse_dynamics(program) < 0) goto error;
+
+	for (struct elf_object *object = preloads; object; object = object->preload_next) {
+		if (dl_relocate(object) < 0) goto error;
+	}
 	if (dl_relocate(program) < 0) goto error;
+
+	for (struct elf_object *object = preloads; object; object = object->preload_next) {
+		if (dl_finish_loading(object) < 0) goto error;
+	}
 	if (dl_finish_loading(program) < 0) goto error;
 
 	dl_setup_libc_alloc();
-
-	int envc = 0;
-	while (envp[envc]) {
-		envc++;
-	}
 
 	// compute the position of the stack pointer at the start
 	long *stack = (long *)argv;

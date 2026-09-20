@@ -1,4 +1,3 @@
-TOP = $(CURDIR)/..
 TMAKE_DIR = $(TOP)/make
 include $(TMAKE_DIR)/tlibc-init.mk
 
@@ -8,12 +7,12 @@ CRTCLEANFILES = $(CRT)
 FILESGROUPS = CRT
 include $(TMAKE_DIR)/tmake-files.mk
 
-$(BUILDDIR)/crt%.o : $(ARCH)/crt%.s
+$(BUILDDIR)/crt%.o : $(SRCDIR)/$(ARCH)/crt%.s
 	@mkdir -p "$(@D)"
 	@echo "AS $<"
 	$(Q)$(AS) $(ASFLAGS) -o "$@" -c $<
 
-$(BUILDDIR)/crt0.o : $(ARCH)/crt0-$(TARGET).s
+$(BUILDDIR)/crt0.o : $(SRCDIR)/$(ARCH)/crt0-$(TARGET).s
 	@mkdir -p "$(@D)"
 	@echo "AS $<"
 	$(Q) $(AS) $(ASFLAGS) -o $@ $<

@@ -1,0 +1,8 @@
+TMAKE_DIR = $(TOP)/make
+include $(TMAKE_DIR)/tlibc-init.mk
+include $(TMAKE_DIR)/tlibc-sysdeps.mk
+
+LIB = c
+DIRS = ctype libgen libintl time stdlib string wchar stdio unistd locale pwd pthread dl fcntl sys signal $(ARCH)
+SRCS += $(foreach DIR,$(DIRS), $(wildcard $(SRCDIR)/$(DIR)/*.[cs])) $(wildcard *.c)
+include $(TMAKE_DIR)/tmake-lib.mk

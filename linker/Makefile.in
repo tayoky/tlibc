@@ -1,4 +1,3 @@
-TOP = $(CURDIR)/..
 TMAKE_DIR = $(TOP)/make
 include $(TMAKE_DIR)/tlibc-init.mk
 include $(TMAKE_DIR)/tlibc-sysdeps.mk
@@ -14,7 +13,7 @@ DL_DEPS = tlibc.c stub.c auxv.c cxa.c uthread.c sys_arch_get_tls.s open.c errno.
 	puts.c putchar.c fputs.c fputc.c stdio.c vfprintf.c fprintf.c \
 	exit.c getenv.c
 
-CFLAGS += -I.
+CFLAGS += -I$(SRCDIR)
 CFLAGS += -D__LD_TLIBC__=1 -fPIC -mgeneral-regs-only -fvisibility=hidden
 LDFLAGS += -static-libgcc -Wl,--no-dynamic-linker,-z,now,-Bsymbolic,-e,_start
 

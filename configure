@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ./tconf.sh
+. "$(dirname "$0")/tconf.sh"
 
 # defaults
 : ${STATIC:=yes}
@@ -19,5 +19,7 @@ tconf_find_os
 tconf_check_attribute "$CC" "weak"
 
 ARCH=${HOST%%-*}
+
+tconf_gen_makefiles $(find "$SRCDIR" -name "Makefile.in")
 
 tconf_fini

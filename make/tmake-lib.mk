@@ -2,12 +2,15 @@
 
 LIB ?= $(PACKAGE)
 SRCS ?= $(wildcard *.[cs])
+SRCNAMES = $(notdir $(SRCS))
+SRCDIRS += $(dir $(SRCS))
+INCS ?= $(wildcard include/*)
 STATIC ?= yes
 SHARED ?= yes
 STATIC_LIB ?= lib$(LIB).a
 SHARED_LIB ?= lib$(LIB).so
-STATIC_OBJS += $(SRCS:%=$(BUILDDIR)/%.o)
-SHARED_OBJS += $(SRCS:%=$(BUILDDIR)/%.so)
+STATIC_OBJS += $(SRCNAMES:%=$(BUILDDIR)/%.o)
+SHARED_OBJS += $(SRCNAMES:%=$(BUILDDIR)/%.so)
 CFLAGS := -std=c99 -I ./ $(CFLAGS)
 LIBMODE ?= 0744
 

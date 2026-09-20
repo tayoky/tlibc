@@ -1,8 +1,5 @@
-TOP = $(CURDIR)/..
 TMAKE_DIR = $(TOP)/make
 include $(TMAKE_DIR)/tlibc-init.mk
 
+INCSDIR := $(INCSDIR)/abi
 include $(TMAKE_DIR)/tlibc-headers.mk
-
-SUBDIRS = sys $(TARGET)
-include $(TMAKE_DIR)/tmake-subdir.mk

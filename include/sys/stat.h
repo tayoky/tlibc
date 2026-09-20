@@ -47,16 +47,27 @@
 // functions
 int stat(const char *pathname,struct stat *st);
 int fstat(int fd,struct stat *st);
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || defined(_DEFAULT_SOURCE)
 int lstat(const char *pathname,struct stat *st);
+#endif
+#if defined(_POSIX_X_SOURCE) && _POSIX_C_SOURCE >= 200809L
 int fstatat(int fd, const char *restrict path, struct stat *restrict st, int flags);
+#endif
 int chmod(const char *pathname, mode_t mode);
+#if defined(_POSIX_X_SOURCE) && _POSIX_C_SOURCE >= 199309L
 int fchmod(int fd, mode_t mode);
+#endif
 int lchmod(const char *pathname,mode_t mode);
 int chown(const char *pathname, uid_t owner, gid_t group);
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L)
 int fchown(int fd, uid_t owner, gid_t group);
 int lchown(const char *pathname, uid_t owner, gid_t group);
+#endif
 mode_t umask(mode_t mask);
 int mkdir(const char *pathname, mode_t mode);
+
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || defined(_DEFAULT_SOURCE)
 int mknod(const char *pathname, mode_t mode, dev_t dev);
+#endif
 
 #endif

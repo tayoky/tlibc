@@ -12,20 +12,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: checkout
+    - name: Checkout
       uses: actions/checkout@v4
 
-    - name: install gettext
+    - name: Install gettext
       run: sudo apt install gettext
 
-    - name: configure
-      run: mkdir -p sysroot/usr && ./configure --prefix=./sysroot/usr --enable-shared
+    - name: Configure
+      run: mkdir -p sysroot/usr build && cd build && ../configure --prefix=../sysroot/usr --enable-shared
 
-    - name: install headers
-      run: make install-include
+    - name: Install headers
+      run: make -C build install-include
 
-    - name: build
-      run: make
+    - name: Build
+      run: make -C build
 
-    - name: install
-      run: make install
+    - name: Install
+      run: make -C build install

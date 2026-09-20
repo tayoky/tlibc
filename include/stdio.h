@@ -1,6 +1,7 @@
 #ifndef _STDIO_H
 #define _STDIO_H
 
+#include <features.h>
 #include <sys/types.h>
 #include <stdarg.h>
 

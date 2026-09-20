@@ -1,6 +1,7 @@
 #ifndef _UNISTD_H
 #define _UNISTD_H
 
+#include <features.h>
 #include <sys/types.h>
 #include <tlibcnoreturn.h>
 #include <fcntl.h>
@@ -33,8 +34,13 @@ off_t lseek(int fd, off_t offset, int whence);
 ssize_t read(int fd, const void *buffer, size_t count);
 ssize_t write(int fd, const void *buffer, size_t count);
 
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L)
 int truncate(const char *path, off_t length);
+#endif
+
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L)
 int ftruncate(int fd, off_t length);
+#endif
 
 int dup(int oldfd);
 int dup2(int oldfd, int newfd);

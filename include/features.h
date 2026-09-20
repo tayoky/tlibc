@@ -22,7 +22,7 @@
 #define _POSIX_C_SOURCE 200809L
 #endif
 
-#if _POSIX_SOURCE >= 1
+#if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 1
 #undef _POSIX_SOURCE
 #define _POSIX_SOURCE 1
 #endif

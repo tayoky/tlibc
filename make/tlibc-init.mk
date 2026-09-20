@@ -20,7 +20,8 @@ CFLAGS += -Wall \
 	-I "$(TOP)/include" \
 	-I "$(TOP)/include/$(TARGET)" \
 	-D$(ARCH)=1 \
-	-D__TLIBC__
+	-D__TLIBC__=1 \
+	-D_TLIBC_SOURCE=1 \
 
 LDFLAGS += -Wl,--gc-sections
 

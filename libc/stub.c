@@ -37,6 +37,9 @@ STUB(pthread_setschedparam)
 
 STUB(open_memstream)
 
+STUB(__freading)
+STUB(__fwriting)
+
 STUB(openlog)
 STUB(closelog)
 STUB(vsyslog)

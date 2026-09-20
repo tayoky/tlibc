@@ -3,7 +3,7 @@ include $(TMAKE_DIR)/tlibc-init.mk
 
 # if a file exist in $(ARCH) don't take the generic version in generic
 ARCH_SRCS = $(wildcard $(SRCDIR)/$(ARCH)/*.[sc])
-SRCS = $(ARCH_SRCS) $(filter-out $(ARCH_SRCS:$(ARCH)/%.s=generic/%.c),$(wildcard $(SRCDIR)/generic/*.c))
+SRCS = $(ARCH_SRCS) $(filter-out $(ARCH_SRCS:$(SRCDIR)/$(ARCH)/%.s=$(SRCDIR)/generic/%.c),$(wildcard $(SRCDIR)/generic/*.c))
 
 LIB = m
 LDFLAGS += -L$(BUILDDIR)/../libc -lc

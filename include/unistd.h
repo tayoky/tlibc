@@ -31,7 +31,7 @@ int access(const char *pathname, int mode);
 
 off_t lseek(int fd, off_t offset, int whence);
 
-ssize_t read(int fd, const void *buffer, size_t count);
+ssize_t read(int fd, void *buffer, size_t count);
 ssize_t write(int fd, const void *buffer, size_t count);
 
 #if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L)

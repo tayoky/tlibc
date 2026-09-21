@@ -66,7 +66,7 @@ SYSDEP int sys_getcwd(char *buf, size_t size);
 SYSDEP int sys_open(const char *pathname, int flags, mode_t mode);
 SYSDEP int sys_openat(int dirfd, const char *pathname, int flags, mode_t mode);
 SYSDEP int sys_close(int fd);
-SYSDEP ssize_t sys_read(int fd, const void *buffer, size_t count);
+SYSDEP ssize_t sys_read(int fd, void *buffer, size_t count);
 SYSDEP ssize_t sys_write(int fd, const void *buffer, size_t count);
 SYSDEP off_t sys_lseek(int fd, off_t offset, int whence);
 SYSDEP int sys_fcntl(int fd, int op, va_list args);

@@ -63,22 +63,26 @@ int syncfs(int fd);
 void sync(void);
 
 unsigned int sleep(unsigned int seconds);
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500 && !(defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE >= 200809L)) || (defined(_DEFAULT_SOURCE) && _DEFAULT_SOURCE)
 int usleep(useconds_t usec);
+#endif
 
 int pipe(int pipefd[2]);
 
-int execve(const char *pathname, char *const argv[], char *const envp[]);
 
 pid_t fork(void);
 
-//not syscall exec
+// execxxx functions
 
 int execl(const char *pathname, const char *arg, ... /*, (char *) NULL */);
 int execlp(const char *file, const char *arg, ... /*, (char *) NULL */);
 int execle(const char *pathname, const char *arg, ... /*, (char *) NULL, char *const envp[] */);
 int execv(const char *pathname, char *const argv[]);
 int execvp(const char *file, char *const argv[]);
+int execve(const char *pathname, char *const argv[], char *const envp[]);
+#if defined(_GNU_SOURCE) && _GNU_SOURCE
 int execvpe(const char *file, char *const argv[], char *const envp[]);
+#endif
 
 // cwd/root management
 

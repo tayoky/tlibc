@@ -1,7 +1,7 @@
 #ifndef _TIME_H
 #define _TIME_H
 
-#include <features.sh>
+#include <features.h>
 #include <sys/time.h>
 #include <locale.h>
 

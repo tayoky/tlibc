@@ -65,7 +65,7 @@ long ftell(FILE *stream);
 void rewind(FILE *stream);
 int fgetpos(FILE *stream, fpos_t *pos);
 int fsetpos(FILE *stream, fpos_t *pos);
-#if _FILE_OFFSET_BITS == 64 || _POSIX_SOURCE >= 200112L
+#if (defined(_FILE_OFFSET_BITS) && _FILE_OFFSET_BITS == 64) ||(defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L)
 int fseeko(FILE *stream, off_t offset, int origin);
 off_t ftello(FILE *stream);
 #endif

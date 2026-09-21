@@ -1,6 +1,7 @@
 #ifndef _SYS_STAT_H
 #define _SYS_STAT_H
 
+#include <features.h>
 #include <abi/stat.h>
 #include <sys/types.h>
 

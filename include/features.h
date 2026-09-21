@@ -56,4 +56,18 @@
 #define _POSIX_SOURCE 1
 #endif
 
+// trigger the ISO C for POSIX source above 2001
+#if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L
+#undef  _ISOC95_SOURCE
+#define _ISOC95_SOURCE 1
+#undef  _ISOC99_SOURCE
+#define _ISOC99_SOURCE 1
+#endif
+
+// trigger _ATFILE_SOURCE for POSIX source above 2008
+#if defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE - 0) >= 200809L
+#undef  _ATFILE_SOURCE
+#define _ATFILE_SOURCE	1
+#endif
+
 #endif

@@ -84,9 +84,17 @@ int execvpe(const char *file, char *const argv[], char *const envp[]);
 
 char *getcwd(char *buf, size_t size);
 int chdir(const char *path);
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L)
 int fchdir(int fd);
+#endif
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE && !(defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE >= 200112L)) || _DEFAULT_SOURCE
 int chroot(const char *path);
+#endif
+
+#if defined(_TLIBC_SOURCE) && _TLIBC_SOURCE
+// tlibc extention
 int fchroot(int fd);
+#endif
 
 int isatty(int fd);
 
@@ -96,9 +104,13 @@ pid_t getpid(void);
 pid_t tcgetpgrp(int fd);
 int tcsetpgrp(int fd, pid_t pgrp);
 int setpgid(pid_t pid, pid_t pgid);
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L)
 pid_t getpgid(pid_t pid);
+#endif
 pid_t getpgrp(void);
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || (defined(_DEFAULT_SOURCE) && _DEFAULT_SOURCE)
 int setpgrp(void);
+#endif
 pid_t getsid(void);
 pid_t setsid(void);
 
@@ -125,7 +137,9 @@ long pathconf(const char *pathname, int varcode);
 
 long sysconf(int name);
 
+#if (defined(_DEFAULT_SOURCE) && _DEFAULT_SOURCE)
 long syscall(long number, ...);
+#endif
 
 // use the same id as glibc and mlibc
 #define _SC_ARG_MAX 0
@@ -263,13 +277,17 @@ long syscall(long number, ...);
 #define _SC_MINSIGSTKSZ 249
 #define _SC_SIGSTKSZ 250
 
+#if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 2) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE)
 int getopt(int argc, char *const *argv, const char *optstring);
+#endif
 
 #ifndef NULL
 #define NULL ((void*)0)
 #endif
 
+#if defined(_GNU_SOURCE) && _GNU_SOURCE
 extern char **environ;
+#endif
 extern int optind;
 extern int opterr;
 extern int optopt;

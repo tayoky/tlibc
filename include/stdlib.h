@@ -74,11 +74,14 @@ char *realpath(const char *path, char *resolved_path);
 
 //environement variables
 
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE) || (defined(_DEFAULT_SOURCE) && _DEFAULT_SOURCE)
 int putenv(char *str);
+#endif
 char *getenv(const char *name);
+#if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L
 int setenv(const char *name, const char *value, int overwrite);
 int unsetenv(const char *name);
-extern char **environ;
+#endif
 
 int system(const char *command);
 

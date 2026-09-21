@@ -25,6 +25,9 @@
 #if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 1
 #undef _POSIX_SOURCE
 #define _POSIX_SOURCE 1
+#elif defined(_POSIX_SOURCE) && _POSIX_SOURCE
+#undef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 1
 #endif
 
 #endif

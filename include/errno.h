@@ -136,4 +136,9 @@ static inline int __set_errno(int ret){
 	return ret;
 }
 
+#if defined(_GNU_SOURCE) && _GNU_SOURCE
+extern char *program_invocation_name;
+extern char *program_invocation_short_name;
+#endif
+
 #endif

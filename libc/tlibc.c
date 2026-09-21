@@ -12,6 +12,9 @@ void _fini(void);
 
 typedef void (*func)(void);
 
+char *program_invocation_name = NULL;
+char *program_invocation_short_name = NULL;
+
 extern func __init_array_start[] __attribute__((weak));
 extern func __fini_array_start[] __attribute__((weak));
 extern func __init_array_end[] __attribute__((weak));
@@ -50,6 +53,11 @@ void __init_tlibc(long *stack, main_t main) {
 	if (!environ) {
 		environ = envp;
 	}
+
+	// setup program invocation strings
+	program_invocation_name = argv[0];
+	program_invocation_short_name = strrchr(argv[0], '?');
+	if (!program_invocation_short_name) program_invocation_short_name = argv[0];
 
 #ifndef __LD_TLIBC__
 	atexit(__fini_tlibc);

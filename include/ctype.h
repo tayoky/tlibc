@@ -1,7 +1,7 @@
 #ifndef _CTYPE_H
 #define _CTYPE_H
 
-#include <features.sh>
+#include <features.h>
 
 int tolower(int c);
 int toupper(int c);
@@ -16,6 +16,7 @@ int isascii(int c);
 int isspace(int c);
 #if (defined(_ISOC99_SOURCE) && _ISOC99_SOURCE) || (defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE >= 200112L)
 int isblank(int c);
+#endif
 
 int isdigit(int c);
 int isxdigit(int c);

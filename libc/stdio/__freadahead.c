@@ -2,7 +2,5 @@
 #include <stdio-internal.h>
 
 size_t __freadahead(FILE *stream) {
-    // currently there is no read buffering
-    (void)stream;
-    return 0;
+    return stream->read_end - stream->read_pos;
 }

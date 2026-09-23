@@ -14,9 +14,9 @@ int setvbuf(FILE *stream, char *buf, int type, size_t size) {
 		if (!buf && !size) size = BUFSIZ;
 	}
 
-	if (size != stream->bufsize || buf) {
+	if (size != stream->buf_size || buf) {
 		if (stream->internalbuf) free(stream->buf);
-		stream->bufsize = size;
+		stream->buf_size = size;
 		if (!size) {
 			stream->buf = NULL;
 			stream->internalbuf = 0;

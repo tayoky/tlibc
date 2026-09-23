@@ -4,5 +4,6 @@
 void  __fpurge(FILE *stream) {
     if (!stream) return;
     stream->unget = EOF;
-    stream->usedsize = 0;
+	stream->write_pos = stream->write_end = NULL;
+	stream->read_pos  = stream->read_end  = NULL;
 }

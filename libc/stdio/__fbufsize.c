@@ -2,5 +2,5 @@
 #include <stdio-internal.h>
 
 size_t __fbufsize(FILE *stream) {
-    return stream ? stream->bufsize : 0;
+    return stream ? stream->buf_size : 0;
 }

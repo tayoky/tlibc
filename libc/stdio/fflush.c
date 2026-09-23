@@ -18,16 +18,15 @@ int fflush(FILE *stream) {
 		return 0;
 	}
 	stream->unget = EOF;
-	if (stream->buftype == _IONBF || stream->usedsize == 0) return 0;
+	if (stream->buftype == _IONBF || !stream->write_pos) return 0;
 	char *buf = stream->buf;
-	while (stream->usedsize > 0) {
-		ssize_t w = write(stream->fd, buf, stream->usedsize);
-		if (w < 0) {
-			stream->error = errno;
-			return -1;
-		}
-		stream->usedsize -= w;
+	size_t count = stream->write_pos - stream->buf;
+	while (count > 0) {
+		ssize_t w = __do_write(stream, buf, count);
+		if (w <= 0) return EOF;
 		buf += w;
 	}
+	stream->write_pos = stream->write_end = NULL;
+	stream->read_pos  = stream->read_end  = NULL;
 	return 0;
 }

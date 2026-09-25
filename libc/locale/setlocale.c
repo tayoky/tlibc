@@ -10,9 +10,9 @@ char *setlocale(int category, const char *locale) {
 	if (locale) {
 		locale_t new_locale = NULL;
 		if (category == LC_ALL) {
-			new_locale = newlocale(LC_ALL_MASK, locale, &_locale)->locales[0]->name;
+			new_locale = newlocale(LC_ALL_MASK, locale, &_locale);
 		} else {
-			new_locale = newlocale(1 << category, locale, &_locale)->locales[category]->name;
+			new_locale = newlocale(1 << category, locale, &_locale);
 		}
 		if (!new_locale) return NULL;
 		_locale = *new_locale;

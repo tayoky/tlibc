@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sysdeps.h>
+#include <string.h>
 #include <tlibc.h>
 
 #ifndef __SHARED__

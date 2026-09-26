@@ -2,5 +2,8 @@
 #include <stdio.h>
 
 int feof(FILE *stream) {
-	return stream->eof;
+	flockfile(stream);
+	int eof = stream->eof;
+	funlockfile(stream);
+	return eof;
 }

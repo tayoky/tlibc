@@ -17,16 +17,24 @@ int fflush(FILE *stream) {
 		}
 		return 0;
 	}
+	flockfile(stream);
 	stream->unget = EOF;
-	if (stream->buftype == _IONBF || !stream->write_pos) return 0;
+	if (stream->buftype == _IONBF || !stream->write_pos) {
+		funlockfile(stream);
+		return 0;
+	}
 	char *buf = stream->buf;
 	size_t count = stream->write_pos - stream->buf;
 	while (count > 0) {
 		ssize_t w = __do_write(stream, buf, count);
-		if (w <= 0) return EOF;
+		if (w <= 0) {
+			funlockfile(stream);
+			return EOF;
+		}
 		buf += w;
 	}
 	stream->write_pos = stream->write_end = NULL;
 	stream->read_pos  = stream->read_end  = NULL;
+	funlockfile(stream);
 	return 0;
 }

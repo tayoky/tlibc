@@ -2,5 +2,8 @@
 #include <stdio.h>
 
 int ferror(FILE *stream) {
-	return stream->error;
+	flockfile(stream);
+	int error = stream->error;
+	funlockfile(stream);
+	return error;
 }

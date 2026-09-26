@@ -82,6 +82,13 @@ int putchar(int c);
 int fputs(const char *string, FILE *stream);
 int puts(const char *string);
 
+
+#if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199309L
+void flockfile(FILE *filehandle);
+int ftrylockfile(FILE *filehandle);
+void funlockfile(FILE *filehandle);
+#endif
+
 void clearerr(FILE *stream);
 int feof(FILE *stream);
 int ferror(FILE *stream);

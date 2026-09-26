@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-ssize_t __fileio_read(FILE *stream, void *buf, size_t count) {
+ssize_t __fileio_read_unlocked(FILE *stream, void *buf, size_t count) {
 	if (!stream) {
 		return __set_errno(-EBADF);
 	}

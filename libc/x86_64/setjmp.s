@@ -1,8 +1,9 @@
-.section .text
-
 .globl setjmp
+.globl _setjmp
 .type setjmp @function
+.type _setjmp @function
 setjmp:
+_setjmp:
 	//save callee saved register
 	movq %rsp, 8(%rdi)
 	movq %rbp, 16(%rdi)
@@ -20,10 +21,14 @@ setjmp:
 	xor %rax, %rax
 	ret
 .size setjmp, .-setjmp
+.size _setjmp, .-_setjmp
 
 .globl longjmp
+.globl _longjmp
 .type longjmp @function
+.type _longjmp @function
 longjmp:
+_longjmp:
 	//if rsi is 0 set it to 1
 	cmp $0, %rsi
 	jne skip
@@ -46,6 +51,7 @@ longjmp:
 	mov (%rdi), %rsi
 	jmp *%rsi
 .size longjmp, .-longjmp
+.size _longjmp, .-_longjmp
 
 .globl sigsetjmp
 .type sigsetjmp @function

@@ -23,5 +23,7 @@ int setjmp(jmp_buf env);
 void longjmp(jmp_buf env, int value);
 int sigsetjmp(sigjmp_buf env, int savemask);
 void siglongjmp(sigjmp_buf env, int value);
+int _setjmp(jmp_buf env);
+void _longjmp(jmp_buf env, int val);
 
 #endif

@@ -1,6 +1,9 @@
 .globl setjmp
+.globl _setjmp
 .type setjmp @function
+.type _setjmp @function
 setjmp:
+_setjmp:
 	//save return address
 	str lr, [x0]
 
@@ -23,10 +26,14 @@ setjmp:
 	mov x0, xzr
 	ret
 .size setjmp, .-setjmp
+.size _setjmp, .-_setjmp
 
 .globl longjmp
+.globl _longjmp
 .type longjmp @function
+.type _longjmp @function
 longjmp:
+_longjmp:
 	//if x1 is 0 set it to 1
 	cmp x1, xzr
 	bne skip
@@ -55,6 +62,7 @@ longjmp:
 	mov x0, x1
 	ret
 .size longjmp, .-longjmp
+.size _longjmp, .-_longjmp
 
 .globl sigsetjmp
 .type sigsetjmp @function

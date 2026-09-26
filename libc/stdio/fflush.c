@@ -19,19 +19,26 @@ int fflush(FILE *stream) {
 	}
 	flockfile(stream);
 	stream->unget = EOF;
-	if (stream->buftype == _IONBF || !stream->write_pos) {
+	if (stream->buftype == _IONBF) {
 		funlockfile(stream);
 		return 0;
 	}
-	char *buf = stream->buf;
-	size_t count = stream->write_pos - stream->buf;
-	while (count > 0) {
-		ssize_t w = __do_write(stream, buf, count);
-		if (w <= 0) {
-			funlockfile(stream);
-			return EOF;
+
+	if (stream->write_pos) {
+		char *buf = stream->buf;
+		size_t count = stream->write_pos - stream->buf;
+		while (count > 0) {
+			ssize_t w = __do_write(stream, buf, count);
+			if (w <= 0) {
+				funlockfile(stream);
+				return EOF;
+			}
+			buf += w;
 		}
-		buf += w;
+	} else if (stream->read_pos) {
+		// seek back the data we didn't read
+		size_t readahead = stream->read_end - stream->read_pos;
+		lseek(stream->fd, SEEK_CUR, -readahead);
 	}
 	stream->write_pos = stream->write_end = NULL;
 	stream->read_pos  = stream->read_end  = NULL;

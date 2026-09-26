@@ -5,10 +5,6 @@
 #include <unistd.h>
 
 ssize_t __fileio_write_unlocked(FILE *stream, const void *buf, size_t count) {
-	if (!stream) {
-		return __set_errno(-EBADF);
-	}
-
 	if (stream->buftype == _IONBF) {
 		return __do_write(stream, buf, count);
 	}

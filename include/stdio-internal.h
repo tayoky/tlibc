@@ -24,6 +24,7 @@ struct _FILE{
 	size_t lock_count;
 };
 
+ssize_t __do_read(FILE *stream, char *buf, size_t count);
 ssize_t __do_write(FILE *stream, const char *buf, size_t count);
 ssize_t __fileio_read(FILE *stream, void *buf, size_t count);
 ssize_t __fileio_read_unlocked(FILE *stream, void *buf, size_t count);

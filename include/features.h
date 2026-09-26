@@ -1,6 +1,13 @@
 #ifndef _FEATURES_H
 #define _FEATURES_H
 
+// see if we can use fast inline functions
+#if defined(__OPTIMIZE__) && !defined(__NO_INLINE__) && !defined(TLIBC_NO_FAST_INLINES)
+#undef  TLIBC_FAST_INLINES
+#define TLIBC_FAST_INLINES 1
+#endif
+
+
 // deprecated
 #if (defined( _BSD_SOURCE) || defined(_SVID_SOURCE)) && !defined(_DEFAULT_SOURCE)
 # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"

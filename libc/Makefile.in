@@ -5,4 +5,5 @@ include $(TMAKE_DIR)/tlibc-sysdeps.mk
 LIB = c
 DIRS = ctype libgen libintl time stdlib string wchar stdio unistd locale pwd pthread dl fcntl sys signal $(ARCH)
 SRCS += $(foreach DIR,$(DIRS), $(wildcard $(SRCDIR)/$(DIR)/*.[cs])) $(wildcard $(SRCDIR)/*.c)
+CFLAGS += -DTLIBC_NO_FAST_INLINE=1
 include $(TMAKE_DIR)/tmake-lib.mk

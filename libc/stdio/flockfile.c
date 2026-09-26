@@ -16,6 +16,6 @@ void flockfile(FILE *filehandle) {
 			filehandle->lock_count++;
 			return;
 		}
-		if (sys_futex_wait(&filehandle->thread, expected) < 0 && errno != EAGAIN);
+		sys_futex_wait(&filehandle->thread, expected);
 	}
 }

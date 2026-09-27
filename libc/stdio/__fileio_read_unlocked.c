@@ -37,7 +37,7 @@ ssize_t __fileio_read_unlocked(FILE *stream, void *buf, size_t count) {
 			size_t readahead = stream->read_end - stream->read_pos;
 			size_t chunk_size = readahead < count ? readahead : count;
 
-			memcpy(buf, stream->buf, chunk_size);
+			memcpy(buf, stream->read_pos, chunk_size);
 			buf = (char *)buf + chunk_size;
 			count -= chunk_size;
 			total += chunk_size;

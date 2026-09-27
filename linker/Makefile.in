@@ -15,7 +15,7 @@ DL_DEPS = tlibc.c stub.c auxv.c cxa.c uthread.c sys_arch_get_tls.s open.c errno.
 	exit.c getenv.c
 
 CFLAGS += -I$(SRCDIR)
-CFLAGS += -D__LD_TLIBC__=1 -fPIC -mgeneral-regs-only -fvisibility=hidden
+CFLAGS += -D__LD_TLIBC__=1 -fPIC -mgeneral-regs-only -fvisibility=hidden -DTLIBC_NO_FAST_INLINES=1
 LDFLAGS += -static-libgcc -Wl,--no-dynamic-linker,-z,now,-Bsymbolic,-e,_start
 
 # the dynamic linker need to be execuable

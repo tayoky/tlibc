@@ -22,6 +22,7 @@ CFLAGS += -Wall \
 	-D$(ARCH)=1 \
 	-D__TLIBC__=1 \
 	-D_TLIBC_SOURCE=1 \
+	-DTLIBC_NO_FAST_INLINES=1
 
 LDFLAGS += -Wl,--gc-sections
 

@@ -61,6 +61,19 @@
 #define _POSIX_C_SOURCE 200809L
 #undef  _POSIX_SOURCE
 #define _POSIX_SOURCE 1
+#elif defined(_XOPEN_SOURCE) && _XOPEN_SOURCE
+#undef  _POSIX_C_SOURCE
+#if _XOPEN_SOURCE >= 700
+#define _POSIX_C_SOURCE 200809L
+#elif _XOPEN_SOURCE >= 600
+#define _POSIX_C_SOURCE 200112L
+#elif _XOPEN_SOURCE >= 500
+#define _POSIX_C_SOURCE 199506L
+#else
+#define _POSIX_C_SOURCE 2
+#endif
+#undef  _POSIX_SOURCE
+#define _POSIX_SOURCE 1
 #endif
 
 // trigger the ISO C for POSIX source above 2001

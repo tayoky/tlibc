@@ -39,6 +39,7 @@ wchar_t *wcscat(wchar_t *dest,const wchar_t *src);
 int wcscmp(const wchar_t *ws1,const wchar_t *ws2);
 int wcscoll(const wchar_t *ws1,const wchar_t *ws2);
 wchar_t *wcschr(const wchar_t *ws,wchar_t wc);
+wchar_t *wcsrchr(const wchar_t *ws,wchar_t wc);
 wchar_t *wcsstr(const wchar_t *ws1,const wchar_t *ws2);
 wchar_t *wcscpy(wchar_t *dest,const wchar_t *src);
 size_t wcslen(const wchar_t *ws);

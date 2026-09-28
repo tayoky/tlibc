@@ -1,6 +1,7 @@
 #ifndef _MATH_H
 #define _MATH_H
 
+#include <features.h>
 #include <limits.h>
 #include <float.h>
 
@@ -93,7 +94,14 @@ ifunc(long, lrint)
 ifunc(long long, llrint)
 
 ffunc(sqrt)
+
+#if (defined(_ISOC99_SOURCE) && _ISOC99_SOURCE) || \
+	(defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || \
+	(defined(_XOPEN_SOURCE) && _XOPEN_SOURCE) || \
+	(defined(_DEFAULT_SOURCE) && _DEFAULT_SOURCE)
 ffunc(erf)
+ffunc(erfc)
+#endif
 
 ffunc(log)
 ffunc(log2)

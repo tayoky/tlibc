@@ -25,7 +25,7 @@ ssize_t __fileio_write_unlocked(FILE *stream, const void *buf, size_t count) {
 				need_flush = 0;
 				size_t pending = stream->write_pos - stream->buf;
 				ret = __do_write(stream, stream->buf, pending);
-				if (ret < pending) break;
+				if (ret < (ssize_t)pending) break;
 			}
 			stream->write_pos = stream->buf;
 			stream->write_end = stream->buf + stream->buf_size;

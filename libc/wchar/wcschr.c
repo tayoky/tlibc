@@ -5,6 +5,6 @@ wchar_t *wcschr(const wchar_t *ws, wchar_t wc) {
 		if (*ws == wc) return (wchar_t *)ws;
 		ws++;
 	}
-	if (wc == 0) return ws;
+	if (wc == 0) return (wchar_t *)ws;
 	return NULL;
 }

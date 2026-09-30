@@ -6,6 +6,6 @@ wchar_t *wcsrchr(const wchar_t *ws, wchar_t wc) {
 		if (*ws == wc) best = (wchar_t *)ws;
 		ws++;
 	}
-	if (wc == 0) return ws;
+	if (wc == 0) return (wchar_t *)ws;
 	return best;
 }

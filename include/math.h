@@ -95,10 +95,10 @@ ifunc(long long, llrint)
 
 ffunc(sqrt)
 
-#if (defined(_ISOC99_SOURCE) && _ISOC99_SOURCE) || \
+#if defined(_ISOC99_SOURCE) || \
 	(defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || \
 	(defined(_XOPEN_SOURCE) && _XOPEN_SOURCE) || \
-	(defined(_DEFAULT_SOURCE) && _DEFAULT_SOURCE)
+	defined(_DEFAULT_SOURCE)
 ffunc(erf)
 ffunc(erfc)
 #endif
@@ -110,10 +110,10 @@ ffunc(log10)
 ffunc(exp)
 ffunc(exp2)
 
-#if (defined(_ISOC99_SOURCE) && _ISOC99_SOURCE) || \
+#if defined(_ISOC99_SOURCE) || \
 	(defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || \
 	(defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || \
-	(defined(_DEFAULT_SOURCE) && _DEFAULT_SOURCE)
+	defined(_DEFAULT_SOURCE)
 ffunc(log1p)
 ffunc(expm1)
 #endif

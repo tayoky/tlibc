@@ -75,7 +75,7 @@ char *realpath(const char *path, char *resolved_path);
 
 //environement variables
 
-#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE) || (defined(_DEFAULT_SOURCE) && _DEFAULT_SOURCE)
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE) || defined(_DEFAULT_SOURCE)
 int putenv(char *str);
 #endif
 char *getenv(const char *name);

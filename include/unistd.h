@@ -63,7 +63,7 @@ int syncfs(int fd);
 void sync(void);
 
 unsigned int sleep(unsigned int seconds);
-#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500 && !(defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE >= 200809L)) || (defined(_DEFAULT_SOURCE) && _DEFAULT_SOURCE)
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500 && !(defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE >= 200809L)) || defined(_DEFAULT_SOURCE)
 int usleep(useconds_t usec);
 #endif
 
@@ -80,7 +80,7 @@ int execle(const char *pathname, const char *arg, ... /*, (char *) NULL, char *c
 int execv(const char *pathname, char *const argv[]);
 int execvp(const char *file, char *const argv[]);
 int execve(const char *pathname, char *const argv[], char *const envp[]);
-#if defined(_GNU_SOURCE) && _GNU_SOURCE
+#if defined(_GNU_SOURCE)
 int execvpe(const char *file, char *const argv[], char *const envp[]);
 #endif
 
@@ -91,7 +91,7 @@ int chdir(const char *path);
 #if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L)
 int fchdir(int fd);
 #endif
-#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE && !(defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE >= 200112L)) || _DEFAULT_SOURCE
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE && !(defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE >= 200112L)) || defined(_DEFAULT_SOURCE)
 int chroot(const char *path);
 #endif
 
@@ -112,7 +112,7 @@ int setpgid(pid_t pid, pid_t pgid);
 pid_t getpgid(pid_t pid);
 #endif
 pid_t getpgrp(void);
-#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || (defined(_DEFAULT_SOURCE) && _DEFAULT_SOURCE)
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || defined(_DEFAULT_SOURCE)
 int setpgrp(void);
 #endif
 pid_t getsid(void);
@@ -141,7 +141,7 @@ long pathconf(const char *pathname, int varcode);
 
 long sysconf(int name);
 
-#if (defined(_DEFAULT_SOURCE) && _DEFAULT_SOURCE)
+#if defined(_DEFAULT_SOURCE)
 long syscall(long number, ...);
 #endif
 
@@ -289,7 +289,7 @@ int getopt(int argc, char *const *argv, const char *optstring);
 #define NULL ((void*)0)
 #endif
 
-#if defined(_GNU_SOURCE) && _GNU_SOURCE
+#if defined(_GNU_SOURCE)
 extern char **environ;
 #endif
 extern int optind;

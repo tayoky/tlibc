@@ -17,7 +17,7 @@ struct tm {
 	int tm_isdst;        // DST.     [-1/0/1]
 
 
-#if defined(_DEFAULT_SOURCE) && _DEFAULT_SOURCE
+#if defined(_DEFAULT_SOURCE)
 	long int tm_gmtoff;  // Seconds east of UTC.  
 	const char *tm_zone; // STimezone abbreviation.SS
 #else
@@ -51,7 +51,7 @@ size_t strftime(char *, size_t, const char *, const struct tm *);
 size_t strftime_l(char *buf, size_t size, const char *fmt, const struct tm *tm,locale_t locale);
 
 
-#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE) || (defined(_DEFAULT_SOURCE) && _DEFAULT_SOURCE)
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE) || defined(_DEFAULT_SOURCE)
 extern long timezone;
 extern int daylight;
 #endif

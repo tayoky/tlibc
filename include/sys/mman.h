@@ -10,7 +10,7 @@
 void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
 int munmap(void *addr, size_t length);
 int mprotect(void *addr, size_t size, int prot);
-#if defined(_DEFAULT_SOURCE) && _DEFAULT_SOURCE
+#if defined(_DEFAULT_SOURCE)
 #define MADV_NORMAL     0
 #define MADV_RANDOM     1
 #define MADV_SEQUENTIAL 2

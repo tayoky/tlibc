@@ -8,7 +8,10 @@ DOCSDIR = $(DOCDIR)/$(PACKAGE)
 FILESGROUPS += DOCS
 include $(TMAKE_DIR)/tmake-files.mk
 
-SUBDIRS = include libk libc libm linker stub crt
+SUBDIRS = include libc libm linker stub crt
+ifeq ($(LIBK),yes)
+	SUBDIRS += libk
+endif
 include $(TMAKE_DIR)/tmake-subdir.mk
 
 # dependency

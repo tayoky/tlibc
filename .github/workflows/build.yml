@@ -19,7 +19,7 @@ jobs:
       run: sudo apt install gettext
 
     - name: Configure
-      run: mkdir -p sysroot/usr build && cd build && ../configure --prefix=../sysroot/usr --enable-shared
+      run: mkdir -p sysroot/usr build && cd build && ../configure --prefix=../sysroot/usr --enable-shared --enable-libk
 
     - name: Install headers
       run: make -C build install-include

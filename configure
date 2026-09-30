@@ -5,9 +5,10 @@
 # defaults
 : ${STATIC:=yes}
 : ${SHARED:=no}
+: ${LIBK:=no}
 : ${SYSROOT=./sysroot}
 
-OPTIONS="STATIC SHARED"
+OPTIONS="STATIC SHARED LIBK"
 
 tconf_init "$@"
 

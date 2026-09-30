@@ -1,6 +1,6 @@
 # a collection of various utilities to make configure scripts
 
-TCONF_VERSION="0.2.1"
+TCONF_VERSION="0.2.3"
 
 tconf_print () {
 	echo "$@" 1>&2
@@ -24,6 +24,10 @@ tconf_to_file_name () {
 
 tconf_to_option_name () {
 	echo "$@" | tr "A-Z_" "a-z-"
+}
+
+tconf_to_lowercase () {
+	echo "$@" | tr "A-Z" "a-z"
 }
 
 tconf_help () {
@@ -469,7 +473,51 @@ tconf_search_pkgconfig () {
 		tconf_print "usage : tconf_search_pkgconfig PREFIX"
 		return 1
 	fi
-	tconf_search_util PKGCONFIG "pkg-config" "$1" pkg-config
+	tconf_search_util PKGCONFIG "pkg-config" "$1" pkgconf pkg-config
+}
+
+tconf_guess_build () {
+	BUILD_MACHINE="$(uname -m || echo unknown)"
+	BUILD_SYSTEM="$(uname -s || echo unknown)"
+	BUILD_OS="$(uname -o || echo unknown)"
+
+	case "$BUILD_MACHINE" in
+		amd64|x64)
+			BUILD_MACHINE="x86_64"
+			;;
+		arm64)
+			BUILD_MACHINE="aarch64"
+			;;
+	esac
+
+	case "$BUILD_MACHINE:$BUILD_SYSTEM:$BUILD_OS" in
+		*:*:Android)
+			GUESS="$BUILD_MACHINE-unknown-$BUILD_SYSTEM-android"
+			;;
+		*:*:GNU|*:*:GNU/*)
+			# GNU or GNU variants
+			GUESS="$BUILD_MACHINE-unknown-$BUILD_SYSTEM-gnu"
+			;;
+		*:Linux:*)
+			GUESS="$BUILD_MACHINE-unknown-linux"
+			;;
+	    x86_64:[Mm]anagarm:*|i?86:[Mm]anagarm:*)
+			GUESS="$BUILD_MACHINE-pc-managarm-mlibc"
+			;;
+		*:[Mm]anagarm:*)
+			GUESS="$BUILD_MACHINE-unknown-managarm-mlibc"
+			;;
+		*:[Ss]tanix:*)
+			GUESS="$BUILD_MACHINE-pc-$BUILD_SYSTEM"
+			;;
+		x86_64:*:*|i?86:*:*)
+			GUESS="$BUILD_MACHINE-pc-$BUILD_SYSTEM"
+			;;
+		*)
+			GUESS="$BUILD_MACHINE-unknown-$BUILD_SYSTEM"
+			;;
+	esac
+	tconf_to_lowercase "$GUESS"
 }
 
 tconf_find_build () {
@@ -482,13 +530,19 @@ tconf_find_build () {
 		tconf_print "$BUILD"
 		return 0
 	fi
-	tconf_print "unknown"
+	BUILD="$(tconf_guess_build)"
+	tconf_print "$BUILD"
 	return 1
 }
 
 tconf_find_host () {
 	tconf_print -n "host os... "
 	if test -n "$HOST" ; then
+		tconf_print "$HOST"
+		return 0
+	fi
+	if test -n "$BUILD" ; then
+		HOST="$BUILD"
 		tconf_print "$HOST"
 		return 0
 	fi

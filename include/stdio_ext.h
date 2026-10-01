@@ -6,8 +6,10 @@
 size_t __fbufsize(FILE *stream);
 size_t __fpending(FILE *stream);
 size_t __freadahead(FILE *stream);
+int __flbf(FILE *stream);
 int __freading(FILE *stream);
 int __fwriting(FILE *stream);
 void  __fpurge(FILE *stream);
+void __fseterr(FILE *stream);
 
 #endif

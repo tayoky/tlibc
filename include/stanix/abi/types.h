@@ -6,6 +6,7 @@
 typedef long pid_t;
 typedef long uid_t;
 typedef long gid_t;
+typedef long id_t;
 typedef long mode_t;
 typedef long nlink_t ;
 

@@ -25,6 +25,8 @@ struct winsize;
 struct termios;
 struct dirent;
 struct stat;
+struct rlimit;
+struct rusage;
 
 typedef TLIBC_FUTEX_TYPE futex_val_t;
 typedef _Atomic(TLIBC_FUTEX_TYPE) futex_atomic_t;
@@ -101,6 +103,13 @@ SYSDEP void *sys_mmap(void *addr, size_t length, int prot, int flags, int fd, of
 SYSDEP int sys_munmap(void *addr, size_t length);
 SYSDEP int sys_mprotect(void *addr, size_t size, int prot);
 SYSDEP int sys_madvise(void *addr, size_t size, int advice);
+
+// process management
+SYSDEP int sys_getpriority(int which, id_t who);
+SYSDEP int sys_setpriority(int which, id_t who, int value);
+SYSDEP int sys_getrlimit(int resource, struct rlimit *rlp);
+SYSDEP int sys_setrlimit(int resource, const struct rlimit *rlp);
+SYSDEP int sys_getrusage(int who, struct rusage *r_usage);
 SYSDEP pid_t sys_getpid(void);
 SYSDEP pid_t sys_getpgid(pid_t pid);
 SYSDEP int sys_setpgid(pid_t pid, pid_t pgid);
@@ -110,11 +119,14 @@ SYSDEP pid_t sys_fork(void);
 SYSDEP int sys_execve(const char *pathname, char *const *argv, char *const *envp);
 SYSDEP TLIBC_NORETURN void sys_exit(int status);
 SYSDEP pid_t sys_waitpid(pid_t pid, int *status, int options);
+
+// time management
 SYSDEP int sys_clock_gettime(clockid_t clockid, struct timespec *tp);
 SYSDEP int sys_clock_settime(clockid_t clockid, const struct timespec *tp);
 SYSDEP int sys_usleep(useconds_t usec);
 SYSDEP int sys_nanosleep(const struct timespec *duration, struct timespec *rem);
 
+// signal management
 SYSDEP sighandler_t sys_signal(int signum, sighandler_t handler);
 SYSDEP int sys_sigaction(int signum, const struct sigaction *act, struct sigaction *oldact);
 SYSDEP int sys_kill(pid_t pid, int sig);

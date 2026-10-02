@@ -132,6 +132,7 @@ int *__errno_location(void);
 static inline int __set_errno(int ret){ 
 	if(ret < 0){
 		errno = -ret;
+		return -1;
 	}
 	return ret;
 }

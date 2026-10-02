@@ -63,5 +63,6 @@ wint_t towlower(wint_t wc);
 int iswupper(wint_t wc);
 int iswlower(wint_t wc);
 int iswcntrl(wint_t wc);
+int iswspace(wint_t wc);
 
 #endif

@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <sysdeps.h>
 
 static struct group _gbuf;
 static char _buf[1048];
@@ -146,4 +147,8 @@ struct group *getgrnam(const char *name) {
 	struct group *gbufp;
 	getgrnam_r(name, &_gbuf, _buf, sizeof(_buf), &gbufp);
 	return gbufp;
+}
+
+int setgroups(size_t size, const gid_t *list) {
+	return sys_setgroups(size, list);
 }

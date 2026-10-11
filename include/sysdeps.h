@@ -144,9 +144,11 @@ SYSDEP uid_t sys_getuid(void);
 SYSDEP uid_t sys_geteuid(void);
 SYSDEP gid_t sys_getgid(void);
 SYSDEP gid_t sys_getegid(void);
+SYSDEP int sys_getgroups(int size, gid_t *list);
 SYSDEP int sys_setuid(uid_t uid);
 SYSDEP int sys_seteuid(uid_t uid);
 SYSDEP int sys_setgid(gid_t gid);
 SYSDEP int sys_setegid(gid_t gid);
+SYSDEP int sys_setgroups(size_t size, const gid_t *list);
 
 #endif

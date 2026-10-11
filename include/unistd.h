@@ -133,6 +133,7 @@ gid_t getgid(void);
 gid_t getegid(void);
 char *getlogin(void);
 int getlogin_r(char *buf, size_t bufsize);
+int getgroups(int size, gid_t *list);
 
 void sync(void);
 

@@ -24,4 +24,6 @@ int getgrent_r(struct group *gbuf, char *buf, size_t size, struct group **gbufp)
 struct group *fgetgrent(FILE *stream);
 int fgetgrent_r(FILE *stream, struct group *gbuf, char *buf, size_t size, struct group **gbufp);
 
+int setgroups(size_t size, const gid_t *list);
+
 #endif

@@ -3,9 +3,6 @@
 
 #include <sys/types.h>
 
-// deprecated, use BLOCK_GET_DISK_INFO instead
-#define BLOCK_GET_SIZE     17000
-
 #define BLOCK_GET_DISK_INFO 17001
 #define BLOCK_RESCAN_PARTS  17002
 #define BLOCK_GET_PART_INFO 17003

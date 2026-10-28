@@ -46,7 +46,7 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 		}
 
 		if (filesz > 0) {
-			if (mmap((void *)vaddr, filesz, PROT_WRITE, MAP_PRIVATE | MAP_FIXED, file, offset) == MAP_FAILED) {
+			if (mmap((void *)vaddr, filesz, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_FIXED, file, offset) == MAP_FAILED) {
 				return dl_error("mmap failed");
 			}
 			// zero the last page
@@ -58,7 +58,7 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 		if (memsz > filesz) {
 			// we need to fill with anonymous mapping
 			vaddr += filesz;
-			if (mmap((void *)vaddr, memsz - filesz, PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) == MAP_FAILED) {
+			if (mmap((void *)vaddr, memsz - filesz, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) == MAP_FAILED) {
 				// remove the aready mapped part
 				munmap((void *)(vaddr - filesz), filesz);
 				return dl_error("mmap failed");
@@ -67,7 +67,7 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 	} else {
 		size_t memsz = PAGE_ALIGN_UP(pheader->p_memsz + vaddr_off);
 
-		if (mmap((void *)vaddr, memsz, PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) == MAP_FAILED) {
+		if (mmap((void *)vaddr, memsz, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0, 0) == MAP_FAILED) {
 			return dl_error("mmap failed");
 		}
 

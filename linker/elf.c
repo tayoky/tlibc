@@ -87,6 +87,7 @@ static int map_segment(struct elf_object *object, int file, Elf_Phdr *pheader) {
 
 static int set_protections(struct elf_object *object) {
 	for (size_t i = 0; i < object->phdrs_count; i++) {
+		if (object->phdrs[i].p_type != PT_LOAD) continue;
 		int prot = 0;
 		if (object->phdrs[i].p_flags & PF_R) {
 			prot |= PROT_READ;
@@ -99,7 +100,8 @@ static int set_protections(struct elf_object *object) {
 		}
 		uintptr_t start = PAGE_ALIGN_DOWN(object->phdrs[i].p_vaddr + object->addr);
 		uintptr_t end = PAGE_ALIGN_UP(object->phdrs[i].p_vaddr + object->addr + object->phdrs[i].p_memsz);
-		mprotect((void *)start, end - start, prot);
+		int ret = mprotect((void *)start, end - start, prot);
+		if (ret < 0) return ret;
 	}
 	return 0;
 }

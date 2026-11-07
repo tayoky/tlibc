@@ -29,41 +29,42 @@ typedef struct mo_desc {
 	uint32_t offset;
 } __attribute__((packed)) mo_desc_t;
 
-struct text_domain {
-	char *data;
+typedef struct mo_file {
 	size_t size;
-	char *dir;
-	char *codepoint;
-	char *name;
+	char *data;
 	mo_desc_t *orig_table;
 	mo_desc_t *trans_table;
 	uint32_t *hash_table;
-};
+} mo_file_t;
+
+typedef struct text_domain {
+	char *dir;
+	char *codepoint;
+	char *name;
+	mo_file_t files[LC_ALL];
+} text_domain_t;
 
 #define MO_MAGIC 0x950412de
 
-static struct text_domain *domains[LC_ALL] = {0};
-static size_t domains_count[LC_ALL] = {0};
+static text_domain_t *domains;
+static size_t domains_count;
 static char global_domain[256] = "messages";
 
-static struct text_domain *get_domain(const char *domainname, int category) {
-	if (category < 0 || category >= LC_ALL) {
-		return NULL;
-	}
+static text_domain_t *get_domain(const char *domainname) {
 	if (!domainname) {
 		domainname = global_domain;
 	}
-	for (size_t i=0; i<domains_count[category]; i++) {
-		if (!strcmp(domains[category][i].name, domainname)) {
-			return &domains[category][i];
+	for (size_t i=0; i<domains_count; i++) {
+		if (!strcmp(domains[i].name, domainname)) {
+			return &domains[i];
 		}
 	}
-	struct text_domain *new_domains = realloc(domains[category], sizeof(struct text_domain) * (domains_count[category] + 1));
+	text_domain_t *new_domains = realloc(domains, sizeof(struct text_domain) * (domains_count + 1));
 	if (!new_domains) return NULL;
-	domains[category] = new_domains;
-	memset(&domains[category][domains_count[category]], 0, sizeof(struct text_domain));
-	domains[category][domains_count[category]].name = strdup(domainname);
-	return &domains[category][domains_count[category]++];
+	domains = new_domains;
+	memset(&domains[domains_count], 0, sizeof(struct text_domain));
+	domains[domains_count].name = strdup(domainname);
+	return &domains[domains_count++];
 }
 
 static const char *category2str(int category) {
@@ -83,11 +84,17 @@ static const char *get_locale(int category) {
 	return name;
 }
 
-static int load_domain(struct text_domain *domain, int category) {
-	if (domain->data) {
-		//already loaded
-		return 0;
+static mo_file_t *load_domain(text_domain_t *domain, int category) {
+	if (category < 0 || category >= LC_ALL) {
+		return NULL;
 	}
+
+	mo_file_t *file = &domain->files[category];
+	if (file->data) {
+		// already loaded
+		return file;
+	}
+
 	const char *locale_name = get_locale(category);
 	char locale[64] = {0};
 	strncpy(locale, locale_name, sizeof(locale)-1);
@@ -102,7 +109,7 @@ static int load_domain(struct text_domain *domain, int category) {
 		snprintf(path, sizeof(path), "%s/%s/%s/%s.mo", dir, locale, category2str(category), domain->name);
 		fd = open(path, O_RDONLY);
 	}
-	if (fd < 0) return -1;
+	if (fd < 0) return NULL;
 
 	mo_header_t header = {0};
 	if (read(fd, &header, sizeof(mo_header_t)) < (ssize_t)sizeof(mo_header_t)) goto err_close;
@@ -136,27 +143,29 @@ static int load_domain(struct text_domain *domain, int category) {
 		goto err_close;
 	}
 
-	domain->size = buf.st_size;
-	domain->data = mmap(NULL, domain->size, PROT_READ, MAP_PRIVATE, fd, 0);
+	file->size = buf.st_size;
+	file->data = mmap(NULL, file->size, PROT_READ, MAP_PRIVATE, fd, 0);
 	close(fd);
-	if (domain->data == MAP_FAILED) {
-		return -1;
-	}
-	domain->orig_table  = (mo_desc_t*)(domain->data + header.orig_table_offset);
-	domain->trans_table = (mo_desc_t*)(domain->data + header.trans_table_offset);
-	domain->hash_table  = (uint32_t*)(domain->data + header.hash_offset);
-	return 0;
-err_close:
-	close(fd);
-	return -1;
-}
-
-static const char *get_str(struct text_domain *domain, mo_desc_t *table, size_t index) {
-	mo_desc_t *desc = &table[index];
-	if (desc->offset + desc->length + 1 > domain->size) {
+	if (file->data == MAP_FAILED) {
+		file->data = NULL;
 		return NULL;
 	}
-	const char *str = domain->data + desc->offset;
+	file->orig_table  = (mo_desc_t*)(file->data + header.orig_table_offset);
+	file->trans_table = (mo_desc_t*)(file->data + header.trans_table_offset);
+	file->hash_table  = (uint32_t*)(file->data + header.hash_offset);
+	return file;
+
+err_close:
+	close(fd);
+	return NULL;
+}
+
+static const char *get_str(mo_file_t *file, mo_desc_t *table, size_t index) {
+	mo_desc_t *desc = &table[index];
+	if (desc->offset + desc->length + 1 > file->size) {
+		return NULL;
+	}
+	const char *str = file->data + desc->offset;
 	if (str[desc->length] != '\0') {
 		return NULL;
 	}
@@ -178,18 +187,18 @@ uint32_t hash_pjw(const char *str) {
 	return hval;
 }
 
-static const char *bsearch_lookup(struct text_domain *domain, const char *msgid) {
-	mo_header_t *header = (mo_header_t*)domain->data;
+static const char *bsearch_lookup(mo_file_t *data, const char *msgid) {
+	mo_header_t *header = (mo_header_t*)data->data;
 	if (header->num_strings == 0) return NULL;
 	size_t start = 0;
 	size_t end = header->num_strings - 1;
 	while (end >= start) {
 		size_t i = (start + end) / 2;
-		const char *candidate = get_str(domain, domain->orig_table, i);
+		const char *candidate = get_str(data, data->orig_table, i);
 		if (!candidate) break;
 		int cmp = strcmp(candidate, msgid);
 		if (cmp == 0) {
-			return get_str(domain, domain->trans_table, i);
+			return get_str(data, data->trans_table, i);
 		} else if (cmp < 0) {
 			start = i + 1;
 		} else {
@@ -200,41 +209,42 @@ static const char *bsearch_lookup(struct text_domain *domain, const char *msgid)
 	return NULL;
 }
 
-static const char *hash_lookup(struct text_domain *domain, const char *msgid) {
-	mo_header_t *header = (mo_header_t*)domain->data;
+static const char *hash_lookup(mo_file_t *data, const char *msgid) {
+	mo_header_t *header = (mo_header_t*)data->data;
 	uint32_t hash = hash_pjw(msgid);
 	uint32_t index = hash % header->hash_size;
 	uint32_t incr = 1 + (hash % (header->hash_size - 2));
 	size_t max_iter = header->hash_size;
-	while (domain->hash_table[index] && (max_iter--) > 0) {
-		size_t str_idx = domain->hash_table[index] - 1;
+	while (data->hash_table[index] && (max_iter--) > 0) {
+		size_t str_idx = data->hash_table[index] - 1;
 		if (str_idx >= header->num_strings) return NULL;
-		const char *candidate = get_str(domain, domain->orig_table, str_idx);
+		const char *candidate = get_str(data, data->orig_table, str_idx);
 		if (!candidate) return NULL;
 		if (!strcmp(candidate, msgid)) {
-			return get_str(domain, domain->trans_table, str_idx);
+			return get_str(data, data->trans_table, str_idx);
 		}
 		index = (index + incr) % header->hash_size;
 	}
 	return NULL;
 }
 
-static const char *lookup_msgid(struct text_domain *domain, const char *msgid) {
-	mo_header_t *header = (mo_header_t*)domain->data;
+static const char *lookup_msgid(mo_file_t *file, const char *msgid, int category) {
+	mo_header_t *header = (mo_header_t*)file->data;
 	const char *msg;
 	if (header->hash_size <= 2) {
-		msg = bsearch_lookup(domain, msgid);
+		msg = bsearch_lookup(file, msgid);
 	} else {
-		msg = hash_lookup(domain, msgid);
+		msg = hash_lookup(file, msgid);
 	}
 	return msg ? msg : msgid;
 }
 
 char *dcgettext(const char *domainname, const char *msgid, int category) {
-	struct text_domain *domain = get_domain(domainname, category);
+	text_domain_t *domain = get_domain(domainname);
 	if (!domain) return (char*)msgid;
-	if (load_domain(domain, category) < 0) return (char *)msgid;
-	return (char *)lookup_msgid(domain, msgid);
+	mo_file_t *file = load_domain(domain, category);
+	if (!file) return (char *)msgid;
+	return (char *)lookup_msgid(file, msgid, category);
 }
 
 char *dcngettext(const char *domainname, const char *msgid1, const char *msgid2, unsigned long n, int category) {
@@ -247,4 +257,11 @@ char *textdomain(const char *domainname) {
 		snprintf(global_domain, sizeof(global_domain), "%s", domainname);
 	}
 	return global_domain;
+}
+
+char *bindtextdomain(const char *domainname, const char *dirname) {
+	text_domain_t *domain = get_domain(domainname);
+	if (!domain) return NULL;
+	if (dirname) domain->dir = (char*)dirname;
+	return domain->dir ? domain->dir : LOCALEDIR;
 }

@@ -7,6 +7,10 @@
 #define _Complex_I ((float _Complex){0.0f, 1.0f})
 #define I _Complex_I
 
+double cimag(double complex z);
+float cimagf(float complex z);
+long double cimagl(long double complex z);
+
 double creal(double complex z);
 float crealf(float complex z);
 long double creall(long double complex z);

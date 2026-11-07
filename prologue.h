@@ -1,5 +1,5 @@
-// THIS FILE COMES FROM TLIBC (GPL3 tayoky 2025-2026)
-// SEE https://github.com/tayoky/tlibc FOR LASTED VERSION
+// this file comes from tlibc (GPL3 tayoky 2025-2026)
+// see https://github.com/tayoky/tlibc for latest version
 
 #include <sys/cdefs.h>
 

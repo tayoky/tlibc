@@ -11,6 +11,10 @@ double cabs(double complex z);
 float cabsf(float complex z);
 long double cabsl(long double complex z);
 
+double carg(double complex z);
+float cargf(float complex z);
+long double cargl(long double complex z);
+
 double cimag(double complex z);
 float cimagf(float complex z);
 long double cimagl(long double complex z);

@@ -404,6 +404,26 @@ typedef struct {
 #define DT_LOPROC       0x70000000
 #define DT_HIPROC       0x7fffffff
 
+// note stuff
+
+typedef struct elf32_note {
+	Elf32_Word n_namesz;
+	Elf32_Word n_descsz;
+	Elf32_Word n_type;
+} Elf32_Nhdr;
+
+typedef struct elf64_note {
+	Elf64_Word n_namesz;
+	Elf64_Word n_descsz;
+	Elf64_Word n_type;
+} Elf64_Nhdr;
+
+#define NT_PRSTATUS 1
+#define NT_PRFPREG  2
+#define NT_PRPSINFO 3
+#define NT_AUXV     6
+#define NT_FILE     0x46494c45
+
 // auxiliary vector
 typedef struct {
 	long a_type;

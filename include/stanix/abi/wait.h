@@ -3,15 +3,30 @@
 
 // Stanix wait ABI
 
+#include <features.h>
+
 #define WNOHANG 0x01
 
-#define WIFEXITED(status)   (status & (1UL << 16))
-#define WIFSIGNALED(status) (status & (1UL << 17))
-#define WCOREDUMP(status)   (status & (1UL << 18))
-#define WIFSTOPPED(status)  (status & (1UL << 19))
+#define __WCOREFLAG 0x80
 
-#define WEXITSTATUS(status) (status & 0xFFFF)
-#define WTERMSIG WEXITSTATUS
-#define WSTOPSIG WEXITSTATUS
+#define WEXITSTATUS(x)  (((x) & 0xff00) >> 8)
+#define WTERMSIG(x)     ((x) & 0x7f)
+#define WSTOPSIG(x)     WEXITSTATUS(x)
+#define WIFEXITED(x)    (WTERMSIG(x) == 0)
+#define WIFSIGNALED(x)  (((signed char) (WTERMSIG(x) + 1) >> 1) > 0)
+#define WIFSTOPPED(x)   (((x) & 0xff) == 0x7f)
+#define WIFCONTINUED(x) ((x) == 0xffff)
+
+#ifdef _DEFAULT_SOURCE
+#define WCOREFLAG __WCOREFLAG
+#endif
+
+#if defined(_DEFAULT_SOURCE) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 202401)
+#define WCOREDUMP(x) ((x) & __WCOREFLAG)
+#endif
+
+#ifdef _DEFAULT_SOURCE
+#define W_EXITCODE(ret, sig) (((ret) << 8) | (sig))
+#endif
 
 #endif

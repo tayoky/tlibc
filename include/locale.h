@@ -96,4 +96,6 @@ locale_t newlocale(int mask, const char *locale, locale_t base);
 void freelocale(locale_t locale);
 locale_t uselocale(locale_t locale);
 struct __locale_data *__findlocale(const char *name);
+
+#define LC_GLOBAL_LOCALE ((locale_t)-1L)
 #endif

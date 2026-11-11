@@ -14,7 +14,7 @@ int isascii(int c);
 #endif
 
 int isspace(int c);
-#if defined(_ISOC99_SOURCE) || (defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE >= 200112L)
+#if defined(_ISOC99_SOURCE) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L)
 int isblank(int c);
 #endif
 

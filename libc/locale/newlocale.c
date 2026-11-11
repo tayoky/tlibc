@@ -1,24 +1,26 @@
-#include <locale.h>
+#include <locale-internal.h>
 #include <stdlib.h>
-
-extern struct __locale _locale;
+#include <string.h>
 
 locale_t newlocale(int mask, const char *locale, locale_t base) {
-	struct __locale_data *l = __findlocale(locale);
-	if (!l) return NULL;
-
 	if (base == NULL) {
-		base = malloc(sizeof(struct __locale));
-		base->allocated = 1;
-		for (int i = 0; i < LC_ALL; i++) {
-			base->locales[i] = &__posix;
-		}
+		// start over the C locale
+		base = (locale_t)&__c_locale;
+	};
+
+	if ((mask == LC_ALL_MASK && !strcmp(locale, "C")) || (mask == 0 && base == &__c_locale)) {
+		// the result of this operation would be the C locale
+		return (locale_t)&__c_locale;
 	}
 
-	for (int i = 0; i < LC_ALL; i++) {
-		if (mask & (1 << i)) {
-			base->locales[i] = l;
-		}
+	if (mask == 0) {
+		// nothing to change
+		locale_t ret = malloc(sizeof(struct __locale));
+		if (!ret) return NULL;
+		*ret = *base;
+		return ret;
 	}
-	return base;
+
+	// TODO : implement loading
+	return NULL;
 }

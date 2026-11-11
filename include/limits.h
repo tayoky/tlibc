@@ -14,11 +14,17 @@
 #ifdef __SCHAR_MAX__
 #define SCHAR_MAX __SCHAR_MAX__
 #else
-#define SCHAR_MAX 127
+#define SCHAR_MAX ((1U << CHAR_BIT) - 1)
 #endif
 
 #define SCHAR_MIN (-SCHAR_MAX -1)
 #define UCHAR_MAX (SCHAR_MAX * 2U + 1)
+
+#ifdef __CHAR_UNSIGNED__
+#define CHAR_MAX UCHAR_MAX
+#else
+#define CHAR_MAX SCHAR_MAX
+#endif
 
 #ifdef __SHRT_MAX__
 #define SHRT_MAX __SHRT_MAX__

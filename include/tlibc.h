@@ -22,6 +22,7 @@ struct __uthread {
 	size_t stack_size;
 	void *retval;
 	struct __pthread_cleanup *cleanups;
+	void *locale;
 	pid_t tid;
 	int stack_is_allocated;
 	int err;

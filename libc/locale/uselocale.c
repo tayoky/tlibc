@@ -1,11 +1,10 @@
-#include <locale.h>
-
-extern struct __locale _locale;
+#include <locale-internal.h>
+#include <tlibc.h>
 
 locale_t uselocale(locale_t locale) {
+	locale_t old = _NL_CURRENT_LOCALE;
 	if (locale) {
-		_locale = *locale;
-		_locale.allocated = 0;
+		__get_uthread()->locale = locale == LC_GLOBAL_LOCALE ? NULL : locale;
 	}
-	return &_locale;
+	return old == __global_locale ? LC_GLOBAL_LOCALE : old;
 }

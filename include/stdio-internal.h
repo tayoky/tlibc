@@ -5,7 +5,7 @@
 #include <sysdeps.h>
 #include <stdio.h>
 
-struct _FILE{
+struct _FILE {
 	struct _FILE *next;
 	struct _FILE *prev;
 	char *buf;
@@ -24,6 +24,16 @@ struct _FILE{
 	size_t lock_count;
 };
 
+struct __pipe_stream {
+	struct _FILE file;
+	struct __pipe_stream *next;
+	struct __pipe_stream *prev;
+	pid_t pid;
+};
+
+extern struct __pipe_stream *__pipe_streams;
+
+void __register_stream(FILE *stream);
 ssize_t __do_read(FILE *stream, char *buf, size_t count);
 ssize_t __do_write(FILE *stream, const char *buf, size_t count);
 ssize_t __fileio_read(FILE *stream, void *buf, size_t count);

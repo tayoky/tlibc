@@ -1,8 +1,6 @@
-#include <errno.h>
 #include <stdio-internal.h>
-#include <stdio.h>
-
-FILE *__create_stream(void);
+#include <errno.h>
+#include <stdlib.h>
 
 FILE *fdopen(int handle, const char *type) {
 	(void)type;
@@ -11,10 +9,11 @@ FILE *fdopen(int handle, const char *type) {
 		return NULL;
 	}
 
-	FILE *stream = __create_stream();
+	FILE *stream = calloc(1, sizeof(FILE));
 	if (!stream) return NULL;
 	stream->fd = handle;
 	setvbuf(stream, NULL, _IOFBF, 0);
+	__register_stream(stream);
 
 	return stream;
 }

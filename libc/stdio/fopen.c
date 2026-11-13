@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -36,5 +37,6 @@ FILE *fopen(const char *path, const char *mode) {
 	}
 
 	FILE *stream = fdopen(fd, mode);
+	if (!stream) close(fd);
 	return stream;
 }

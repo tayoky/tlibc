@@ -116,6 +116,10 @@ FILE *fdopen(int handle, const char *type);
 int fileno(FILE *stream);
 #endif
 
+#if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 2
+FILE *popen(const char *command, const char *type);
+int pclose(FILE *stream);
+#endif
 
 //seek func
 int fseek(FILE *stream, long offset, int origin);

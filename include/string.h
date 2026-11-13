@@ -36,6 +36,7 @@ void *memcpy(void *dest, const void *src, size_t n);
 int memcmp(const void *buf1, const void *buf2, size_t count);
 void *memmove(void *dest, const void *src, size_t n);
 void *memchr(const void *buf, int c, size_t count);
+void *memmem(const void *haystack, size_t hsize, const void *needle, size_t nsize);
 
 const char *strerror(int errnum);
 char *strsignal(int signum);

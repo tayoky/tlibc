@@ -58,7 +58,10 @@ static const char *_error_strings[] = {
 	[ENOANO] = N_("No anode"),
 	[EBADRQC] = N_("Invalid request code"),
 	[EBADSLT] = N_("Invalid slot"),
+	// on Linux EDEADLOCK and EDEADLK are the same
+#if EDEADLOCK != EDEADLK
 	[EDEADLOCK] = N_("File locking deadlock error"),
+#endif
 	[EBFONT] = N_("Bad font file format"),
 	[ENOSTR] = N_("Device not a stream"),
 	[ENODATA] = N_("No data available"),
@@ -75,7 +78,9 @@ static const char *_error_strings[] = {
 	[EMULTIHOP] = N_("Multihop attempted"),
 	[EDOTDOT] = N_("Cross mount point"),
 	[EBADMSG] = N_("Bad message"),
+#ifdef EFTYPE
 	[EFTYPE] = N_("Inappropriate file type or format"),
+#endif
 	[ENOTUNIQ] = N_("Name not unique"),
 	[EBADFD] = N_("File descriptor in bad state"),
 	[EREMCHG] = N_("Remote address changed"),
@@ -88,7 +93,10 @@ static const char *_error_strings[] = {
 	[ENOTEMPTY] = N_("Directory not empty"),
 	[ENAMETOOLONG] = N_("File or path name too long"),
 	[ELOOP] = N_("Too many symbolic links"),
+	// on Linux ENOTSUP and EOPNOTSUPP are the same
+#if EOPNOTSUPP != ENOTSUP
 	[EOPNOTSUPP] = N_("Operation not supported on transport endpoint"),
+#endif
 	[EPFNOSUPPORT] = N_("Protocol family not supported"),
 	[ECONNRESET] = N_("Connection reset by peer"),
 	[ENOBUFS] = N_("No buffer space available"),

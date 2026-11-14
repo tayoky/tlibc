@@ -11,7 +11,7 @@ void flockfile(FILE *filehandle) {
 			filehandle->lock_count = 1;
 			return;
 		}
-		// maybee we already own it
+		// maybe we already own it
 		if (expected == (futex_val_t)tid) {
 			filehandle->lock_count++;
 			return;

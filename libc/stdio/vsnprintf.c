@@ -11,12 +11,12 @@
 
 #define OUT(c) \
 	{ \
-		if (maxlen != 1) { \
+		if (maxlen > 0) { \
 			if (buf) { \
 				*buf = c; \
 				buf++; \
 			} \
-			if (maxlen) maxlen--; \
+			maxlen--; \
 		} \
 		count++; \
 	}
@@ -98,10 +98,11 @@ static int _print_uint(char *buf, size_t maxlen, uint64_t value, int base, int p
 	do { \
 		int tmp = _print_uint(__VA_ARGS__); \
 		count += tmp; \
-		if (maxlen && (size_t)tmp > maxlen - 1) tmp = maxlen - 1; \
+		if (maxlen == 0) tmp = 0; \
+		else if ((size_t)tmp > maxlen - 1) tmp = maxlen - 1; \
 		if (buf) buf += tmp; \
-		if (maxlen) maxlen -= tmp; \
-	} while (0);
+		maxlen -= tmp; \
+	} while (0)
 
 #if !defined(__LIBK__) && !defined(__LD_TLIBC__)
 static int _print_float(char *buf, size_t maxlen, long double number, int base, int padding, char padding_char, int precision, int high, int positive_sign, int alternate_form, int exponent) {
@@ -152,9 +153,10 @@ static int _print_float(char *buf, size_t maxlen, long double number, int base, 
 	do { \
 		int tmp = _print_float(__VA_ARGS__); \
 		count += tmp; \
-		if (maxlen && (size_t)tmp > maxlen - 1) tmp = maxlen - 1; \
+		if (maxlen == 0) tmp = 0; \
+		else if ((size_t)tmp > maxlen - 1) tmp = maxlen - 1; \
 		if (buf) buf += tmp; \
-		if (maxlen) maxlen -= tmp; \
+		maxlen -= tmp; \
 	} while (0);
 #endif
 

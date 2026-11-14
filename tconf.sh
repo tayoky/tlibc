@@ -1,6 +1,7 @@
 # a collection of various utilities to make configure scripts
+# this file is a part of tconf, get the latest version at https://github.com/stanix-org/tconf
 
-TCONF_VERSION="0.2.3"
+TCONF_VERSION="0.2.6"
 
 tconf_print () {
 	echo "$@" 1>&2
@@ -26,13 +27,17 @@ tconf_to_option_name () {
 	echo "$@" | tr "A-Z_" "a-z-"
 }
 
+tconf_to_func_name () {
+	echo "$@" | tr "A-Z-" "a-z_"
+}
+
 tconf_to_lowercase () {
 	echo "$@" | tr "A-Z" "a-z"
 }
 
 tconf_help () {
 	echo "usage : $(basename "$0") [OPTIONS...]
-generate config.mk from environement
+Configure package for compilation
 --cc=CC set the C compiler
 --cxx=CXX set the C++ compiler
 --as=AS set the assembler
@@ -53,13 +58,18 @@ generate config.mk from environement
 --prefix=PREFIX set the prefix [$PREFIX]
 --sysroot=SYSROOT, --with-sysroot=SYSROOT set the sysroot [${SYSROOT:-"/"}]
 --builddir=BUILDDIR set the builddir (where to put objects) [$BUILDDIR]
---debug compile with debug options activated [$DEBUG]"
-	for OPTION in $OPTIONS ; do
-		OPTION_NAME=$(tconf_to_option_name $OPTION)
-		echo "--enable-$OPTION_NAME compile with $OPTION_NAME enabled [$(tconf_get_var $OPTION)]
---disable-$OPTION_NAME compile with $OPTION_NAME disabled"
-	done
-	echo "--help show this help and exit"
+--debug compile with debug options activated [$DEBUG]$OPTIONS_HELP
+--help show this help and exit"
+}
+
+tconf_add_option () {
+	if [ $# != 2 ] ; then
+		tconf_print "usage : tconf_add_option OPTION HELP"
+		return 1
+	fi
+	OPTIONS_HELP="$OPTIONS_HELP
+--$1 : $2"
+	OPTIONS="$OPTIONS $1 "
 }
 
 tconf_init () {
@@ -153,8 +163,16 @@ tconf_init () {
 			exit 0
 			;;
 		--*)
-			tconf_print "unknown option '$i' (see --help)"
-			exit 1
+			# is it a custom option ??
+			case "$OPTIONS" in
+				*" ${i#--} "*)
+					"$(tconf_to_func_name "${i#--}")"
+					;;
+				*)
+				tconf_print "unknown option '$i' (see --help)"
+				exit 1
+					;;
+			esac
 			;;
 		esac
 	done
@@ -188,7 +206,7 @@ tconf_echo_conf_util () {
 		tconf_print "usage : tconf_echo_conf_util NAME VAR"
 		return 1
 	fi
-	tconf_echo_conf "$1" "$(which "$2")"
+	tconf_echo_conf "$1" "$(which "$2" 2>/dev/null || echo "$2")"
 }
 
 tconf_gen_conf () {
@@ -295,6 +313,9 @@ tconf_check_code_define () {
 
 	if tconf_check_code "$1" "$2" "$3" "$4" ; then
 		OPT="$OPT -D$(tconf_to_macro_name "HAVE_$2")=1"
+		return 0
+	else
+		return 1
 	fi
 }
 

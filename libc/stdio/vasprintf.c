@@ -22,5 +22,7 @@ int vasprintf(char **restrict strp, const char *restrict fmt, va_list args) {
 	if (!buf) return -1;
 	*strp = buf;
 
-	return vsnprintf(buf, len + 1, fmt, args);
+	len = vsnprintf(buf, len + 1, fmt, args);
+	if (len < 0) free(buf);
+	return len;
 }

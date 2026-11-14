@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <pthread.h>
 
 struct bin;
 
@@ -59,6 +60,8 @@ static struct bin bins[] = {
 	BIN(1024),
 	BIN(2048),
 };
+
+static pthread_mutex_t heap_lock = PTHREAD_MUTEX_INITIALIZER;
 
 static struct alloc *get_alloc(void *ptr) {
 	struct alloc *alloc = ptr;
@@ -284,30 +287,41 @@ size_t alloc_get_size(struct alloc *alloc) {
 void *malloc(size_t size) {
 	if (size == 0) return NULL;
 	struct bin *bin = get_bin(size);
+	pthread_mutex_lock(&heap_lock);
+	void *ptr;
 	if (bin) {
-		return bin_allocate(bin);
+		ptr = bin_allocate(bin);
 	} else {
-		return big_allocate(size);
+		ptr = big_allocate(size);
 	}
+	pthread_mutex_unlock(&heap_lock);
+	return ptr;
 }
 
 void *calloc(size_t num, size_t size) {
+	if (size == 0 || num == 0) return NULL;
+	if (SIZE_MAX / size < num) return NULL;
 	size *= num;
 	
-	if (size == 0) return NULL;
 	struct bin *bin = get_bin(size);
+	pthread_mutex_lock(&heap_lock);
+	void *ptr;
 	if (bin) {
-		void *ptr = bin_allocate(bin);
+		ptr = bin_allocate(bin);
 		if (ptr) memset(ptr, 0, size);
-		return ptr;
 	} else {
 		// big allocations are already zeroed
-		return big_allocate(size);
+		ptr = big_allocate(size);
 	}
+	pthread_mutex_unlock(&heap_lock);
+	return ptr;
 }
 
 void *aligned_alloc(size_t alignment, size_t size) {
-	return aligned_allocate(alignment, size);
+	pthread_mutex_lock(&heap_lock);
+	void *ptr = aligned_allocate(alignment, size);
+	pthread_mutex_unlock(&heap_lock);
+	return ptr;
 }
 
 int posix_memalign(void **memptr, size_t alignment, size_t size) {
@@ -323,6 +337,7 @@ int posix_memalign(void **memptr, size_t alignment, size_t size) {
 void free(void *ptr) {
 	if (!ptr) return;
 	struct alloc *alloc = get_alloc(ptr);
+	pthread_mutex_lock(&heap_lock);
 	if (alloc->slab) {
 		bin_free(alloc->slab, ptr);
 	} else if (alloc->size & ALLOC_ALIGNED) {
@@ -330,6 +345,7 @@ void free(void *ptr) {
 	} else {
 		big_free(alloc);
 	}
+	pthread_mutex_unlock(&heap_lock);
 }
 
 void *realloc(void *ptr, size_t newsize) {

@@ -5,7 +5,8 @@
 
 #include <features.h>
 
-#define WNOHANG 0x01
+#define WNOHANG   0x1
+#define WUNTRACED 0x2
 
 #define __WCOREFLAG 0x80
 

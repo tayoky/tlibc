@@ -7,6 +7,8 @@
 #define TLIBC_FAST_INLINES 1
 #endif
 
+// should we also define __GLIBC__ ?
+#define __TLIBC__ 1
 
 // deprecated
 #if (defined( _BSD_SOURCE) || defined(_SVID_SOURCE)) && !defined(_DEFAULT_SOURCE)

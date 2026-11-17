@@ -12,7 +12,7 @@
 #include <signal.h>
 #include <errno.h>
 
-#ifndef __TLIBC__
+#ifndef __BUILDING_TLIBC__
 #error "header for internal use only"
 #endif
 

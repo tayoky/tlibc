@@ -130,7 +130,7 @@ int pthread_getschedparam(pthread_t thread, int *restrict policy, struct sched_p
 int pthread_setschedparam(pthread_t thread, int policy, const struct sched_param *param);
 
 struct __pthread_cleanup {
-#ifdef __TLIBC__
+#ifdef __BUILDING_TLIBC__
 	struct __pthread_cleanup *next;
 	void (*routine)(void *);
 	void *arg;

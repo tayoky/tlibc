@@ -53,7 +53,7 @@ typedef unsigned int sigset_t;
 union sigval {
 	int   sival_int; // integer value
 	void *sival_ptr; // pointer value
-#ifdef __TLIBC__
+#ifdef __BUILDING_TLIBC__
 	long raw_data;
 #endif
 };

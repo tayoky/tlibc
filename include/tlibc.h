@@ -9,7 +9,7 @@
 
 // this is reserved for internal use
 // this should not be used by common program that use crt0.o
-#ifndef __TLIBC__
+#ifndef __BUILDING_TLIBC__
 #error "header for internal use only"
 #endif
 

@@ -10,7 +10,7 @@
 
 typedef struct _FILE FILE;
 
-#ifdef __TLIBC__
+#ifdef __BUILDING_TLIBC__
 struct __fpos {
 	size_t offset;
 };
